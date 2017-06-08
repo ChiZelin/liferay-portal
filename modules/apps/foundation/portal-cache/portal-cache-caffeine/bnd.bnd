@@ -1,5 +1,5 @@
 Bundle-Name: Liferay Portal Cache Caffeine
-Bundle-SymbolicName: com.liferay.portal.cache.Caffeine
+Bundle-SymbolicName: com.liferay.portal.cache.caffeine
 Bundle-Version: 1.0.0
 DynamicImport-Package: *
 Export-Package:

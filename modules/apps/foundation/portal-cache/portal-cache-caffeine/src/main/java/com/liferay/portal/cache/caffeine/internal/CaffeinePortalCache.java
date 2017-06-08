@@ -14,91 +14,104 @@
 
 package com.liferay.portal.cache.caffeine.internal;
 
-import java.io.Serializable;
-import java.util.List;
+import com.github.benmanes.caffeine.cache.Cache;
 
-import com.github.benmanes.caffeine.cache.Caffeine;
 import com.liferay.portal.cache.BasePortalCache;
-import com.liferay.portal.cache.caffeine.CaffeineWrapper;
 import com.liferay.portal.kernel.cache.PortalCacheManager;
+
+import java.io.Serializable;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * @author Leon Chi
  */
 public class CaffeinePortalCache <K extends Serializable, V>
-	extends BasePortalCache<K, V> implements CaffeineWrapper{
+	extends BasePortalCache<K, V> {
 
 	public CaffeinePortalCache(
-		PortalCacheManager<K, V> portalCacheManager, Caffeine caffeine) {
-		
+		PortalCacheManager<K, V> portalCacheManager, Cache<K, V> cache,
+		String cacheName) {
+
 		super(portalCacheManager);
-		// TODO Auto-generated constructor stub
+
+		this.cache = cache;
+		_cacheName = cacheName;
 	}
 
 	@Override
 	public List<K> getKeys() {
-		// TODO Auto-generated method stub
-		return null;
+		ConcurrentMap<K, V> concurrentMap = cache.asMap();
+
+		Set<K> keySet = concurrentMap.keySet();
+
+		List<K> keyList = new ArrayList<K> ();
+
+		keyList.addAll(keySet);
+
+		return keyList;
 	}
 
 	@Override
 	public String getPortalCacheName() {
-		// TODO Auto-generated method stub
-		return null;
+		return _cacheName;
 	}
 
 	@Override
 	public void removeAll() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public Caffeine getCaffeine() {
-		// TODO Auto-generated method stub
-		return null;
+		cache.invalidateAll();
 	}
 
 	@Override
 	protected V doGet(K key) {
-		// TODO Auto-generated method stub
-		return null;
+		return (V)cache.getIfPresent(key);
 	}
 
 	@Override
 	protected void doPut(K key, V value, int timeToLive) {
-		// TODO Auto-generated method stub
-		
+		cache.put(key, value);
 	}
 
 	@Override
 	protected V doPutIfAbsent(K key, V value, int timeToLive) {
+
 		// TODO Auto-generated method stub
+
 		return null;
 	}
 
 	@Override
 	protected void doRemove(K key) {
-		// TODO Auto-generated method stub
-		
+		cache.invalidate(key);
 	}
 
 	@Override
 	protected boolean doRemove(K key, V value) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	protected V doReplace(K key, V value, int timeToLive) {
-		// TODO Auto-generated method stub
-		return null;
+		V oldValue = cache.getIfPresent(key);
+
+		cache.put(key, value);
+
+		return oldValue;
 	}
 
 	@Override
 	protected boolean doReplace(K key, V oldValue, V newValue, int timeToLive) {
+
 		// TODO Auto-generated method stub
+
 		return false;
 	}
+
+	protected volatile Cache<K, V> cache;
+
+	private final String _cacheName;
 
 }

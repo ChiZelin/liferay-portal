@@ -14,12 +14,19 @@
 
 package com.liferay.portal.cache.caffeine.internal;
 
-import java.io.Serializable;
-
-import org.osgi.service.component.annotations.Component;
-
 import com.liferay.portal.kernel.cache.PortalCacheManager;
 import com.liferay.portal.kernel.cache.PortalCacheManagerNames;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+
+import java.io.Serializable;
+
+import java.util.Map;
+
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Modified;
 
 /**
  * @author Leon Chi
@@ -32,6 +39,24 @@ import com.liferay.portal.kernel.cache.PortalCacheManagerNames;
 	service = PortalCacheManager.class
 )
 public class SingleVMCaffeinePortalCacheManager <K extends Serializable, V>
-	extends CaffeinePortalCacheManager<K, V>{
+	extends CaffeinePortalCacheManager<K, V> {
+
+	@Activate
+	@Modified
+	protected void activate(Map<String, Object> properties) {
+		setPortalCacheManagerName(PortalCacheManagerNames.SINGLE_VM);
+
+		if (_log.isDebugEnabled()) {
+			_log.debug("Activated " + PortalCacheManagerNames.SINGLE_VM);
+		}
+	}
+
+	@Deactivate
+	protected void deactivate() {
+		destroy();
+	}
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		SingleVMCaffeinePortalCacheManager.class);
 
 }
