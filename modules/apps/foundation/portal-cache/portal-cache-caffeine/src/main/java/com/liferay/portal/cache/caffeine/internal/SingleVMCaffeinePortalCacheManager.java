@@ -14,6 +14,8 @@
 
 package com.liferay.portal.cache.caffeine.internal;
 
+import com.liferay.portal.cache.PortalCacheListenerFactory;
+import com.liferay.portal.cache.PortalCacheManagerListenerFactory;
 import com.liferay.portal.kernel.cache.PortalCacheManager;
 import com.liferay.portal.kernel.cache.PortalCacheManagerNames;
 import com.liferay.portal.kernel.log.Log;
@@ -27,6 +29,7 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Modified;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Leon Chi
@@ -46,6 +49,8 @@ public class SingleVMCaffeinePortalCacheManager <K extends Serializable, V>
 	protected void activate(Map<String, Object> properties) {
 		setPortalCacheManagerName(PortalCacheManagerNames.SINGLE_VM);
 
+		initialize();
+
 		if (_log.isDebugEnabled()) {
 			_log.debug("Activated " + PortalCacheManagerNames.SINGLE_VM);
 		}
@@ -54,6 +59,22 @@ public class SingleVMCaffeinePortalCacheManager <K extends Serializable, V>
 	@Deactivate
 	protected void deactivate() {
 		destroy();
+	}
+
+	@Reference(unbind = "-")
+	protected void setPortalCacheListenerFactory(
+		PortalCacheListenerFactory portalCacheListenerFactory) {
+
+		this.portalCacheListenerFactory = portalCacheListenerFactory;
+	}
+
+	@Reference(unbind = "-")
+	protected void setPortalCacheManagerListenerFactory(
+		PortalCacheManagerListenerFactory<PortalCacheManager<K, V>>
+			portalCacheManagerListenerFactory) {
+
+		this.portalCacheManagerListenerFactory =
+			portalCacheManagerListenerFactory;
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(

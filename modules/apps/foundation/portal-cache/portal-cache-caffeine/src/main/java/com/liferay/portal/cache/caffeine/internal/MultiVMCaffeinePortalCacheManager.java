@@ -21,11 +21,17 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Modified;
+import org.osgi.service.component.annotations.Reference;
 
+import com.liferay.portal.cache.PortalCacheBootstrapLoaderFactory;
+import com.liferay.portal.cache.PortalCacheListenerFactory;
+import com.liferay.portal.cache.PortalCacheManagerListenerFactory;
 import com.liferay.portal.kernel.cache.PortalCacheManager;
 import com.liferay.portal.kernel.cache.PortalCacheManagerNames;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.util.AggregateClassLoader;
+import com.liferay.portal.kernel.util.ClassLoaderUtil;
 
 /**
  * @author Leon	Chi
@@ -37,15 +43,18 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 	},
 	service = PortalCacheManager.class
 )
-public class MultiVMCaffeinePortalCacheManager <K extends Serializable, V extends Serializable>
-	extends CaffeinePortalCacheManager<K, V>{
+public class MultiVMCaffeinePortalCacheManager
+	<K extends Serializable, V extends Serializable>
+		extends CaffeinePortalCacheManager<K, V>{
 	
 	@Activate
 	@Modified
 	protected void activate(Map<String, Object> properties) {
 		setClusterAware(true);
 		setPortalCacheManagerName(PortalCacheManagerNames.MULTI_VM);
-
+		
+		initialize();
+		
 		if (_log.isDebugEnabled()) {
 			_log.debug("Activated " + PortalCacheManagerNames.MULTI_VM);
 		}
@@ -54,6 +63,30 @@ public class MultiVMCaffeinePortalCacheManager <K extends Serializable, V extend
 	@Deactivate
 	protected void deactivate() {
 		destroy();
+	}
+	
+	@Reference(unbind = "-")
+	protected void setPortalCacheListenerFactory(
+		PortalCacheListenerFactory portalCacheListenerFactory) {
+
+		this.portalCacheListenerFactory = portalCacheListenerFactory;
+	}
+
+	@Reference(unbind = "-")
+	protected void setPortalCacheManagerListenerFactory(
+		PortalCacheManagerListenerFactory<PortalCacheManager<K, V>>
+			portalCacheManagerListenerFactory) {
+
+		this.portalCacheManagerListenerFactory =
+			portalCacheManagerListenerFactory;
+	}
+	
+	@Reference(unbind = "-")
+	protected void setPortalCacheBootstrapLoaderFactory(
+		PortalCacheBootstrapLoaderFactory portalCacheBootstrapLoaderFactory) {
+
+		this.portalCacheBootstrapLoaderFactory =
+			portalCacheBootstrapLoaderFactory;
 	}
 	
 	private static final Log _log = LogFactoryUtil.getLog(

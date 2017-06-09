@@ -77,9 +77,6 @@ public class CaffeinePortalCache <K extends Serializable, V>
 
 	@Override
 	protected V doPutIfAbsent(K key, V value, int timeToLive) {
-
-		// TODO Auto-generated method stub
-
 		return null;
 	}
 
@@ -104,9 +101,6 @@ public class CaffeinePortalCache <K extends Serializable, V>
 
 	@Override
 	protected boolean doReplace(K key, V oldValue, V newValue, int timeToLive) {
-
-		// TODO Auto-generated method stub
-
 		return false;
 	}
 

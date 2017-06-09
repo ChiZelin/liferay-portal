@@ -17,28 +17,47 @@ package com.liferay.portal.cache.caffeine.internal;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 
+import com.liferay.portal.cache.BasePortalCacheManager;
+import com.liferay.portal.cache.configuration.PortalCacheConfiguration;
+import com.liferay.portal.cache.configuration.PortalCacheManagerConfiguration;
 import com.liferay.portal.kernel.cache.PortalCache;
-import com.liferay.portal.kernel.cache.PortalCacheException;
-import com.liferay.portal.kernel.cache.PortalCacheManager;
-import com.liferay.portal.kernel.cache.PortalCacheManagerListener;
 
 import java.io.Serializable;
 
 import java.net.URL;
 
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
 /**
  * @author Leon Chi
  */
 public class CaffeinePortalCacheManager<K extends Serializable, V>
-	implements PortalCacheManager<K, V> {
+	extends BasePortalCacheManager<K, V> {
 
 	@Override
-	public void clearAll() throws PortalCacheException {
+	public void reconfigurePortalCaches(URL configurationURL) {
+	}
+
+	@Override
+	protected PortalCache<K, V> createPortalCache(
+		PortalCacheConfiguration portalCacheConfiguration) {
+
+		Caffeine caffeine = Caffeine.newBuilder();
+
+		caffeine = caffeine.maximumSize(10000);
+
+		caffeine = caffeine.expireAfterWrite(10, TimeUnit.MINUTES);
+
+		Cache<K, V> cache = caffeine.build();
+
+		PortalCache<K, V> portalCache = new CaffeinePortalCache<>(
+			this, cache, portalCacheConfiguration.getPortalCacheName());
+
+		return portalCache;
+	}
+
+	@Override
+	protected void doClearAll() {
 		for (String cacheName : portalCaches.keySet()) {
 			PortalCache<K, V> portalCache = portalCaches.get(cacheName);
 
@@ -49,114 +68,38 @@ public class CaffeinePortalCacheManager<K extends Serializable, V>
 	}
 
 	@Override
-	public void destroy() {
+	protected void doDestroy() {
 		portalCaches.clear();
 	}
 
 	@Override
-	public PortalCache<K, V> getPortalCache(String portalCacheName)
-		throws PortalCacheException {
-
-		PortalCache<K, V> portalCache = portalCaches.get(portalCacheName);
-
-		if (portalCache != null) {
-			return portalCache;
-		}
-
-		Cache<K, V> cache = Caffeine.newBuilder()
-			.maximumSize(10000)
-			.expireAfterWrite(10, TimeUnit.MINUTES)
-			.build();
-
-		portalCache = new CaffeinePortalCache<>(this, cache, portalCacheName);
-
-		portalCaches.putIfAbsent(portalCacheName, portalCache);
-
-		return portalCache;
-	}
-
-	@Override
-	public PortalCache<K, V> getPortalCache(
-			String portalCacheName, boolean blocking)
-		throws PortalCacheException {
-
-		return getPortalCache(portalCacheName);
-	}
-
-	@Override
-	public PortalCache<K, V> getPortalCache(
-			String portalCacheName, boolean blocking, boolean mvcc)
-		throws PortalCacheException {
-
-		return getPortalCache(portalCacheName);
-	}
-
-	@Override
-	public Set<PortalCacheManagerListener> getPortalCacheManagerListeners() {
-
-		// TODO Auto-generated method stub
-
-		return null;
-	}
-
-	@Override
-	public String getPortalCacheManagerName() {
-		return _portalCacheManagerName;
-	}
-
-	@Override
-	public boolean isClusterAware() {
-		return _clusterAware;
-	}
-
-	@Override
-	public void reconfigurePortalCaches(URL configurationURL) {
-
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public boolean registerPortalCacheManagerListener(
-		PortalCacheManagerListener portalCacheManagerListener) {
-
-		// TODO Auto-generated method stub
-
-		return false;
-	}
-
-	@Override
-	public void removePortalCache(String portalCacheName) {
+	protected void doRemovePortalCache(String portalCacheName) {
 		portalCaches.remove(portalCacheName);
 	}
 
-	public void setClusterAware(boolean clusterAware) {
-		this._clusterAware = clusterAware;
-	}
+	@Override
+	protected PortalCacheManagerConfiguration
+		getPortalCacheManagerConfiguration() {
 
-	public void setPortalCacheManagerName(String portalCacheManagerName) {
-		_portalCacheManagerName = portalCacheManagerName;
+		return _portalCacheManagerConfiguration;
 	}
 
 	@Override
-	public boolean unregisterPortalCacheManagerListener(
-		PortalCacheManagerListener portalCacheManagerListener) {
+	protected void initPortalCacheManager() {
+		PortalCacheConfiguration defaultPortalCacheConfiguration =
+			new PortalCacheConfiguration(
+					PortalCacheConfiguration.DEFAULT_PORTAL_CACHE_NAME, null,
+					null);
 
-		// TODO Auto-generated method stub
-
-		return false;
+		_portalCacheManagerConfiguration = new PortalCacheManagerConfiguration(
+			null, defaultPortalCacheConfiguration, null);
 	}
 
 	@Override
-	public void unregisterPortalCacheManagerListeners() {
-
-		// TODO Auto-generated method stub
-
+	protected void removeConfigurableEhcachePortalCacheListeners(
+		PortalCache<K, V> portalCache) {
 	}
 
-	private boolean _clusterAware;
-	private String _portalCacheManagerName;
-	private final ConcurrentMap<String, PortalCache<K, V>> portalCaches =
-		new ConcurrentHashMap<>();
+	private PortalCacheManagerConfiguration _portalCacheManagerConfiguration;
 
 }
