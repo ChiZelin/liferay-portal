@@ -16,6 +16,7 @@ package com.liferay.portal.cache.caffeine.internal.event;
 
 import com.liferay.portal.cache.PortalCacheManagerListenerFactory;
 import com.liferay.portal.cache.caffeine.internal.CaffeinePortalCacheManager;
+import com.liferay.portal.kernel.cache.PortalCacheException;
 import com.liferay.portal.kernel.cache.PortalCacheManagerListener;
 
 import java.util.Properties;
@@ -35,7 +36,25 @@ public class DummyPortalCacheManagerListenerFactory
 		CaffeinePortalCacheManager<?, ?> portalCacheManager,
 		Properties properties) {
 
-		return null;
+		return new PortalCacheManagerListener() {
+
+			@Override
+			public void dispose() throws PortalCacheException {
+			}
+
+			@Override
+			public void init() throws PortalCacheException {
+			}
+
+			@Override
+			public void notifyPortalCacheAdded(String portalCacheName) {
+			}
+
+			@Override
+			public void notifyPortalCacheRemoved(String portalCacheName) {
+			}
+			
+		};
 	}
 
 }
