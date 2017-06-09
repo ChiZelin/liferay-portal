@@ -53,7 +53,7 @@ public class DummyPortalCacheManagerListenerFactory
 			@Override
 			public void notifyPortalCacheRemoved(String portalCacheName) {
 			}
-			
+
 		};
 	}
 

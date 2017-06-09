@@ -18,7 +18,6 @@ import com.liferay.portal.cache.PortalCacheListenerFactory;
 import com.liferay.portal.kernel.cache.PortalCache;
 import com.liferay.portal.kernel.cache.PortalCacheException;
 import com.liferay.portal.kernel.cache.PortalCacheListener;
-import com.liferay.portal.kernel.cache.PortalCacheManagerListener;
 
 import java.io.Serializable;
 
@@ -37,41 +36,52 @@ public class DummyPortalCacheListenerFactory
 	public <K extends Serializable, V> PortalCacheListener<K, V> create(
 		Properties properties) {
 
-		return new PortalCacheListener<K, V>(){
+		return new PortalCacheListener<K, V>() {
 
 			@Override
 			public void dispose() {
 			}
 
 			@Override
-			public void notifyEntryEvicted(PortalCache portalCache, Serializable key, Object value, int timeToLive)
-					throws PortalCacheException {
+			public void notifyEntryEvicted(
+					PortalCache portalCache, Serializable key, Object value,
+					int timeToLive)
+				throws PortalCacheException {
 			}
 
 			@Override
-			public void notifyEntryExpired(PortalCache portalCache, Serializable key, Object value, int timeToLive)
-					throws PortalCacheException {
+			public void notifyEntryExpired(
+					PortalCache portalCache, Serializable key, Object value,
+					int timeToLive)
+				throws PortalCacheException {
 			}
 
 			@Override
-			public void notifyEntryPut(PortalCache portalCache, Serializable key, Object value, int timeToLive)
-					throws PortalCacheException {
+			public void notifyEntryPut(
+					PortalCache portalCache, Serializable key, Object value,
+					int timeToLive)
+				throws PortalCacheException {
 			}
 
 			@Override
-			public void notifyEntryRemoved(PortalCache portalCache, Serializable key, Object value, int timeToLive)
-					throws PortalCacheException {
+			public void notifyEntryRemoved(
+					PortalCache portalCache, Serializable key, Object value,
+					int timeToLive)
+				throws PortalCacheException {
 			}
 
 			@Override
-			public void notifyEntryUpdated(PortalCache portalCache, Serializable key, Object value, int timeToLive)
-					throws PortalCacheException {
+			public void notifyEntryUpdated(
+					PortalCache portalCache, Serializable key, Object value,
+					int timeToLive)
+				throws PortalCacheException {
 			}
 
 			@Override
-			public void notifyRemoveAll(PortalCache portalCache) throws PortalCacheException {
+			public void notifyRemoveAll(PortalCache portalCache)
+				throws PortalCacheException {
 			}
-			
+
 		};
 	}
 
