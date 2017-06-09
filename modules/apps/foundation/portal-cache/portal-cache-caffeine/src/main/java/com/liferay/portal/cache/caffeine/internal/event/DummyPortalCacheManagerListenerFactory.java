@@ -24,7 +24,7 @@ import java.util.Properties;
 import org.osgi.service.component.annotations.Component;
 
 /**
- * @author Tina Tian
+ * @author Leon	Chi
  */
 @Component(immediate = true, service = PortalCacheManagerListenerFactory.class)
 public class DummyPortalCacheManagerListenerFactory
