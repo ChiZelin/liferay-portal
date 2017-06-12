@@ -41,7 +41,7 @@ import org.osgi.service.component.annotations.Reference;
 	},
 	service = PortalCacheManager.class
 )
-public class SingleVMCaffeinePortalCacheManager <K extends Serializable, V>
+public class SingleVMCaffeinePortalCacheManager<K extends Serializable, V>
 	extends CaffeinePortalCacheManager<K, V> {
 
 	@Activate

@@ -44,16 +44,16 @@ import org.osgi.service.component.annotations.Reference;
 )
 public class MultiVMCaffeinePortalCacheManager
 	<K extends Serializable, V extends Serializable>
-		extends CaffeinePortalCacheManager<K, V>{
-	
+		extends CaffeinePortalCacheManager<K, V> {
+
 	@Activate
 	@Modified
 	protected void activate(Map<String, Object> properties) {
 		setClusterAware(true);
 		setPortalCacheManagerName(PortalCacheManagerNames.MULTI_VM);
-		
+
 		initialize();
-		
+
 		if (_log.isDebugEnabled()) {
 			_log.debug("Activated " + PortalCacheManagerNames.MULTI_VM);
 		}
@@ -63,7 +63,15 @@ public class MultiVMCaffeinePortalCacheManager
 	protected void deactivate() {
 		destroy();
 	}
-	
+
+	@Reference(unbind = "-")
+	protected void setPortalCacheBootstrapLoaderFactory(
+		PortalCacheBootstrapLoaderFactory portalCacheBootstrapLoaderFactory) {
+
+		this.portalCacheBootstrapLoaderFactory =
+			portalCacheBootstrapLoaderFactory;
+	}
+
 	@Reference(unbind = "-")
 	protected void setPortalCacheListenerFactory(
 		PortalCacheListenerFactory portalCacheListenerFactory) {
@@ -79,15 +87,8 @@ public class MultiVMCaffeinePortalCacheManager
 		this.portalCacheManagerListenerFactory =
 			portalCacheManagerListenerFactory;
 	}
-	
-	@Reference(unbind = "-")
-	protected void setPortalCacheBootstrapLoaderFactory(
-		PortalCacheBootstrapLoaderFactory portalCacheBootstrapLoaderFactory) {
 
-		this.portalCacheBootstrapLoaderFactory =
-			portalCacheBootstrapLoaderFactory;
-	}
-	
 	private static final Log _log = LogFactoryUtil.getLog(
-			MultiVMCaffeinePortalCacheManager.class);
+		MultiVMCaffeinePortalCacheManager.class);
+
 }

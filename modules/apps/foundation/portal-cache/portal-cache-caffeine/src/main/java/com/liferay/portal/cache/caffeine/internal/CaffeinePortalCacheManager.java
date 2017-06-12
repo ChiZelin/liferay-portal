@@ -42,7 +42,7 @@ public class CaffeinePortalCacheManager<K extends Serializable, V>
 	protected PortalCache<K, V> createPortalCache(
 		PortalCacheConfiguration portalCacheConfiguration) {
 
-		Caffeine caffeine = Caffeine.newBuilder();
+		Caffeine<Object, Object> caffeine = Caffeine.newBuilder();
 
 		caffeine = caffeine.maximumSize(10000);
 
@@ -88,8 +88,7 @@ public class CaffeinePortalCacheManager<K extends Serializable, V>
 	protected void initPortalCacheManager() {
 		PortalCacheConfiguration defaultPortalCacheConfiguration =
 			new PortalCacheConfiguration(
-					PortalCacheConfiguration.DEFAULT_PORTAL_CACHE_NAME, null,
-					null);
+				PortalCacheConfiguration.DEFAULT_PORTAL_CACHE_NAME, null, null);
 
 		_portalCacheManagerConfiguration = new PortalCacheManagerConfiguration(
 			null, defaultPortalCacheConfiguration, null);

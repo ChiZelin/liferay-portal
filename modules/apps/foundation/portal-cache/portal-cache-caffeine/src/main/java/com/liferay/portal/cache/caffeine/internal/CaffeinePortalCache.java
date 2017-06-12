@@ -29,7 +29,7 @@ import java.util.concurrent.ConcurrentMap;
 /**
  * @author Leon Chi
  */
-public class CaffeinePortalCache <K extends Serializable, V>
+public class CaffeinePortalCache<K extends Serializable, V>
 	extends BasePortalCache<K, V> {
 
 	public CaffeinePortalCache(
@@ -39,6 +39,7 @@ public class CaffeinePortalCache <K extends Serializable, V>
 		super(portalCacheManager);
 
 		this.cache = cache;
+
 		_cacheName = cacheName;
 	}
 
@@ -48,7 +49,7 @@ public class CaffeinePortalCache <K extends Serializable, V>
 
 		Set<K> keySet = concurrentMap.keySet();
 
-		List<K> keyList = new ArrayList<K> ();
+		List<K> keyList = new ArrayList<>();
 
 		keyList.addAll(keySet);
 
@@ -77,7 +78,16 @@ public class CaffeinePortalCache <K extends Serializable, V>
 
 	@Override
 	protected V doPutIfAbsent(K key, V value, int timeToLive) {
-		return null;
+		V oldValue = cache.getIfPresent(key);
+
+		if (oldValue != null) {
+			return oldValue;
+		}
+		else {
+			cache.put(key, value);
+
+			return value;
+		}
 	}
 
 	@Override
@@ -87,6 +97,18 @@ public class CaffeinePortalCache <K extends Serializable, V>
 
 	@Override
 	protected boolean doRemove(K key, V value) {
+		V currentValue = cache.getIfPresent(key);
+
+		if (currentValue == null) {
+			return false;
+		}
+
+		if (currentValue.equals(value)) {
+			cache.invalidate(key);
+
+			return true;
+		}
+
 		return false;
 	}
 
@@ -101,6 +123,18 @@ public class CaffeinePortalCache <K extends Serializable, V>
 
 	@Override
 	protected boolean doReplace(K key, V oldValue, V newValue, int timeToLive) {
+		V currentValue = cache.getIfPresent(key);
+
+		if (currentValue == null) {
+			return false;
+		}
+
+		if (currentValue.equals(oldValue)) {
+			cache.put(key, newValue);
+
+			return true;
+		}
+
 		return false;
 	}
 
