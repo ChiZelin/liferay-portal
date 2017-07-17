@@ -32,7 +32,7 @@ public class Cache2kPortalCache<K extends Serializable, V>
 	extends BasePortalCache<K, V> {
 
 	public Cache2kPortalCache(
-		PortalCacheManager<K, V> portalCacheManager, Cache cache) {
+		PortalCacheManager<K, V> portalCacheManager, Cache<K, V> cache) {
 
 		super(portalCacheManager);
 
@@ -123,6 +123,6 @@ public class Cache2kPortalCache<K extends Serializable, V>
 		return false;
 	}
 
-	protected volatile Cache cache;
+	protected volatile Cache<K, V> cache;
 
 }
