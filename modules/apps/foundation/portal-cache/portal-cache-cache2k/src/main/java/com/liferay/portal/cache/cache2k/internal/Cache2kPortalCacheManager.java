@@ -57,7 +57,7 @@ public class Cache2kPortalCacheManager<K extends Serializable, V>
 			}
 		}
 
-		Cache cache = _cacheManager.getCache(portalCacheName);
+		Cache<K, V> cache = _cacheManager.getCache(portalCacheName);
 
 		return new Cache2kPortalCache<>(this, cache);
 	}
