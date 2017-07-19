@@ -89,7 +89,7 @@ public class Cache2kPortalCache<K extends Serializable, V>
 
 	@Override
 	protected V doReplace(K key, V value, int timeToLive) {
-		synchronized (cache){
+		synchronized (cache) {
 			if (cache.containsKey(key)) {
 				V oldValue = (V)cache.get(key);
 
@@ -98,7 +98,7 @@ public class Cache2kPortalCache<K extends Serializable, V>
 				return oldValue;
 			}
 		}
-		
+
 		return null;
 	}
 
