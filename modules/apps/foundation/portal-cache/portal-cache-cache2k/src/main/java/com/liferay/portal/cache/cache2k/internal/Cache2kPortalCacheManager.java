@@ -37,7 +37,6 @@ public class Cache2kPortalCacheManager<K extends Serializable, V>
 
 	@Override
 	public void reconfigurePortalCaches(URL configurationURL) {
-		System.out.println("######################## reconfigurePortalCaches");
 	}
 
 	@Override
