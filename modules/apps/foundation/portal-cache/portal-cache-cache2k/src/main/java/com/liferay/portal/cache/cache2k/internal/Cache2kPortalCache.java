@@ -66,19 +66,11 @@ public class Cache2kPortalCache<K extends Serializable, V>
 	@Override
 	protected void doPut(K key, V value, int timeToLive) {
 		cache.put(key, value);
-
-		if (timeToLive != DEFAULT_TIME_TO_LIVE) {
-			cache.expireAt(
-				key, System.currentTimeMillis() + (long)timeToLive * 1000);
-		}
 	}
 
 	@Override
 	protected V doPutIfAbsent(K key, V value, int timeToLive) {
 		if (cache.putIfAbsent(key, value)) {
-			cache.expireAt(
-				key, System.currentTimeMillis() + (long)timeToLive * 1000);
-
 			return null;
 		}
 
@@ -102,9 +94,6 @@ public class Cache2kPortalCache<K extends Serializable, V>
 
 			cache.put(key, value);
 
-			cache.expireAt(
-				key, System.currentTimeMillis() + (long)timeToLive * 1000);
-
 			return oldValue;
 		}
 
@@ -114,9 +103,6 @@ public class Cache2kPortalCache<K extends Serializable, V>
 	@Override
 	protected boolean doReplace(K key, V oldValue, V newValue, int timeToLive) {
 		if (cache.replaceIfEquals(key, oldValue, newValue)) {
-			cache.expireAt(
-				key, System.currentTimeMillis() + (long)timeToLive * 1000);
-
 			return true;
 		}
 
