@@ -51,7 +51,7 @@ public class MultiVMCache2kPortalCacheManager
 	@Activate
 	@Modified
 	protected void activate(Map<String, Object> properties) {
-		setClusterAware(false);
+		setClusterAware(true);
 		setPortalCacheManagerName(PortalCacheManagerNames.MULTI_VM);
 		setMpiOnly(true);
 
