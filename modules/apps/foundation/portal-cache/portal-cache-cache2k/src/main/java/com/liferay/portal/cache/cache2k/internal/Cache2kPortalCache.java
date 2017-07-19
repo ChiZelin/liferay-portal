@@ -70,11 +70,13 @@ public class Cache2kPortalCache<K extends Serializable, V>
 
 	@Override
 	protected V doPutIfAbsent(K key, V value, int timeToLive) {
-		if (cache.putIfAbsent(key, value)) {
-			return null;
-		}
+		synchronized (cache) {
+			if (cache.putIfAbsent(key, value)) {
+				return null;
+			}
 
-		return (V)cache.get(key);
+			return (V)cache.get(key);
+		}
 	}
 
 	@Override
