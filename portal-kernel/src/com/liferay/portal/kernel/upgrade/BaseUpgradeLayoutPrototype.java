@@ -22,6 +22,7 @@ import com.liferay.portal.kernel.util.ResourceBundleUtil;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 
 import java.util.Date;
@@ -38,11 +39,13 @@ public abstract class BaseUpgradeLayoutPrototype extends UpgradeProcess {
 			String nameKey, String descriptionKey)
 		throws Exception {
 
+		long companyId = _getCompanyId(name);
+
 		String nameXml = _getLocalizationXml(
-			name, nameKey, "Name", resourceBundleLoader);
+			nameKey, "Name", companyId, resourceBundleLoader);
 
 		String descriptionXml = _getLocalizationXml(
-			name, descriptionKey, "Description", resourceBundleLoader);
+			descriptionKey, "Description", companyId, resourceBundleLoader);
 
 		Date now = new Date();
 
@@ -61,16 +64,11 @@ public abstract class BaseUpgradeLayoutPrototype extends UpgradeProcess {
 		}
 	}
 
-	private String _getLocalizationXml(
-			String name, String localizationMapKey, String xmlKey,
-			ResourceBundleLoader resourceBundleLoader)
-		throws Exception {
-
-		Long originalCompanyId = CompanyThreadLocal.getCompanyId();
-		Long companyId = 0L;
+	private long _getCompanyId(String name) throws SQLException {
+		long companyId = 0;
 
 		try (PreparedStatement ps = connection.prepareStatement(
-			"select companyId from LayoutPrototype where name like ?")) {
+				"select companyId from LayoutPrototype where name like ?")) {
 
 			ps.setString(1, name);
 
@@ -81,19 +79,29 @@ public abstract class BaseUpgradeLayoutPrototype extends UpgradeProcess {
 			}
 		}
 
+		return companyId;
+	}
+
+	private String _getLocalizationXml(
+			String localizationMapKey, String xmlKey, long companyId,
+			ResourceBundleLoader resourceBundleLoader)
+		throws Exception {
+
+		Long originalCompanyId = CompanyThreadLocal.getCompanyId();
+
 		CompanyThreadLocal.setCompanyId(companyId);
 
 		Map<Locale, String> localizationMap =
 			ResourceBundleUtil.getLocalizationMap(
 				resourceBundleLoader, localizationMapKey);
 
+		CompanyThreadLocal.setCompanyId(originalCompanyId);
+
 		String defaultLanguageId = UpgradeProcessUtil.getDefaultLanguageId(
 			companyId);
 
 		String xml = LocalizationUtil.updateLocalization(
 			localizationMap, "", xmlKey, defaultLanguageId);
-
-		CompanyThreadLocal.setCompanyId(originalCompanyId);
 
 		return xml;
 	}
