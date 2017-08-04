@@ -38,39 +38,11 @@ public abstract class BaseUpgradeLayoutPrototype extends UpgradeProcess {
 			String nameKey, String descriptionKey)
 		throws Exception {
 
-		Long originalCompanyId = CompanyThreadLocal.getCompanyId();
-		Long companyId = 0L;
+		String nameXml = _getLocalizationXml(
+			name, nameKey, "Name", resourceBundleLoader);
 
-		try (PreparedStatement ps = connection.prepareStatement(
-				"select companyId from LayoutPrototype where name like ?")) {
-
-			ps.setString(1, name);
-
-			ResultSet resultSet = ps.executeQuery();
-
-			while (resultSet.next()) {
-				companyId = resultSet.getLong("companyId");
-			}
-		}
-
-		CompanyThreadLocal.setCompanyId(companyId);
-
-		Map<Locale, String> nameMap = ResourceBundleUtil.getLocalizationMap(
-			resourceBundleLoader, nameKey);
-		Map<Locale, String> descriptionMap =
-			ResourceBundleUtil.getLocalizationMap(
-				resourceBundleLoader, descriptionKey);
-
-		CompanyThreadLocal.setCompanyId(originalCompanyId);
-
-		String defaultLanguageId = UpgradeProcessUtil.getDefaultLanguageId(
-			companyId);
-
-		String nameXml = LocalizationUtil.updateLocalization(
-			nameMap, "", "Name", defaultLanguageId);
-
-		String descriptionXml = LocalizationUtil.updateLocalization(
-			descriptionMap, "", "Description", defaultLanguageId);
+		String descriptionXml = _getLocalizationXml(
+			name, descriptionKey, "Description", resourceBundleLoader);
 
 		Date now = new Date();
 
@@ -87,6 +59,43 @@ public abstract class BaseUpgradeLayoutPrototype extends UpgradeProcess {
 
 			ps.executeUpdate();
 		}
+	}
+
+	private String _getLocalizationXml(
+			String name, String localizationMapKey, String xmlKey,
+			ResourceBundleLoader resourceBundleLoader)
+		throws Exception {
+
+		Long originalCompanyId = CompanyThreadLocal.getCompanyId();
+		Long companyId = 0L;
+
+		try (PreparedStatement ps = connection.prepareStatement(
+			"select companyId from LayoutPrototype where name like ?")) {
+
+			ps.setString(1, name);
+
+			ResultSet resultSet = ps.executeQuery();
+
+			while (resultSet.next()) {
+				companyId = resultSet.getLong("companyId");
+			}
+		}
+
+		CompanyThreadLocal.setCompanyId(companyId);
+
+		Map<Locale, String> localizationMap =
+			ResourceBundleUtil.getLocalizationMap(
+				resourceBundleLoader, localizationMapKey);
+
+		String defaultLanguageId = UpgradeProcessUtil.getDefaultLanguageId(
+			companyId);
+
+		String xml = LocalizationUtil.updateLocalization(
+			localizationMap, "", xmlKey, defaultLanguageId);
+
+		CompanyThreadLocal.setCompanyId(originalCompanyId);
+
+		return xml;
 	}
 
 }
