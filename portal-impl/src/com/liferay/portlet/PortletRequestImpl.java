@@ -451,14 +451,15 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 		List<String> propertyNames = new ArrayList<>();
 
 		Enumeration<String> headerNameEnumeration = _request.getHeaderNames();
-		Enumeration<String> propertyNameEnumeration =
-			_portalContext.getPropertyNames();
 
 		if (headerNameEnumeration != null) {
 			while (headerNameEnumeration.hasMoreElements()) {
 				propertyNames.add(headerNameEnumeration.nextElement());
 			}
 		}
+
+		Enumeration<String> propertyNameEnumeration =
+			_portalContext.getPropertyNames();
 
 		while (propertyNameEnumeration.hasMoreElements()) {
 			propertyNames.add(propertyNameEnumeration.nextElement());
