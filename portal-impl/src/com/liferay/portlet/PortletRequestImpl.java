@@ -412,7 +412,7 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 
 	@Override
 	public Enumeration<String> getProperties(String name) {
-		List<String> properties = new ArrayList<>();
+		List<String> values = new ArrayList<>();
 
 		Enumeration<String> headersEnumeration = _request.getHeaders(name);
 
@@ -421,7 +421,7 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 				String header = headersEnumeration.nextElement();
 
 				if (header != null) {
-					properties.add(header);
+					values.add(header);
 				}
 			}
 		}
@@ -429,10 +429,10 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 		String value = _portalContext.getProperty(name);
 
 		if (value != null) {
-			properties.add(value);
+			values.add(value);
 		}
 
-		return Collections.enumeration(properties);
+		return Collections.enumeration(values);
 	}
 
 	@Override
