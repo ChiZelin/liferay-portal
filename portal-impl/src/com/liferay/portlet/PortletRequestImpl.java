@@ -420,7 +420,9 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 			while (headersEnumeration.hasMoreElements()) {
 				String header = headersEnumeration.nextElement();
 
-				properties.add(header);
+				if (header != null) {
+					properties.add(header);
+				}
 			}
 		}
 
