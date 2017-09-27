@@ -496,6 +496,10 @@ public class PortletServletRequest extends HttpServletRequestWrapper {
 		}
 	}
 
+	public void setInclude(boolean include) {
+		_include = include;
+	}
+
 	protected HttpSession wrapJettySession(HttpSession session)
 		throws Exception {
 
@@ -525,7 +529,7 @@ public class PortletServletRequest extends HttpServletRequestWrapper {
 	private static final Log _log = LogFactoryUtil.getLog(
 		PortletServletRequest.class);
 
-	private final boolean _include;
+	private boolean _include;
 	private final String _lifecycle;
 	private final boolean _named;
 	private final String _pathInfo;
