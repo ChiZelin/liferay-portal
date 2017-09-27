@@ -62,6 +62,15 @@ import org.apache.struts.Globals;
 public class PortletRequestDispatcherImpl
 	implements LiferayPortletRequestDispatcher, RequestDispatcher {
 
+	public PortletRequestDispatcherImpl(RequestDispatcher requestDispatcher) {
+		_requestDispatcher = requestDispatcher;
+		_named = false;
+		_liferayPortletContext = null;
+		_path = null;
+
+		_portlet = null;
+	}
+
 	public PortletRequestDispatcherImpl(
 		RequestDispatcher requestDispatcher, boolean named,
 		PortletContext portletContext) {
