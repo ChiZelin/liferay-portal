@@ -129,6 +129,10 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 		_request.removeAttribute(WebKeys.PORTLET_CONTENT);
 	}
 
+	public void clearPortletRequestDispatcherRequest() {
+		_portletRequestDispatcherRequest = null;
+	}
+
 	@Override
 	public Map<String, String[]> clearRenderParameters() {
 		return RenderParametersPool.clear(_request, _plid, _portletName);
