@@ -383,7 +383,7 @@ public class PortletServletRequest extends HttpServletRequestWrapper {
 
 		if (requestDispatcher != null) {
 			requestDispatcher = new PortletRequestDispatcherImpl(
-				requestDispatcher);
+				requestDispatcher, path);
 		}
 
 		return requestDispatcher;

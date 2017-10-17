@@ -21,8 +21,10 @@ import com.liferay.portal.kernel.model.PortletApp;
 import com.liferay.portal.kernel.portlet.LiferayPortletContext;
 import com.liferay.portal.kernel.portlet.LiferayPortletRequestDispatcher;
 import com.liferay.portal.kernel.portlet.LiferayPortletURL;
+import com.liferay.portal.kernel.servlet.DynamicServletRequest;
 import com.liferay.portal.kernel.servlet.URLEncoder;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.CharPool;
 import com.liferay.portal.kernel.util.JavaConstants;
 import com.liferay.portal.kernel.util.PortalUtil;
@@ -62,15 +64,6 @@ import org.apache.struts.Globals;
 public class PortletRequestDispatcherImpl
 	implements LiferayPortletRequestDispatcher, RequestDispatcher {
 
-	public PortletRequestDispatcherImpl(RequestDispatcher requestDispatcher) {
-		_requestDispatcher = requestDispatcher;
-		_named = false;
-		_liferayPortletContext = null;
-		_path = null;
-
-		_portlet = null;
-	}
-
 	public PortletRequestDispatcherImpl(
 		RequestDispatcher requestDispatcher, boolean named,
 		PortletContext portletContext) {
@@ -88,6 +81,17 @@ public class PortletRequestDispatcherImpl
 		_path = path;
 
 		_portlet = _liferayPortletContext.getPortlet();
+	}
+
+	public PortletRequestDispatcherImpl(
+		RequestDispatcher requestDispatcher, String path) {
+
+		_requestDispatcher = requestDispatcher;
+		_named = false;
+		_liferayPortletContext = null;
+		_path = path;
+
+		_portlet = null;
 	}
 
 	@Override
@@ -114,7 +118,7 @@ public class PortletRequestDispatcherImpl
 			((PortletServletRequest)servletRequest).setInclude(false);
 		}
 
-		_requestDispatcher.forward(servletRequest, servletResponse);
+		dispatch(servletRequest, servletResponse, false);
 	}
 
 	@Override
@@ -151,7 +155,7 @@ public class PortletRequestDispatcherImpl
 			((PortletServletRequest)servletRequest).setInclude(true);
 		}
 
-		_requestDispatcher.include(servletRequest, servletResponse);
+		dispatch(servletRequest, servletResponse, true);
 	}
 
 	protected void checkCalledFlushBuffer(
@@ -300,6 +304,74 @@ public class PortletRequestDispatcherImpl
 			_log.error("Unable to dispatch request: " + se.getMessage());
 
 			throw new PortletException(se);
+		}
+	}
+
+	protected void dispatch(
+			ServletRequest servletRequest, ServletResponse servletResponse,
+			boolean include)
+		throws IOException, ServletException {
+
+		if (_path != null) {
+			String queryString = null;
+
+			int pos = _path.indexOf(CharPool.QUESTION);
+
+			if (pos != -1) {
+				queryString = _path.substring(pos + 1);
+
+				Map<String, String[]> parameterMap = toParameterMap(
+					queryString);
+
+				servletRequest = new DynamicServletRequest(
+					(HttpServletRequest)servletRequest);
+
+				for (Map.Entry<String, String[]> entry :
+						parameterMap.entrySet()) {
+
+					String name = entry.getKey();
+
+					String[] values = entry.getValue();
+
+					String[] oldValues = servletRequest.getParameterValues(
+						name);
+
+					if (oldValues != null) {
+						values = ArrayUtil.append(values, oldValues);
+					}
+
+					((DynamicServletRequest)servletRequest).setParameterValues(
+						name, values);
+				}
+
+				PortletRequest portletRequest =
+					(PortletRequest)servletRequest.getAttribute(
+						"javax.portlet.request");
+
+				PortletRequestImpl portletRequestImpl =
+					PortletRequestImpl.getPortletRequestImpl(portletRequest);
+
+				portletRequestImpl.setPortletRequestDispatcherRequest(
+					(HttpServletRequest)servletRequest);
+			}
+		}
+
+		try {
+			if (include) {
+				_requestDispatcher.include(servletRequest, servletResponse);
+			}
+			else {
+				_requestDispatcher.forward(servletRequest, servletResponse);
+			}
+		}
+		catch (ServletException se) {
+			if (_log.isDebugEnabled()) {
+				_log.debug("Unable to dispatch request", se);
+			}
+
+			_log.error("Unable to dispatch request: " + se.getMessage());
+
+			throw new ServletException(se);
 		}
 	}
 
