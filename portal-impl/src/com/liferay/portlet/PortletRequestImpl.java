@@ -335,6 +335,10 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 		return _portletName;
 	}
 
+	public HttpServletRequest getPortletRequestDispatcherRequest() {
+		return _portletRequestDispatcherRequest;
+	}
+
 	@Override
 	public PortletSession getPortletSession() {
 		return _session;
