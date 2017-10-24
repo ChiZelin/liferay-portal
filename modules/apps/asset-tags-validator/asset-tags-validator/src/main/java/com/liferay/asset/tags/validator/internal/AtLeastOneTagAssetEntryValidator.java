@@ -25,7 +25,7 @@ import com.liferay.portal.kernel.util.ArrayUtil;
 import org.osgi.service.component.annotations.Component;
 
 /**
- * @author Brian Wing Shun Chan
+ * @author Brian Wing Shun Cha
  */
 @Component(
 	immediate = true, property = {"model.class.name=*"},
