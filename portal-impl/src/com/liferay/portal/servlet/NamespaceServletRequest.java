@@ -46,6 +46,7 @@ public class NamespaceServletRequest extends DynamicServletRequest {
 		reservedAttrs.add(JavaConstants.JAVAX_PORTLET_CONFIG);
 		reservedAttrs.add(JavaConstants.JAVAX_PORTLET_PORTLET);
 		reservedAttrs.add(JavaConstants.JAVAX_PORTLET_REQUEST);
+		reservedAttrs.add(JavaConstants.JAVAX_PORTLET_RESPONSE);
 		reservedAttrs.add(JavaConstants.JAVAX_SERVLET_INCLUDE_CONTEXT_PATH);
 		reservedAttrs.add(JavaConstants.JAVAX_SERVLET_INCLUDE_PATH_INFO);
 		reservedAttrs.add(JavaConstants.JAVAX_SERVLET_INCLUDE_QUERY_STRING);
