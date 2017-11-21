@@ -26,7 +26,7 @@ import com.liferay.portal.kernel.service.permission.GroupPermissionUtil;
 import org.osgi.service.component.annotations.Component;
 
 /**
- * @author Jorge Ferrer
+ * @author Jorge Ferre
  * @author Sergio González
  * @author Tibor Lipusz
  */
