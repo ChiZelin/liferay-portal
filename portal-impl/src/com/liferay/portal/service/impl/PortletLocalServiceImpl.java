@@ -2121,6 +2121,34 @@ public class PortletLocalServiceImpl extends PortletLocalServiceBaseImpl {
 			_log.debug("Reading portlet " + portletId);
 		}
 
+		for (Element containerRuntimeOptionElement :
+				portletElement.elements("container-runtime-option")) {
+
+			String name = GetterUtil.getString(
+				containerRuntimeOptionElement.elementText("name"));
+
+			List<String> values = new ArrayList<>();
+
+			for (Element valueElement :
+					containerRuntimeOptionElement.elements("value")) {
+
+				values.add(valueElement.getTextTrim());
+			}
+
+			Map<String, String[]> containerRuntimeOptions =
+				portletApp.getContainerRuntimeOptions();
+
+			containerRuntimeOptions.put(
+				name, values.toArray(new String[values.size()]));
+
+			if (name.equals(
+					LiferayPortletConfig.RUNTIME_OPTION_PORTAL_CONTEXT) &&
+				!values.isEmpty() && GetterUtil.getBoolean(values.get(0))) {
+
+				portletApp.setWARFile(false);
+			}
+		}
+
 		Portlet portletModel = _portletsMap.get(portletId);
 
 		if (portletModel == null) {
