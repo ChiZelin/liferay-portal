@@ -29,6 +29,7 @@ import com.liferay.portal.kernel.util.Validator;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -215,6 +216,12 @@ public class PortletConfigImpl implements LiferayPortletConfig {
 		return _portletApp.isWARFile();
 	}
 
+	public void setContainerRuntimeOptions(
+		Map<String, String[]> containerRuntimeOptions) {
+
+		_containerRuntimeOptions.putAll(containerRuntimeOptions);
+	}
+
 	protected Set<QName> toJavaxQNames(
 		Set<com.liferay.portal.kernel.xml.QName> liferayQNames) {
 
@@ -231,6 +238,8 @@ public class PortletConfigImpl implements LiferayPortletConfig {
 		return javaxQNames;
 	}
 
+	private final Map<String, String[]> _containerRuntimeOptions =
+		new HashMap<>();
 	private final boolean _copyRequestParameters;
 	private final Portlet _portlet;
 	private final PortletApp _portletApp;
