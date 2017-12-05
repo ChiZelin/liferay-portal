@@ -94,6 +94,7 @@ import com.liferay.portal.servlet.ComboServlet;
 import com.liferay.portal.util.PropsValues;
 import com.liferay.portal.util.WebAppPool;
 import com.liferay.portlet.PortletBagFactory;
+import com.liferay.portlet.PortletConfigImpl;
 import com.liferay.portlet.UndeployedPortlet;
 import com.liferay.registry.Filter;
 import com.liferay.registry.Registry;
@@ -121,6 +122,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
+import javax.portlet.PortletConfig;
 import javax.portlet.PortletMode;
 import javax.portlet.PreferencesValidator;
 import javax.portlet.WindowState;
@@ -2368,6 +2370,31 @@ public class PortletLocalServiceImpl extends PortletLocalServiceBaseImpl {
 		}
 
 		portletModel.setPublicRenderParameters(publicRenderParameters);
+
+		Map<String, String[]> containerRuntimeOptions = new HashMap<>();
+
+		for (Element containerRuntimeOptionElement :
+				portletElement.elements("container-runtime-option")) {
+
+			String name = GetterUtil.getString(
+				containerRuntimeOptionElement.elementText("name"));
+
+			List<String> values = new ArrayList<>();
+
+			for (Element valueElement :
+					containerRuntimeOptionElement.elements("value")) {
+
+				values.add(valueElement.getTextTrim());
+			}
+
+			containerRuntimeOptions.put(
+				name, values.toArray(new String[values.size()]));
+		}
+
+		PortletConfig portletConfig = PortletConfigFactoryUtil.get(portletId);
+
+		((PortletConfigImpl)portletConfig).setContainerRuntimeOptions(
+			containerRuntimeOptions);
 
 		portletsMap.put(portletId, portletModel);
 	}
