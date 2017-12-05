@@ -75,7 +75,14 @@ public class PortletConfigImpl implements LiferayPortletConfig {
 
 	@Override
 	public Map<String, String[]> getContainerRuntimeOptions() {
-		return _portletApp.getContainerRuntimeOptions();
+		Map<String, String[]> containerRuntimeOptions = new HashMap<>();
+
+		containerRuntimeOptions.putAll(
+			_portletApp.getContainerRuntimeOptions());
+
+		containerRuntimeOptions.putAll(_containerRuntimeOptions);
+
+		return containerRuntimeOptions;
 	}
 
 	@Override
