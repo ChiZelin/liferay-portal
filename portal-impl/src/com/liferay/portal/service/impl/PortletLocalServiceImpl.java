@@ -2391,8 +2391,7 @@ public class PortletLocalServiceImpl extends PortletLocalServiceBaseImpl {
 				name, values.toArray(new String[values.size()]));
 		}
 
-		PortletConfig portletConfig = PortletConfigFactoryUtil.create(
-			portletModel, portletApp.getServletContext());
+		PortletConfig portletConfig = PortletConfigFactoryUtil.get(portletId);
 
 		((PortletConfigImpl)portletConfig).setContainerRuntimeOptions(
 			containerRuntimeOptions);
