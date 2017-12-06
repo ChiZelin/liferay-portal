@@ -2492,7 +2492,7 @@ public class PortletLocalServiceImpl extends PortletLocalServiceBaseImpl {
 				portletApp.getContainerRuntimeOptions();
 
 			containerRuntimeOptions.put(
-				name, values.toArray(new String[values.size()]));
+				"appLevel" + name, values.toArray(new String[values.size()]));
 
 			if (name.equals(
 					LiferayPortletConfig.RUNTIME_OPTION_PORTAL_CONTEXT) &&
