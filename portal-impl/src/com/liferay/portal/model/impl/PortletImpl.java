@@ -773,6 +773,7 @@ public class PortletImpl extends PortletBaseImpl {
 	 *
 	 * @return the container runtime options at the portlet level
 	 */
+	@Override
 	public Map<String, String[]> getContainerRuntimeOptions() {
 		return _containerRuntimeOptions;
 	}
