@@ -19,6 +19,8 @@ import aQute.bnd.annotation.ProviderType;
 import com.liferay.portal.kernel.annotation.ImplementationClassName;
 import com.liferay.portal.kernel.util.Accessor;
 
+import java.util.Map;
+
 /**
  * The extended model interface for the Portlet service. Represents a row in the &quot;Portlet&quot; database table, with each column mapped to a property of this class.
  *
@@ -228,6 +230,13 @@ public interface Portlet extends PortletModel, PersistedModel {
 	* @return the configuration action instance of the portlet
 	*/
 	public com.liferay.portal.kernel.portlet.ConfigurationAction getConfigurationActionInstance();
+
+	/**
+	 * Returns the container runtime options at the portlet level.
+	 *
+	 * @return the container runtime options at the portlet level
+	 */
+	public Map<String, String[]> getContainerRuntimeOptions();
 
 	/**
 	* Returns the servlet context name of the portlet.
