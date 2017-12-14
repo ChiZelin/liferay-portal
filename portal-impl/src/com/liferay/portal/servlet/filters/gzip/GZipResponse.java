@@ -125,6 +125,10 @@ public class GZipResponse extends HttpServletResponseWrapper {
 			return;
 		}
 
+		if (value == null) {
+			return;
+		}
+
 		super.setHeader(name, value);
 	}
 
