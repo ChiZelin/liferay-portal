@@ -514,15 +514,52 @@ public class MetaInfoCacheServletResponse extends HttpServletResponseWrapper {
 			return;
 		}
 
-		Set<Header> values = new HashSet<>();
+		if (value != null) {
+			Set<Header> values = new HashSet<>();
 
-		_metaData._headers.put(name, values);
+			_metaData._headers.put(name, values);
 
-		Header header = new Header(value);
+			Header header = new Header(value);
 
-		values.add(header);
+			values.add(header);
 
-		super.setHeader(name, value);
+			super.setHeader(name, value);
+		}
+		else {
+			_metaData._headers.remove(name);
+
+			Map<String, Collection<String>> headers = new HashMap<>();
+
+			Collection<String> headerNames = super.getHeaderNames();
+
+			for (String headerName : headerNames) {
+				if (!headerName.equals(name)) {
+					headers.put(headerName, super.getHeaders(headerName));
+				}
+			}
+
+			String characterEncoding = super.getCharacterEncoding();
+			String contentType = super.getContentType();
+			Locale locale = super.getLocale();
+			int status = super.getStatus();
+
+			super.reset();
+
+			for (Map.Entry<String, Collection<String>> headerEntry :
+					headers.entrySet()) {
+
+				String headerName = headerEntry.getKey();
+
+				for (String header : headerEntry.getValue()) {
+					super.addHeader(headerName, header);
+				}
+			}
+
+			super.setCharacterEncoding(characterEncoding);
+			super.setContentType(contentType);
+			super.setLocale(locale);
+			super.setStatus(status);
+		}
 	}
 
 	@Override
