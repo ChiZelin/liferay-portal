@@ -24,6 +24,9 @@ import javax.portlet.PortletContext;
  */
 public interface LiferayPortletConfig extends PortletConfig {
 
+	public static final String RUNTIME_OPTION_ACTION_SCOPED_REQUEST_ATTRIBUTES =
+		"javax.portlet.actionScopedRequestAttributes";
+
 	public static final String RUNTIME_OPTION_ESCAPE_XML =
 		"javax.portlet.escapeXml";
 
