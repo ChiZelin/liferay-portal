@@ -71,6 +71,7 @@ import java.util.regex.Pattern;
 
 import javax.ccpp.Profile;
 
+import javax.portlet.MimeResponse;
 import javax.portlet.PortalContext;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletContext;
@@ -687,6 +688,18 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 		_request.removeAttribute(name);
 	}
 
+	public void removePortletRequestAttrs() {
+		Enumeration<String> attributesNames = getAttributeNames();
+
+		while (attributesNames.hasMoreElements()) {
+			String attributeName = attributesNames.nextElement();
+
+			if (!_reservedAttrs.contains(attributeName)) {
+				removeAttribute(attributeName);
+			}
+		}
+	}
+
 	@Override
 	public void setAttribute(String name, Object obj) {
 		if (name == null) {
@@ -1127,8 +1140,33 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 	private static final Log _log = LogFactoryUtil.getLog(
 		PortletRequestImpl.class);
 
+	private static final Set<String> _reservedAttrs = new HashSet<>();
 	private static final Pattern _strutsPortletIgnoredParamtersPattern =
 		Pattern.compile(PropsValues.STRUTS_PORTLET_IGNORED_PARAMETERS_REGEXP);
+
+	static {
+		_reservedAttrs.add(JavaConstants.JAVAX_PORTLET_CONFIG);
+		_reservedAttrs.add(JavaConstants.JAVAX_PORTLET_PORTLET);
+		_reservedAttrs.add(JavaConstants.JAVAX_PORTLET_REQUEST);
+		_reservedAttrs.add(JavaConstants.JAVAX_PORTLET_RESPONSE);
+		_reservedAttrs.add(JavaConstants.JAVAX_SERVLET_FORWARD_CONTEXT_PATH);
+		_reservedAttrs.add(JavaConstants.JAVAX_SERVLET_FORWARD_PATH_INFO);
+		_reservedAttrs.add(JavaConstants.JAVAX_SERVLET_FORWARD_QUERY_STRING);
+		_reservedAttrs.add(JavaConstants.JAVAX_SERVLET_FORWARD_REQUEST_URI);
+		_reservedAttrs.add(JavaConstants.JAVAX_SERVLET_FORWARD_SERVLET_PATH);
+		_reservedAttrs.add(JavaConstants.JAVAX_SERVLET_INCLUDE_CONTEXT_PATH);
+		_reservedAttrs.add(JavaConstants.JAVAX_SERVLET_INCLUDE_PATH_INFO);
+		_reservedAttrs.add(JavaConstants.JAVAX_SERVLET_INCLUDE_QUERY_STRING);
+		_reservedAttrs.add(JavaConstants.JAVAX_SERVLET_INCLUDE_REQUEST_URI);
+		_reservedAttrs.add(JavaConstants.JAVAX_SERVLET_INCLUDE_SERVLET_PATH);
+		_reservedAttrs.add(MimeResponse.MARKUP_HEAD_ELEMENT);
+		_reservedAttrs.add(PortletRequest.LIFECYCLE_PHASE);
+		_reservedAttrs.add(WebKeys.INVOKER_FILTER_URI);
+		_reservedAttrs.add(WebKeys.PORTLET_CONTENT);
+		_reservedAttrs.add(WebKeys.PORTLET_ID);
+		_reservedAttrs.add(WebKeys.THEME_DISPLAY);
+		_reservedAttrs.add(WebKeys.WINDOW_STATE);
+	}
 
 	private boolean _invalidSession;
 	private Locale _locale;
