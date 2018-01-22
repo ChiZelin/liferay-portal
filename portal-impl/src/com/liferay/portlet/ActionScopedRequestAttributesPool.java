@@ -14,7 +14,6 @@
 
 package com.liferay.portlet;
 
-import com.liferay.portal.kernel.portlet.LiferayPortletConfig;
 import com.liferay.portal.kernel.security.SecureRandomUtil;
 import com.liferay.portal.kernel.util.JavaConstants;
 
@@ -50,8 +49,7 @@ public class ActionScopedRequestAttributesPool {
 
 		String[] actionScopedRequestAttributesValues =
 			containerRuntimeOptions.get(
-				LiferayPortletConfig.
-					RUNTIME_OPTION_ACTION_SCOPED_REQUEST_ATTRIBUTES);
+				"javax.portlet.actionScopedRequestAttributes");
 
 		if ((actionScopedRequestAttributesValues == null) ||
 			(Boolean.parseBoolean(actionScopedRequestAttributesValues[0]) ==
