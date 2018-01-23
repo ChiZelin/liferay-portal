@@ -18,7 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 /**
- * @author Leon Chi
+ * @author Leon Ch
  */
 public class ExtraPortletAppConfigRegistry {
 
