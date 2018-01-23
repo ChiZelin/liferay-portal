@@ -41,7 +41,7 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 
 /**
- * @author Brian Wing Shun Chan
+ * @author Brian Wing Shun
  * @author Brett Randall
  */
 public class PortletContextImpl implements LiferayPortletContext {
