@@ -51,7 +51,7 @@ public class ActionScopedRequestAttributesPool {
 			containerRuntimeOptions.get(
 				"javax.portlet.actionScopedRequestAttributes");
 
-		if ((actionScopedRequestAttributesValues != null) &&
+		if ((actionScopedRequestAttributesValues == null) ||
 			(Boolean.parseBoolean(actionScopedRequestAttributesValues[0]) ==
 				false)) {
 
