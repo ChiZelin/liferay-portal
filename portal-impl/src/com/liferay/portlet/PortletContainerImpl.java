@@ -393,6 +393,8 @@ public class PortletContainerImpl implements PortletContainer {
 
 			invokerPortlet.processAction(actionRequestImpl, actionResponseImpl);
 
+			actionRequestImpl.removePortletRequestAttrs();
+
 			actionResponseImpl.transferHeaders(response);
 
 			RenderParametersPool.put(
@@ -533,6 +535,8 @@ public class PortletContainerImpl implements PortletContainer {
 
 		try {
 			invokerPortlet.processEvent(eventRequestImpl, eventResponseImpl);
+
+			eventRequestImpl.removePortletRequestAttrs();
 
 			eventResponseImpl.transferHeaders(response);
 
