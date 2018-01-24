@@ -1175,6 +1175,7 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 		_reservedAttrs.add(WebKeys.PORTLET_ID);
 		_reservedAttrs.add(WebKeys.THEME_DISPLAY);
 		_reservedAttrs.add(WebKeys.WINDOW_STATE);
+		_reservedAttrs.add(WebKeys.LAYOUT);
 	}
 
 	private Map<String, Object> _actionScopedRequestAttributesPool;
