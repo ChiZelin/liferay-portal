@@ -496,6 +496,9 @@ public class InvokerPortletImpl
 			List<? extends PortletFilter> filters)
 		throws IOException, PortletException {
 
+		ActionScopedRequestAttributesPool.
+			handleActionScopedRequestAttributesPool(portletRequest);
+
 		FilterChain filterChain = new FilterChainImpl(_portlet, filters);
 
 		if (_liferayPortletConfig.isWARFile()) {

@@ -150,6 +150,10 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 		setAttribute(PortletRequest.LIFECYCLE_PHASE, getLifecycle());
 	}
 
+	public Map<String, Object> getActionScopedRequestAttributesPool() {
+		return _actionScopedRequestAttributesPool;
+	}
+
 	@Override
 	public Object getAttribute(String name) {
 		if (name == null) {
@@ -167,7 +171,20 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 			}
 		}
 
-		return _request.getAttribute(name);
+		Object object = null;
+
+		if (_actionScopedRequestAttributesPool != null) {
+			object = _actionScopedRequestAttributesPool.get(name);
+
+			if (object == null) {
+				object = _request.getAttribute(name);
+			}
+		}
+		else {
+			object = _request.getAttribute(name);
+		}
+
+		return object;
 	}
 
 	@Override
@@ -687,6 +704,12 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 		_request.removeAttribute(name);
 	}
 
+	public void setActionScopedRequestAttributesPool(
+		Map<String, Object> actionScopedRequestAttributesPool) {
+
+		_actionScopedRequestAttributesPool = actionScopedRequestAttributesPool;
+	}
+
 	@Override
 	public void setAttribute(String name, Object obj) {
 		if (name == null) {
@@ -694,10 +717,20 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 		}
 
 		if (obj == null) {
-			_request.removeAttribute(name);
+			if (_actionScopedRequestAttributesPool != null) {
+				_actionScopedRequestAttributesPool.remove(name);
+			}
+			else {
+				_request.removeAttribute(name);
+			}
 		}
 		else {
-			_request.setAttribute(name, obj);
+			if (_actionScopedRequestAttributesPool != null) {
+				_actionScopedRequestAttributesPool.put(name, obj);
+			}
+			else {
+				_request.setAttribute(name, obj);
+			}
 		}
 	}
 
@@ -1130,6 +1163,7 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 	private static final Pattern _strutsPortletIgnoredParamtersPattern =
 		Pattern.compile(PropsValues.STRUTS_PORTLET_IGNORED_PARAMETERS_REGEXP);
 
+	private Map<String, Object> _actionScopedRequestAttributesPool;
 	private boolean _invalidSession;
 	private Locale _locale;
 	private HttpServletRequest _originalRequest;
