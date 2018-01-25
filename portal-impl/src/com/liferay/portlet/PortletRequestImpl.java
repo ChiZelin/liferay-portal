@@ -188,6 +188,10 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 	public Enumeration<String> getAttributeNames() {
 		Set<String> names = new HashSet<>();
 
+		if (_actionScopedRequestAttributesPool != null) {
+			names = _actionScopedRequestAttributesPool.keySet();
+		}
+
 		Enumeration<String> enu = _request.getAttributeNames();
 
 		_copyAttributeNames(names, enu);
@@ -677,7 +681,14 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 			throw new IllegalArgumentException();
 		}
 
-		_request.removeAttribute(name);
+		if ((_actionScopedRequestAttributesPool != null) &&
+			!_reservedAttrs.contains(name)) {
+
+			_actionScopedRequestAttributesPool.remove(name);
+		}
+		else {
+			_request.removeAttribute(name);
+		}
 	}
 
 	public void removePortletRequestAttrs() {
@@ -705,7 +716,9 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 		}
 
 		if (obj == null) {
-			if (_actionScopedRequestAttributesPool != null) {
+			if ((_actionScopedRequestAttributesPool != null) &&
+				!_reservedAttrs.contains(name)) {
+
 				_actionScopedRequestAttributesPool.remove(name);
 			}
 			else {
@@ -713,7 +726,9 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 			}
 		}
 		else {
-			if (_actionScopedRequestAttributesPool != null) {
+			if ((_actionScopedRequestAttributesPool != null) &&
+				!_reservedAttrs.contains(name)) {
+
 				_actionScopedRequestAttributesPool.put(name, obj);
 			}
 			else {
