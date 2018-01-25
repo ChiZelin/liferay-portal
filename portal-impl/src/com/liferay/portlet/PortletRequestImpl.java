@@ -150,6 +150,10 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 		setAttribute(PortletRequest.LIFECYCLE_PHASE, getLifecycle());
 	}
 
+	public Map<String, Object> getActionScopedRequestAttributesPool() {
+		return _actionScopedRequestAttributesPool;
+	}
+
 	@Override
 	public Object getAttribute(String name) {
 		if (name == null) {
