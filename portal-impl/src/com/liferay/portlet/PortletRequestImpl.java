@@ -702,7 +702,7 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 			String attributeName = attributesNames.nextElement();
 
 			if (_isNameOK(attributeName)) {
-				removeAttribute(attributeName);
+				_request.removeAttribute(attributeName);
 			}
 		}
 	}
