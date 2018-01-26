@@ -71,7 +71,6 @@ import java.util.regex.Pattern;
 
 import javax.ccpp.Profile;
 
-import javax.portlet.MimeResponse;
 import javax.portlet.PortalContext;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletContext;
@@ -189,7 +188,9 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 		Set<String> names = new HashSet<>();
 
 		if (_actionScopedRequestAttributesPool != null) {
-			names = _actionScopedRequestAttributesPool.keySet();
+			Set<String> keySet = _actionScopedRequestAttributesPool.keySet();
+
+			_copyAttributeNames(names, keySet);
 		}
 
 		Enumeration<String> enu = _request.getAttributeNames();
@@ -681,9 +682,7 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 			throw new IllegalArgumentException();
 		}
 
-		if ((_actionScopedRequestAttributesPool != null) &&
-			!_reservedAttrs.contains(name)) {
-
+		if ((_actionScopedRequestAttributesPool != null) && _isNameOK(name)) {
 			_actionScopedRequestAttributesPool.remove(name);
 		}
 		else {
@@ -697,7 +696,7 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 		while (attributesNames.hasMoreElements()) {
 			String attributeName = attributesNames.nextElement();
 
-			if (!_reservedAttrs.contains(attributeName)) {
+			if (_isNameOK(attributeName)) {
 				removeAttribute(attributeName);
 			}
 		}
@@ -717,7 +716,7 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 
 		if (obj == null) {
 			if ((_actionScopedRequestAttributesPool != null) &&
-				!_reservedAttrs.contains(name)) {
+				_isNameOK(name)) {
 
 				_actionScopedRequestAttributesPool.remove(name);
 			}
@@ -727,7 +726,7 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 		}
 		else {
 			if ((_actionScopedRequestAttributesPool != null) &&
-				!_reservedAttrs.contains(name)) {
+				_isNameOK(name)) {
 
 				_actionScopedRequestAttributesPool.put(name, obj);
 			}
@@ -1036,6 +1035,23 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 		}
 	}
 
+	private void _copyAttributeNames(Set<String> names, Set<String> keySet) {
+		for (String name : keySet) {
+			names.add(name);
+		}
+	}
+
+	private boolean _isNameOK(String name) {
+		if (name.startsWith("javax.portlet.") ||
+			name.startsWith("javax.servlet.") ||
+			_reservedAttrs.contains(name)) {
+
+			return false;
+		}
+
+		return true;
+	}
+
 	private void _mergePublicRenderParameters(
 		DynamicServletRequest dynamicRequest,
 		Map<String, String[]> publicRenderParametersMap,
@@ -1169,22 +1185,6 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 		Pattern.compile(PropsValues.STRUTS_PORTLET_IGNORED_PARAMETERS_REGEXP);
 
 	static {
-		_reservedAttrs.add(JavaConstants.JAVAX_PORTLET_CONFIG);
-		_reservedAttrs.add(JavaConstants.JAVAX_PORTLET_PORTLET);
-		_reservedAttrs.add(JavaConstants.JAVAX_PORTLET_REQUEST);
-		_reservedAttrs.add(JavaConstants.JAVAX_PORTLET_RESPONSE);
-		_reservedAttrs.add(JavaConstants.JAVAX_SERVLET_FORWARD_CONTEXT_PATH);
-		_reservedAttrs.add(JavaConstants.JAVAX_SERVLET_FORWARD_PATH_INFO);
-		_reservedAttrs.add(JavaConstants.JAVAX_SERVLET_FORWARD_QUERY_STRING);
-		_reservedAttrs.add(JavaConstants.JAVAX_SERVLET_FORWARD_REQUEST_URI);
-		_reservedAttrs.add(JavaConstants.JAVAX_SERVLET_FORWARD_SERVLET_PATH);
-		_reservedAttrs.add(JavaConstants.JAVAX_SERVLET_INCLUDE_CONTEXT_PATH);
-		_reservedAttrs.add(JavaConstants.JAVAX_SERVLET_INCLUDE_PATH_INFO);
-		_reservedAttrs.add(JavaConstants.JAVAX_SERVLET_INCLUDE_QUERY_STRING);
-		_reservedAttrs.add(JavaConstants.JAVAX_SERVLET_INCLUDE_REQUEST_URI);
-		_reservedAttrs.add(JavaConstants.JAVAX_SERVLET_INCLUDE_SERVLET_PATH);
-		_reservedAttrs.add(MimeResponse.MARKUP_HEAD_ELEMENT);
-		_reservedAttrs.add(PortletRequest.LIFECYCLE_PHASE);
 		_reservedAttrs.add(WebKeys.INVOKER_FILTER_URI);
 		_reservedAttrs.add(WebKeys.PORTLET_CONTENT);
 		_reservedAttrs.add(WebKeys.PORTLET_ID);
