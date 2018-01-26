@@ -32,6 +32,7 @@ import com.liferay.portal.kernel.portlet.PortletQNameUtil;
 import com.liferay.portal.kernel.service.PortletLocalServiceUtil;
 import com.liferay.portal.kernel.service.RoleLocalServiceUtil;
 import com.liferay.portal.kernel.servlet.DynamicServletRequest;
+import com.liferay.portal.kernel.servlet.PortletServlet;
 import com.liferay.portal.kernel.servlet.ProtectedPrincipal;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ArrayUtil;
@@ -1215,6 +1216,11 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 		_reservedAttrs.add(WebKeys.THEME_DISPLAY);
 		_reservedAttrs.add(WebKeys.WINDOW_STATE);
 		_reservedAttrs.add(WebKeys.LAYOUT);
+		_reservedAttrs.add(PortletServlet.PORTLET_APP);
+		_reservedAttrs.add(PortletServlet.PORTLET_SERVLET_CONFIG);
+		_reservedAttrs.add(PortletServlet.PORTLET_SERVLET_FILTER_CHAIN);
+		_reservedAttrs.add(PortletServlet.PORTLET_SERVLET_REQUEST);
+		_reservedAttrs.add(PortletServlet.PORTLET_SERVLET_RESPONSE);
 	}
 
 	private Map<String, Object> _actionScopedRequestAttributesPool;
