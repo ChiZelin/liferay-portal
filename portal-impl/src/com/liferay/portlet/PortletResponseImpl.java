@@ -390,6 +390,9 @@ public abstract class PortletResponseImpl implements LiferayPortletResponse {
 		return _urlEncoder;
 	}
 
+	public void setActionScopeId(String actionScopeId) {
+	}
+
 	@Override
 	public void setDateHeader(String name, long date) {
 		if (Validator.isNull(name)) {

@@ -35,6 +35,7 @@ import java.util.Map;
 import javax.portlet.Event;
 import javax.portlet.PortletMode;
 import javax.portlet.PortletModeException;
+import javax.portlet.PortletRequest;
 import javax.portlet.StateAwareResponse;
 import javax.portlet.WindowState;
 import javax.portlet.WindowStateException;
@@ -121,6 +122,13 @@ public abstract class StateAwareResponseImpl
 		String key = PortletQNameUtil.getPublicRenderParameterName(qName);
 
 		_publicRenderParameters.remove(key);
+	}
+
+	public void setActionScopeId(String actionScopeId) {
+		if (actionScopeId != null) {
+			_params.put(
+				PortletRequest.ACTION_SCOPE_ID, new String[] {actionScopeId});
+		}
 	}
 
 	@Override
