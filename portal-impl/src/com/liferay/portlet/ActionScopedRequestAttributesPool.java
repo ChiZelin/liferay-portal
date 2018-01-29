@@ -23,8 +23,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.portlet.ActionResponse;
-import javax.portlet.EventResponse;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletSession;
@@ -81,14 +79,11 @@ public class ActionScopedRequestAttributesPool {
 			portletSession.setAttribute(
 				ACTION_SCOPED_REQUEST_ATTRIBUTES_SESSION_DATA, sessionData);
 
-			ActionResponse actionResponse =
-				(ActionResponse)portletRequest.getAttribute(
+			PortletResponseImpl portletResponseImpl =
+				(PortletResponseImpl)portletRequest.getAttribute(
 					JavaConstants.JAVAX_PORTLET_RESPONSE);
 
-			StateAwareResponseImpl stateAwareResponseImpl =
-				(StateAwareResponseImpl)actionResponse;
-
-			stateAwareResponseImpl.setActionScopeId(sessionData.actionScopeId);
+			portletResponseImpl.setActionScopeId(sessionData.actionScopeId);
 		}
 
 		if (lifecycle.equals(PortletRequest.EVENT_PHASE)) {
@@ -103,15 +98,11 @@ public class ActionScopedRequestAttributesPool {
 				portletSession.setAttribute(
 					ACTION_SCOPED_REQUEST_ATTRIBUTES_SESSION_DATA, sessionData);
 
-				EventResponse eventResponse =
-					(EventResponse)portletRequest.getAttribute(
+				PortletResponseImpl portletResponseImpl =
+					(PortletResponseImpl)portletRequest.getAttribute(
 						JavaConstants.JAVAX_PORTLET_RESPONSE);
 
-				StateAwareResponseImpl stateAwareResponseImpl =
-					(StateAwareResponseImpl)eventResponse;
-
-				stateAwareResponseImpl.setActionScopeId(
-					sessionData.actionScopeId);
+				portletResponseImpl.setActionScopeId(sessionData.actionScopeId);
 			}
 
 			if ((actionScopeIdParameter != null) &&
@@ -121,15 +112,11 @@ public class ActionScopedRequestAttributesPool {
 				portletRequestImpl.setActionScopedRequestAttributesPool(
 					sessionData.actionScopedRequestAttributesPool);
 
-				EventResponse eventResponse =
-					(EventResponse)portletRequest.getAttribute(
+				PortletResponseImpl portletResponseImpl =
+					(PortletResponseImpl)portletRequest.getAttribute(
 						JavaConstants.JAVAX_PORTLET_RESPONSE);
 
-				StateAwareResponseImpl stateAwareResponseImpl =
-					(StateAwareResponseImpl)eventResponse;
-
-				stateAwareResponseImpl.setActionScopeId(
-					sessionData.actionScopeId);
+				portletResponseImpl.setActionScopeId(sessionData.actionScopeId);
 			}
 		}
 
@@ -146,6 +133,12 @@ public class ActionScopedRequestAttributesPool {
 
 				portletRequestImpl.setActionScopedRequestAttributesPool(
 					sessionData.actionScopedRequestAttributesPool);
+
+				PortletResponseImpl portletResponseImpl =
+					(PortletResponseImpl)portletRequest.getAttribute(
+						JavaConstants.JAVAX_PORTLET_RESPONSE);
+
+				portletResponseImpl.setActionScopeId(sessionData.actionScopeId);
 			}
 		}
 
@@ -155,6 +148,12 @@ public class ActionScopedRequestAttributesPool {
 
 				portletRequestImpl.setActionScopedRequestAttributesPool(
 					sessionData.actionScopedRequestAttributesPool);
+
+				PortletResponseImpl portletResponseImpl =
+					(PortletResponseImpl)portletRequest.getAttribute(
+						JavaConstants.JAVAX_PORTLET_RESPONSE);
+
+				portletResponseImpl.setActionScopeId(sessionData.actionScopeId);
 			}
 		}
 	}

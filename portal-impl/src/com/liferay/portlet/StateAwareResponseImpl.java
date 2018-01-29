@@ -125,8 +125,10 @@ public abstract class StateAwareResponseImpl
 	}
 
 	public void setActionScopeId(String actionScopeId) {
-		_params.put(
-			PortletRequest.ACTION_SCOPE_ID, new String[] {actionScopeId});
+		if (actionScopeId != null) {
+			_params.put(
+				PortletRequest.ACTION_SCOPE_ID, new String[] {actionScopeId});
+		}
 	}
 
 	@Override
