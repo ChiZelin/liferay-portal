@@ -88,7 +88,7 @@ public class ActionScopedRequestAttributesPool {
 
 		if (lifecycle.equals(PortletRequest.EVENT_PHASE)) {
 			if ((actionScopeIdParameter == null) ||
-				(sessionData.rendered == true)) {
+				((sessionData != null) && (sessionData.rendered == true))) {
 
 				sessionData = new ActionScopedRequestAttributesSessionData();
 
@@ -105,7 +105,7 @@ public class ActionScopedRequestAttributesPool {
 				portletResponseImpl.setActionScopeId(sessionData.actionScopeId);
 			}
 
-			if ((actionScopeIdParameter != null) &&
+			if ((actionScopeIdParameter != null) && (sessionData != null) &&
 				actionScopeIdParameter.equals(sessionData.actionScopeId) &&
 				(sessionData.rendered == false)) {
 
@@ -126,7 +126,7 @@ public class ActionScopedRequestAttributesPool {
 					ACTION_SCOPED_REQUEST_ATTRIBUTES_SESSION_DATA);
 			}
 
-			if ((actionScopeIdParameter != null) &&
+			if ((actionScopeIdParameter != null) && (sessionData != null) &&
 				actionScopeIdParameter.equals(sessionData.actionScopeId)) {
 
 				sessionData.rendered = true;
@@ -143,7 +143,7 @@ public class ActionScopedRequestAttributesPool {
 		}
 
 		if (lifecycle.equals(PortletRequest.RESOURCE_PHASE)) {
-			if ((actionScopeIdParameter != null) &&
+			if ((actionScopeIdParameter != null) && (sessionData != null) &&
 				actionScopeIdParameter.equals(sessionData.actionScopeId)) {
 
 				portletRequestImpl.setActionScopedRequestAttributesPool(
