@@ -1054,7 +1054,7 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 			return false;
 		}
 
-		return false;
+		return true;
 	}
 
 	private void _mergePublicRenderParameters(
@@ -1196,6 +1196,9 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 		_reservedAttrs.add(WebKeys.THEME_DISPLAY);
 		_reservedAttrs.add(WebKeys.WINDOW_STATE);
 		_reservedAttrs.add(WebKeys.LAYOUT);
+		_reservedAttrs.add(WebKeys.RENDER_PATH);
+		_reservedAttrs.add(WebKeys.RENDER_PORTLET);
+		_reservedAttrs.add(WebKeys.PORTLET_CONFIGURATOR_VISIBILITY);
 		_reservedAttrs.add(PortletServlet.PORTLET_APP);
 		_reservedAttrs.add(PortletServlet.PORTLET_SERVLET_CONFIG);
 		_reservedAttrs.add(PortletServlet.PORTLET_SERVLET_FILTER_CHAIN);

@@ -23,8 +23,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.portlet.ActionResponse;
-import javax.portlet.EventResponse;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletSession;
@@ -37,7 +35,7 @@ public class ActionScopedRequestAttributesPool {
 	public static final String ACTION_SCOPED_REQUEST_ATTRIBUTES_SESSION_DATA =
 		"action.scoped.request.attributes.session.data";
 
-	public static void handleActionScopedRequestAttributesPool(
+	public static String handleActionScopedRequestAttributesPool(
 		PortletRequest portletRequest) {
 
 		PortletConfig portletConfig =
@@ -55,7 +53,7 @@ public class ActionScopedRequestAttributesPool {
 			(Boolean.parseBoolean(actionScopedRequestAttributesValues[0]) ==
 				false)) {
 
-			return;
+			return null;
 		}
 
 		PortletRequestImpl portletRequestImpl =
@@ -81,12 +79,7 @@ public class ActionScopedRequestAttributesPool {
 			portletSession.setAttribute(
 				ACTION_SCOPED_REQUEST_ATTRIBUTES_SESSION_DATA, sessionData);
 
-			ActionResponse actionResponse =
-				(ActionResponse)portletRequest.getAttribute(
-					JavaConstants.JAVAX_PORTLET_RESPONSE);
-
-			actionResponse.setRenderParameter(
-				PortletRequest.ACTION_SCOPE_ID, sessionData.actionScopeId);
+			return sessionData.actionScopeId;
 		}
 
 		if (lifecycle.equals(PortletRequest.EVENT_PHASE)) {
@@ -101,12 +94,7 @@ public class ActionScopedRequestAttributesPool {
 				portletSession.setAttribute(
 					ACTION_SCOPED_REQUEST_ATTRIBUTES_SESSION_DATA, sessionData);
 
-				EventResponse eventResponse =
-					(EventResponse)portletRequest.getAttribute(
-						JavaConstants.JAVAX_PORTLET_RESPONSE);
-
-				eventResponse.setRenderParameter(
-					PortletRequest.ACTION_SCOPE_ID, sessionData.actionScopeId);
+				return sessionData.actionScopeId;
 			}
 
 			if ((actionScopeIdParameter != null) && (sessionData != null) &&
@@ -115,12 +103,8 @@ public class ActionScopedRequestAttributesPool {
 
 				portletRequestImpl.setActionScopedRequestAttributesPool(
 					sessionData.actionScopedRequestAttributesPool);
-				EventResponse eventResponse =
-					(EventResponse)portletRequest.getAttribute(
-						JavaConstants.JAVAX_PORTLET_RESPONSE);
 
-				eventResponse.setRenderParameter(
-					PortletRequest.ACTION_SCOPE_ID, sessionData.actionScopeId);
+				return sessionData.actionScopeId;
 			}
 		}
 
@@ -148,6 +132,8 @@ public class ActionScopedRequestAttributesPool {
 					sessionData.actionScopedRequestAttributesPool);
 			}
 		}
+
+		return null;
 	}
 
 	private static class ActionScopedRequestAttributesSessionData
