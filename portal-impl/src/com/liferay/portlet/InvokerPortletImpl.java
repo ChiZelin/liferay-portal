@@ -578,16 +578,9 @@ public class InvokerPortletImpl
 		LiferayPortletResponse portletResponse =
 			PortalUtil.getLiferayPortletResponse(actionResponse);
 
-		String actionScopeId =
-			ActionScopedRequestAttributesPool.
-				handleActionScopedRequestAttributesPool(portletRequest);
-
 		invoke(
 			portletRequest, portletResponse, PortletRequest.ACTION_PHASE,
 			_invokerFilterContainer.getActionFilters());
-
-		actionResponse.setRenderParameter(
-			PortletRequest.ACTION_SCOPE_ID, actionScopeId);
 	}
 
 	protected void invokeEvent(
@@ -599,16 +592,9 @@ public class InvokerPortletImpl
 		LiferayPortletResponse portletResponse =
 			PortalUtil.getLiferayPortletResponse(eventResponse);
 
-		String actionScopeId =
-			ActionScopedRequestAttributesPool.
-				handleActionScopedRequestAttributesPool(portletRequest);
-
 		invoke(
 			portletRequest, portletResponse, PortletRequest.EVENT_PHASE,
 			_invokerFilterContainer.getEventFilters());
-
-		eventResponse.setRenderParameter(
-			PortletRequest.ACTION_SCOPE_ID, actionScopeId);
 	}
 
 	protected String invokeRender(
@@ -648,9 +634,6 @@ public class InvokerPortletImpl
 			PortalUtil.getLiferayPortletRequest(resourceRequest);
 		LiferayPortletResponse portletResponse =
 			PortalUtil.getLiferayPortletResponse(resourceResponse);
-
-		ActionScopedRequestAttributesPool.
-			handleActionScopedRequestAttributesPool(portletRequest);
 
 		invoke(
 			portletRequest, portletResponse, PortletRequest.RESOURCE_PHASE,
