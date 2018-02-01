@@ -298,6 +298,15 @@ public class LayoutAction extends Action {
 					if (response.isCommitted()) {
 						return null;
 					}
+					else {
+						PortletRequestImpl portletRequestImpl =
+							(PortletRequestImpl)request.getAttribute(
+								JavaConstants.JAVAX_PORTLET_REQUEST);
+
+						if (portletRequestImpl != null) {
+							portletRequestImpl.removePortletRequestAttrs();
+						}
+					}
 				}
 				else if (themeDisplay.isLifecycleResource()) {
 					PortletContainerUtil.serveResource(
@@ -344,6 +353,8 @@ public class LayoutAction extends Action {
 							portletRequest);
 
 					portletRequestImpl.cleanUp();
+
+					portletRequestImpl.removePortletRequestAttrs();
 				}
 			}
 		}
