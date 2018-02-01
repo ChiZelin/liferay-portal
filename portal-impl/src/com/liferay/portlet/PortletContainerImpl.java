@@ -552,7 +552,16 @@ public class PortletContainerImpl implements PortletContainer {
 		eventRequestImpl.defineObjects(portletConfig, eventResponseImpl);
 
 		try {
+			String actionScopeId =
+				ActionScopedRequestAttributesPool.
+					handleActionScopedRequestAttributesPool(eventRequestImpl);
+
 			invokerPortlet.processEvent(eventRequestImpl, eventResponseImpl);
+
+			if (actionScopeId != null) {
+				eventResponseImpl.setRenderParameter(
+					PortletRequest.ACTION_SCOPE_ID, actionScopeId);
+			}
 
 			eventResponseImpl.transferHeaders(response);
 
