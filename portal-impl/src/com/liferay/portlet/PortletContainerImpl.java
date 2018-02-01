@@ -877,6 +877,9 @@ public class PortletContainerImpl implements PortletContainer {
 
 			ServiceContextThreadLocal.pushServiceContext(serviceContext);
 
+			ActionScopedRequestAttributesPool.
+				handleActionScopedRequestAttributesPool(resourceRequestImpl);
+
 			invokerPortlet.serveResource(
 				resourceRequestImpl, resourceResponseImpl);
 
