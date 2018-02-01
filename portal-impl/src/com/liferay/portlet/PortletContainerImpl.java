@@ -426,6 +426,14 @@ public class PortletContainerImpl implements PortletContainer {
 					portletURL.setParameter(key, value);
 				}
 
+				if (actionScopeId != null) {
+					portletURL.setParameter(
+						PortletRequest.ACTION_SCOPE_ID, actionScopeId);
+
+					request.setAttribute(
+						PortletRequest.ACTION_SCOPE_ID, actionScopeId);
+				}
+
 				redirectLocation = portletURL.toString();
 			}
 			else if (Validator.isNull(redirectLocation)) {
