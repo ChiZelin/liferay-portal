@@ -32,6 +32,7 @@ import com.liferay.portal.kernel.portlet.PortletQNameUtil;
 import com.liferay.portal.kernel.service.PortletLocalServiceUtil;
 import com.liferay.portal.kernel.service.RoleLocalServiceUtil;
 import com.liferay.portal.kernel.servlet.DynamicServletRequest;
+import com.liferay.portal.kernel.servlet.PortletServlet;
 import com.liferay.portal.kernel.servlet.ProtectedPrincipal;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ArrayUtil;
@@ -666,6 +667,18 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 		_request.removeAttribute(name);
 	}
 
+	public void removePortletRequestAttrs() {
+		Enumeration<String> attributesNames = getAttributeNames();
+
+		while (attributesNames.hasMoreElements()) {
+			String attributeName = attributesNames.nextElement();
+
+			if (_isNameOK(attributeName)) {
+				_request.removeAttribute(attributeName);
+			}
+		}
+	}
+
 	@Override
 	public void setAttribute(String name, Object obj) {
 		if (name == null) {
@@ -979,6 +992,17 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 		}
 	}
 
+	private boolean _isNameOK(String name) {
+		if (name.startsWith("javax.portlet.") ||
+			name.startsWith("javax.servlet.") ||
+			name.startsWith("org.apache.") || _reservedAttrs.contains(name)) {
+
+			return false;
+		}
+
+		return true;
+	}
+
 	private void _mergePublicRenderParameters(
 		DynamicServletRequest dynamicRequest,
 		Map<String, String[]> publicRenderParametersMap,
@@ -1107,8 +1131,26 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 	private static final Log _log = LogFactoryUtil.getLog(
 		PortletRequestImpl.class);
 
+	private static final Set<String> _reservedAttrs = new HashSet<>();
 	private static final Pattern _strutsPortletIgnoredParamtersPattern =
 		Pattern.compile(PropsValues.STRUTS_PORTLET_IGNORED_PARAMETERS_REGEXP);
+
+	static {
+		_reservedAttrs.add(WebKeys.INVOKER_FILTER_URI);
+		_reservedAttrs.add(WebKeys.PORTLET_CONTENT);
+		_reservedAttrs.add(WebKeys.PORTLET_ID);
+		_reservedAttrs.add(WebKeys.THEME_DISPLAY);
+		_reservedAttrs.add(WebKeys.WINDOW_STATE);
+		_reservedAttrs.add(WebKeys.LAYOUT);
+		_reservedAttrs.add(WebKeys.RENDER_PATH);
+		_reservedAttrs.add(WebKeys.RENDER_PORTLET);
+		_reservedAttrs.add(WebKeys.PORTLET_CONFIGURATOR_VISIBILITY);
+		_reservedAttrs.add(PortletServlet.PORTLET_APP);
+		_reservedAttrs.add(PortletServlet.PORTLET_SERVLET_CONFIG);
+		_reservedAttrs.add(PortletServlet.PORTLET_SERVLET_FILTER_CHAIN);
+		_reservedAttrs.add(PortletServlet.PORTLET_SERVLET_REQUEST);
+		_reservedAttrs.add(PortletServlet.PORTLET_SERVLET_RESPONSE);
+	}
 
 	private boolean _invalidSession;
 	private Locale _locale;
