@@ -391,7 +391,13 @@ public class PortletContainerImpl implements PortletContainer {
 
 			ServiceContextThreadLocal.pushServiceContext(serviceContext);
 
+			String actionScopeId =
+				ActionScopedRequestAttributesPool.
+					handleActionScopedRequestAttributesPool(actionRequestImpl);
+
 			invokerPortlet.processAction(actionRequestImpl, actionResponseImpl);
+
+			actionRequestImpl.removePortletRequestAttrs();
 
 			actionResponseImpl.transferHeaders(response);
 
@@ -422,7 +428,21 @@ public class PortletContainerImpl implements PortletContainer {
 					portletURL.setParameter(key, value);
 				}
 
+				if (actionScopeId != null) {
+					portletURL.setParameter(
+						PortletRequest.ACTION_SCOPE_ID, actionScopeId);
+
+					request.setAttribute(
+						PortletRequest.ACTION_SCOPE_ID, actionScopeId);
+				}
+
 				redirectLocation = portletURL.toString();
+			}
+			else if (Validator.isNull(redirectLocation)) {
+				if (actionScopeId != null) {
+					actionResponseImpl.setRenderParameter(
+						PortletRequest.ACTION_SCOPE_ID, actionScopeId);
+				}
 			}
 
 			return new ActionResult(events, redirectLocation);
@@ -532,7 +552,16 @@ public class PortletContainerImpl implements PortletContainer {
 		eventRequestImpl.defineObjects(portletConfig, eventResponseImpl);
 
 		try {
+			String actionScopeId =
+				ActionScopedRequestAttributesPool.
+					handleActionScopedRequestAttributesPool(eventRequestImpl);
+
 			invokerPortlet.processEvent(eventRequestImpl, eventResponseImpl);
+
+			if (actionScopeId != null) {
+				eventResponseImpl.setRenderParameter(
+					PortletRequest.ACTION_SCOPE_ID, actionScopeId);
+			}
 
 			eventResponseImpl.transferHeaders(response);
 
@@ -552,6 +581,8 @@ public class PortletContainerImpl implements PortletContainer {
 		}
 		finally {
 			eventRequestImpl.cleanUp();
+
+			eventRequestImpl.removePortletRequestAttrs();
 		}
 	}
 
@@ -841,6 +872,9 @@ public class PortletContainerImpl implements PortletContainer {
 				resourceRequestImpl);
 
 			ServiceContextThreadLocal.pushServiceContext(serviceContext);
+
+			ActionScopedRequestAttributesPool.
+				handleActionScopedRequestAttributesPool(resourceRequestImpl);
 
 			invokerPortlet.serveResource(
 				resourceRequestImpl, resourceResponseImpl);
