@@ -1061,7 +1061,7 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 			return false;
 		}
 
-		return false;
+		return true;
 	}
 
 	private void _mergePublicRenderParameters(
