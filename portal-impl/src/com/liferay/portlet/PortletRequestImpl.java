@@ -75,6 +75,7 @@ import javax.ccpp.Profile;
 import javax.portlet.PortalContext;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletContext;
+import javax.portlet.PortletException;
 import javax.portlet.PortletMode;
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
@@ -706,18 +707,11 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 
 		Enumeration<String> attributesNames = tempRequest.getAttributeNames();
 
-		String portletNamespace = PortalUtil.getPortletNamespace(_portletName);
-
 		while (attributesNames.hasMoreElements()) {
 			String attributeName = attributesNames.nextElement();
 
-			if (attributeName.startsWith(portletNamespace)) {
-				String name = attributeName.substring(
-					portletNamespace.length());
-
-				if (!_reservedAttrs.contains(name)) {
-					tempRequest.removeAttribute(attributeName);
-				}
+			if (_canRemove(attributeName)) {
+				tempRequest.removeAttribute(attributeName);
 			}
 		}
 	}
@@ -1051,6 +1045,29 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 		}
 
 		return name;
+	}
+
+	private boolean _canRemove(String attributeName) {
+		String portletNamespace = PortalUtil.getPortletNamespace(_portletName);
+
+		if (attributeName.startsWith(portletNamespace)) {
+			String name = attributeName.substring(portletNamespace.length());
+
+			if (!_reservedAttrs.contains(name)) {
+				return true;
+			}
+		}
+
+		String portletId = _portlet.getPortletId();
+
+		String portletExceptionAttributeName =
+			portletId + PortletException.class.getName();
+
+		if (attributeName.equals(portletExceptionAttributeName)) {
+			return true;
+		}
+
+		return false;
 	}
 
 	private void _copyAttributeNames(
