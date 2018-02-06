@@ -84,6 +84,7 @@ import javax.portlet.filter.PortletRequestWrapper;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpSession;
 
 /**
@@ -664,6 +665,30 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 		}
 
 		_request.removeAttribute(name);
+	}
+
+	public void removePortletRequestAttrs() {
+		HttpServletRequest tempRequest = _request;
+
+		while (tempRequest instanceof HttpServletRequestWrapper) {
+			HttpServletRequestWrapper httpServletRequestWrapper =
+				(HttpServletRequestWrapper)tempRequest;
+
+			tempRequest =
+				(HttpServletRequest)httpServletRequestWrapper.getRequest();
+		}
+
+		Enumeration<String> attributesNames = tempRequest.getAttributeNames();
+
+		String portletNamespace = PortalUtil.getPortletNamespace(_portletName);
+
+		while (attributesNames.hasMoreElements()) {
+			String attributeName = attributesNames.nextElement();
+
+			if (attributeName.startsWith(portletNamespace)) {
+				tempRequest.removeAttribute(attributeName);
+			}
+		}
 	}
 
 	@Override
