@@ -32,6 +32,7 @@ import com.liferay.portal.kernel.portlet.PortletQNameUtil;
 import com.liferay.portal.kernel.service.PortletLocalServiceUtil;
 import com.liferay.portal.kernel.service.RoleLocalServiceUtil;
 import com.liferay.portal.kernel.servlet.DynamicServletRequest;
+import com.liferay.portal.kernel.servlet.PortletServlet;
 import com.liferay.portal.kernel.servlet.ProtectedPrincipal;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ArrayUtil;
@@ -74,6 +75,7 @@ import javax.ccpp.Profile;
 import javax.portlet.PortalContext;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletContext;
+import javax.portlet.PortletException;
 import javax.portlet.PortletMode;
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
@@ -84,6 +86,7 @@ import javax.portlet.filter.PortletRequestWrapper;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpSession;
 
 /**
@@ -666,6 +669,28 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 		_request.removeAttribute(name);
 	}
 
+	public void removePortletRequestAttrs() {
+		HttpServletRequest tempRequest = _request;
+
+		while (tempRequest instanceof HttpServletRequestWrapper) {
+			HttpServletRequestWrapper httpServletRequestWrapper =
+				(HttpServletRequestWrapper)tempRequest;
+
+			tempRequest =
+				(HttpServletRequest)httpServletRequestWrapper.getRequest();
+		}
+
+		Enumeration<String> attributesNames = tempRequest.getAttributeNames();
+
+		while (attributesNames.hasMoreElements()) {
+			String attributeName = attributesNames.nextElement();
+
+			if (_canRemove(attributeName)) {
+				tempRequest.removeAttribute(attributeName);
+			}
+		}
+	}
+
 	@Override
 	public void setAttribute(String name, Object obj) {
 		if (name == null) {
@@ -967,6 +992,27 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 		return name;
 	}
 
+	private boolean _canRemove(String attributeName) {
+		String portletNamespace = PortalUtil.getPortletNamespace(_portletName);
+
+		if (attributeName.startsWith(portletNamespace)) {
+			String name = attributeName.substring(portletNamespace.length());
+
+			String portletId = _portlet.getPortletId();
+
+			String portletExceptionAttributeName =
+				portletId + PortletException.class.getName();
+
+			if (name.equals(portletExceptionAttributeName)) {
+				return false;
+			}
+
+			return true;
+		}
+
+		return false;
+	}
+
 	private void _copyAttributeNames(
 		Set<String> names, Enumeration<String> enumeration) {
 
@@ -1107,8 +1153,18 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 	private static final Log _log = LogFactoryUtil.getLog(
 		PortletRequestImpl.class);
 
+	private static final Set<String> _reservedAttrs = new HashSet<>();
 	private static final Pattern _strutsPortletIgnoredParamtersPattern =
 		Pattern.compile(PropsValues.STRUTS_PORTLET_IGNORED_PARAMETERS_REGEXP);
+
+	static {
+		_reservedAttrs.add(WebKeys.PORTLET_ID);
+		_reservedAttrs.add(WebKeys.WINDOW_STATE);
+		_reservedAttrs.add(PortletServlet.PORTLET_SERVLET_CONFIG);
+		_reservedAttrs.add(PortletServlet.PORTLET_SERVLET_FILTER_CHAIN);
+		_reservedAttrs.add(PortletServlet.PORTLET_SERVLET_REQUEST);
+		_reservedAttrs.add(PortletServlet.PORTLET_SERVLET_RESPONSE);
+	}
 
 	private boolean _invalidSession;
 	private Locale _locale;
