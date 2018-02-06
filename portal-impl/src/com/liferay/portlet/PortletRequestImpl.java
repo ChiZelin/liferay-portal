@@ -686,7 +686,9 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 			throw new IllegalArgumentException();
 		}
 
-		if ((_actionScopedRequestAttributesPool != null) && _isNameOK(name)) {
+		if ((_actionScopedRequestAttributesPool != null) &&
+			_isNotReservedAttrs(name)) {
+
 			_actionScopedRequestAttributesPool.remove(name);
 		}
 		else {
@@ -730,7 +732,7 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 
 		if (obj == null) {
 			if ((_actionScopedRequestAttributesPool != null) &&
-				_isNameOK(name)) {
+				_isNotReservedAttrs(name)) {
 
 				_actionScopedRequestAttributesPool.remove(name);
 			}
@@ -740,7 +742,7 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 		}
 		else {
 			if ((_actionScopedRequestAttributesPool != null) &&
-				_isNameOK(name)) {
+				_isNotReservedAttrs(name)) {
 
 				_actionScopedRequestAttributesPool.put(name, obj);
 			}
@@ -1058,7 +1060,7 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 			String portletExceptionAttributeName =
 				portletId + PortletException.class.getName();
 
-			if (_isNameOK(name) &&
+			if (_isNotReservedAttrs(name) &&
 				!name.equals(portletExceptionAttributeName)) {
 
 				return true;
@@ -1086,7 +1088,7 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 		}
 	}
 
-	private boolean _isNameOK(String name) {
+	private boolean _isNotReservedAttrs(String name) {
 		if (name.startsWith("javax.portlet.") ||
 			name.startsWith("javax.servlet.") ||
 			_reservedAttrs.contains(name)) {
