@@ -1053,18 +1053,16 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 		if (attributeName.startsWith(portletNamespace)) {
 			String name = attributeName.substring(portletNamespace.length());
 
-			if (!_reservedAttrs.contains(name)) {
+			String portletId = _portlet.getPortletId();
+
+			String portletExceptionAttributeName =
+				portletId + PortletException.class.getName();
+
+			if (_isNameOK(name) &&
+				!name.equals(portletExceptionAttributeName)) {
+
 				return true;
 			}
-		}
-
-		String portletId = _portlet.getPortletId();
-
-		String portletExceptionAttributeName =
-			portletId + PortletException.class.getName();
-
-		if (attributeName.equals(portletExceptionAttributeName)) {
-			return true;
 		}
 
 		return false;
