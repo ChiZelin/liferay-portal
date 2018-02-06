@@ -248,6 +248,8 @@ public class PortletContextImpl implements LiferayPortletContext {
 
 	static {
 		_supportedRuntimeOptions.add(
+			"javax.portlet.actionScopedRequestAttributes");
+		_supportedRuntimeOptions.add(
 			LiferayPortletConfig.RUNTIME_OPTION_ESCAPE_XML);
 		_supportedRuntimeOptions.add(
 			LiferayPortletConfig.RUNTIME_OPTION_PORTAL_CONTEXT);
