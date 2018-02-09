@@ -74,6 +74,7 @@ import javax.ccpp.Profile;
 import javax.portlet.PortalContext;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletContext;
+import javax.portlet.PortletException;
 import javax.portlet.PortletMode;
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
@@ -84,6 +85,7 @@ import javax.portlet.filter.PortletRequestWrapper;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpSession;
 
 /**
@@ -666,6 +668,28 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 		_request.removeAttribute(name);
 	}
 
+	public void removePortletRequestAttrs() {
+		HttpServletRequest tempRequest = _request;
+
+		while (tempRequest instanceof HttpServletRequestWrapper) {
+			HttpServletRequestWrapper httpServletRequestWrapper =
+				(HttpServletRequestWrapper)tempRequest;
+
+			tempRequest =
+				(HttpServletRequest)httpServletRequestWrapper.getRequest();
+		}
+
+		Enumeration<String> attributesNames = tempRequest.getAttributeNames();
+
+		while (attributesNames.hasMoreElements()) {
+			String attributeName = attributesNames.nextElement();
+
+			if (_canRemove(attributeName)) {
+				tempRequest.removeAttribute(attributeName);
+			}
+		}
+	}
+
 	@Override
 	public void setAttribute(String name, Object obj) {
 		if (name == null) {
@@ -965,6 +989,25 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 		}
 
 		return name;
+	}
+
+	private boolean _canRemove(String attributeName) {
+		String portletNamespace = PortalUtil.getPortletNamespace(_portletName);
+
+		if (attributeName.startsWith(portletNamespace)) {
+			String portletId = _portlet.getPortletId();
+
+			String portletExceptionAttributeName =
+				portletId + PortletException.class.getName();
+
+			if (attributeName.endsWith(portletExceptionAttributeName)) {
+				return false;
+			}
+
+			return true;
+		}
+
+		return false;
 	}
 
 	private void _copyAttributeNames(
