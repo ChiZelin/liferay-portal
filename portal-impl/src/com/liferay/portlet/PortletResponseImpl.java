@@ -14,6 +14,8 @@
 
 package com.liferay.portlet;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.io.unsync.UnsyncStringWriter;
 import com.liferay.portal.kernel.log.Log;
@@ -40,9 +42,14 @@ import java.io.Writer;
 import java.lang.reflect.Constructor;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.portlet.MimeResponse;
@@ -72,7 +79,9 @@ import org.w3c.dom.Element;
 
 /**
  * @author Brian Wing Shun Chan
+ * @author Neil Griffin
  */
+@ProviderType
 public abstract class PortletResponseImpl implements LiferayPortletResponse {
 
 	public static PortletResponseImpl getPortletResponseImpl(
@@ -262,7 +271,7 @@ public abstract class PortletResponseImpl implements LiferayPortletResponse {
 		boolean includeLinkToLayoutUuid) {
 
 		return _createLiferayPortletURL(
-			plid, portletName, lifecycle, includeLinkToLayoutUuid);
+			plid, portletName, lifecycle, includeLinkToLayoutUuid, null);
 	}
 
 	@Override
@@ -295,8 +304,14 @@ public abstract class PortletResponseImpl implements LiferayPortletResponse {
 
 	@Override
 	public LiferayPortletURL createResourceURL(String portletName) {
+
+		// TODO: portlet3 - Might need to have a Portlet 2.0 compatibility mode
+		// if/then check that passes MimeResponse.Copy.NONE. Need to try a Pluto
+		// 2.0 test portlet.
+
 		return _createLiferayPortletURL(
-			_plid, portletName, PortletRequest.RESOURCE_PHASE, true);
+			_plid, portletName, PortletRequest.RESOURCE_PHASE, true,
+			MimeResponse.Copy.ALL);
 	}
 
 	@Override
@@ -378,6 +393,39 @@ public abstract class PortletResponseImpl implements LiferayPortletResponse {
 		}
 
 		return properties;
+	}
+
+	@Override
+	public String getProperty(String key) {
+		String[] values = (String[])_headers.get(key);
+
+		if ((values != null) && (values.length > 0)) {
+			return values[0];
+		}
+
+		return null;
+	}
+
+	@Override
+	public Collection<String> getPropertyNames() {
+		Set<String> keySet = _headers.keySet();
+
+		if (keySet != null) {
+			return new LinkedHashSet<>(keySet);
+		}
+
+		return Collections.emptySet();
+	}
+
+	@Override
+	public Collection<String> getPropertyValues(String key) {
+		String[] values = (String[])_headers.get(key);
+
+		if (values != null) {
+			return Arrays.asList(values);
+		}
+
+		return Collections.emptySet();
 	}
 
 	public URLEncoder getUrlEncoder() {
@@ -502,6 +550,22 @@ public abstract class PortletResponseImpl implements LiferayPortletResponse {
 		}
 	}
 
+	protected void addDependency(String markup) {
+		HttpServletRequest request = getHttpServletRequest();
+
+		List<String> markupHeadElements = (List<String>)request.getAttribute(
+			MimeResponse.MARKUP_HEAD_ELEMENT);
+
+		if (markupHeadElements == null) {
+			markupHeadElements = new ArrayList<>();
+
+			request.setAttribute(
+				MimeResponse.MARKUP_HEAD_ELEMENT, markupHeadElements);
+		}
+
+		markupHeadElements.add(markup);
+	}
+
 	protected void init(
 		PortletRequestImpl portletRequestImpl, HttpServletResponse response) {
 
@@ -523,7 +587,7 @@ public abstract class PortletResponseImpl implements LiferayPortletResponse {
 
 	private LiferayPortletURL _createLiferayPortletURL(
 		long plid, String portletName, String lifecycle,
-		boolean includeLinkToLayoutUuid) {
+		boolean includeLinkToLayoutUuid, MimeResponse.Copy copy) {
 
 		ThemeDisplay themeDisplay =
 			(ThemeDisplay)portletRequestImpl.getAttribute(
@@ -539,9 +603,9 @@ public abstract class PortletResponseImpl implements LiferayPortletResponse {
 
 		return DoPrivilegedUtil.wrap(
 			new LiferayPortletURLPrivilegedAction(
-				plid, portletName, lifecycle, includeLinkToLayoutUuid, layout,
-				getPortlet(), _portletSetup, portletRequestImpl, this, _plid,
-				_constructors));
+				plid, portletName, lifecycle, includeLinkToLayoutUuid, copy,
+				layout, getPortlet(), _portletSetup, portletRequestImpl, this,
+				_plid, _constructors));
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
