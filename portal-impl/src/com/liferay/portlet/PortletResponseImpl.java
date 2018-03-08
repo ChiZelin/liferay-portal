@@ -304,11 +304,6 @@ public abstract class PortletResponseImpl implements LiferayPortletResponse {
 
 	@Override
 	public LiferayPortletURL createResourceURL(String portletName) {
-
-		// TODO: portlet3 - Might need to have a Portlet 2.0 compatibility mode
-		// if/then check that passes MimeResponse.Copy.NONE. Need to try a Pluto
-		// 2.0 test portlet.
-
 		return _createLiferayPortletURL(
 			_plid, portletName, PortletRequest.RESOURCE_PHASE, true,
 			MimeResponse.Copy.ALL);
