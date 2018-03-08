@@ -135,6 +135,7 @@ import javax.servlet.ServletContext;
  * @author Eduardo Lundgren
  * @author Wesley Gong
  * @author Shuyang Zhou
+ * @author Neil Griffin
  */
 public class PortletLocalServiceImpl extends PortletLocalServiceBaseImpl {
 
