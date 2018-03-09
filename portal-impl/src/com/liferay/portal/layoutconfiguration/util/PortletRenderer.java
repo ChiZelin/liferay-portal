@@ -29,6 +29,7 @@ import java.io.IOException;
 
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
@@ -37,6 +38,7 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  * @author Shuyang Zhou
+ * @author Neil Griffin
  */
 public class PortletRenderer {
 
@@ -57,9 +59,10 @@ public class PortletRenderer {
 	}
 
 	public Callable<StringBundler> getCallable(
-		HttpServletRequest request, HttpServletResponse response) {
+		HttpServletRequest request, HttpServletResponse response,
+		Map<String, Object> headerRequestMap) {
 
-		return new PortletRendererCallable(request, response);
+		return new PortletRendererCallable(request, response, headerRequestMap);
 	}
 
 	public Portlet getPortlet() {
@@ -67,11 +70,14 @@ public class PortletRenderer {
 	}
 
 	public StringBundler render(
-			HttpServletRequest request, HttpServletResponse response)
+			HttpServletRequest request, HttpServletResponse response,
+			Map<String, Object> headerRequestMap)
 		throws PortletContainerException {
 
 		request = PortletContainerUtil.setupOptionalRenderParameters(
 			request, null, _columnId, _columnPos, _columnCount);
+
+		_copyHeaderRequestAttributes(headerRequestMap, request);
 
 		return _render(request, response);
 	}
@@ -108,6 +114,41 @@ public class PortletRenderer {
 		}
 	}
 
+	public Map<String, Object> renderHeaders(
+			HttpServletRequest request, HttpServletResponse response)
+		throws PortletContainerException {
+
+		request = PortletContainerUtil.setupOptionalRenderParameters(
+			request, null, _columnId, _columnPos, _columnCount);
+
+		_renderHeaders(request, response);
+
+		Map<String, Object> headerRequestMap = new HashMap<>();
+
+		Enumeration<String> attributeNames = request.getAttributeNames();
+
+		while (attributeNames.hasMoreElements()) {
+			String attributeName = attributeNames.nextElement();
+
+			headerRequestMap.put(
+				attributeName, request.getAttribute(attributeName));
+		}
+
+		return headerRequestMap;
+	}
+
+	private void _copyHeaderRequestAttributes(
+		Map<String, Object> headerRequestMap, HttpServletRequest request) {
+
+		if (headerRequestMap != null) {
+			for (Map.Entry<String, Object> entry :
+					headerRequestMap.entrySet()) {
+
+				request.setAttribute(entry.getKey(), entry.getValue());
+			}
+		}
+	}
+
 	private StringBundler _render(
 			HttpServletRequest request, HttpServletResponse response)
 		throws PortletContainerException {
@@ -139,6 +180,17 @@ public class PortletRenderer {
 			request.setAttribute(
 				WebKeys.PORTLET_PARALLEL_RENDER, portletParallelRender);
 		}
+	}
+
+	private void _renderHeaders(
+			HttpServletRequest request, HttpServletResponse response)
+		throws PortletContainerException {
+
+		BufferCacheServletResponse bufferCacheServletResponse =
+			new BufferCacheServletResponse(response);
+
+		PortletContainerUtil.renderHeaders(
+			request, bufferCacheServletResponse, _portlet);
 	}
 
 	private static final String _RENDER_PATH =
@@ -221,7 +273,8 @@ public class PortletRenderer {
 		extends CopyThreadLocalCallable<StringBundler> {
 
 		public PortletRendererCallable(
-			HttpServletRequest request, HttpServletResponse response) {
+			HttpServletRequest request, HttpServletResponse response,
+			Map<String, Object> headerRequestMap) {
 
 			super(
 				ParallelRenderThreadLocalBinderUtil.getThreadLocalBinder(),
@@ -229,6 +282,7 @@ public class PortletRenderer {
 
 			_request = request;
 			_response = response;
+			_headerRequestMap = headerRequestMap;
 		}
 
 		@Override
@@ -236,6 +290,8 @@ public class PortletRenderer {
 			HttpServletRequest request =
 				PortletContainerUtil.setupOptionalRenderParameters(
 					_request, null, _columnId, _columnPos, _columnCount);
+
+			_copyHeaderRequestAttributes(_headerRequestMap, request);
 
 			_restrictPortletServletRequest =
 				(RestrictPortletServletRequest)request;
@@ -286,6 +342,7 @@ public class PortletRenderer {
 			}
 		}
 
+		private final Map<String, Object> _headerRequestMap;
 		private final HttpServletRequest _request;
 		private final HttpServletResponse _response;
 

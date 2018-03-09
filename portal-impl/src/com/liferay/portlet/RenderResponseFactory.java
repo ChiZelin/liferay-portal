@@ -14,6 +14,8 @@
 
 package com.liferay.portlet;
 
+import com.liferay.portlet.internal.RenderResponse3Impl;
+
 import javax.servlet.http.HttpServletResponse;
 
 /**
@@ -24,7 +26,7 @@ public class RenderResponseFactory {
 	public static RenderResponseImpl create(
 		RenderRequestImpl renderRequestImpl, HttpServletResponse response) {
 
-		RenderResponseImpl renderResponseImpl = new RenderResponseImpl();
+		RenderResponseImpl renderResponseImpl = new RenderResponse3Impl();
 
 		renderResponseImpl.init(renderRequestImpl, response);
 

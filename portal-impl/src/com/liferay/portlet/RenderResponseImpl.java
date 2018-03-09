@@ -14,6 +14,8 @@
 
 package com.liferay.portlet;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.kernel.portlet.LiferayRenderResponse;
 import com.liferay.portal.kernel.theme.PortletDisplay;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
@@ -23,16 +25,36 @@ import com.liferay.portlet.configuration.kernel.util.PortletConfigurationUtil;
 
 import java.util.Collection;
 
-import javax.portlet.PortletMode;
+import javax.portlet.ActionURL;
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
+import javax.portlet.RenderURL;
 
 /**
  * @author Brian Wing Shun Chan
  * @author Eduardo Lundgren
  */
+@ProviderType
 public class RenderResponseImpl
 	extends MimeResponseImpl implements LiferayRenderResponse {
+
+	@Override
+	public ActionURL createActionURL(Copy copy) {
+
+		// See RenderResponse3Impl.createActionURL(Copy) and
+		// ResourceResponse3Impl.createActionURL(Copy)
+
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public RenderURL createRenderURL(Copy copy) {
+
+		// See RenderResponse3Impl.createRenderURL(Copy) and
+		// ResourceResponse3Impl.createRenderURL(Copy)
+
+		throw new UnsupportedOperationException();
+	}
 
 	@Override
 	public String getLifecycle() {
@@ -52,8 +74,7 @@ public class RenderResponseImpl
 	}
 
 	@Override
-	public void setNextPossiblePortletModes(
-		Collection<PortletMode> portletModes) {
+	public void setNextPossiblePortletModes(Collection portletModes) {
 	}
 
 	@Override

@@ -14,6 +14,8 @@
 
 package com.liferay.portlet;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.kernel.model.Portlet;
 import com.liferay.portal.kernel.model.PortletApp;
 import com.liferay.portal.kernel.portlet.LiferayPortletURL;
@@ -23,8 +25,10 @@ import com.liferay.portlet.extra.config.ExtraPortletAppConfigRegistry;
 
 import java.util.Locale;
 
+import javax.portlet.ActionURL;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletURL;
+import javax.portlet.RenderURL;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 import javax.portlet.ResourceURL;
@@ -34,7 +38,9 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  * @author Brian Wing Shun Chan
+ * @author Neil Griffin
  */
+@ProviderType
 public class ResourceResponseImpl
 	extends MimeResponseImpl implements ResourceResponse {
 
@@ -63,6 +69,14 @@ public class ResourceResponseImpl
 	@Override
 	public PortletURL createActionURL() {
 		return super.createActionURL();
+	}
+
+	@Override
+	public ActionURL createActionURL(Copy copy) {
+
+		// See ResourceResponse3Impl.createActionURL(Copy)
+
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -97,13 +111,24 @@ public class ResourceResponseImpl
 	}
 
 	@Override
-	public ResourceURL createResourceURL() {
-		return super.createResourceURL();
+	public RenderURL createRenderURL(Copy copy) {
+
+		// See ResourceResponse3Impl.createRenderURL(Copy)
+
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public String getLifecycle() {
 		return PortletRequest.RESOURCE_PHASE;
+	}
+
+	@Override
+	public int getStatus() {
+
+		// See ResourceResponse3Impl.getStatus()
+
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -116,6 +141,14 @@ public class ResourceResponseImpl
 	@Override
 	public void setContentLength(int length) {
 		response.setContentLength(length);
+	}
+
+	@Override
+	public void setContentLengthLong(long length) {
+
+		// See ResourceResponse3Impl.setContentLengthLong(length)
+
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -166,6 +199,14 @@ public class ResourceResponseImpl
 				_canSetLocaleEncoding = true;
 			}
 		}
+	}
+
+	@Override
+	public void setStatus(int statusCode) {
+
+		// See ResourceResponse3Impl.setStatus(int)
+
+		throw new UnsupportedOperationException();
 	}
 
 	private boolean _canSetLocaleEncoding = true;

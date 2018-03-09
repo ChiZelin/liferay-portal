@@ -14,6 +14,8 @@
 
 package com.liferay.portlet;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.ccpp.PortalProfileFactory;
 import com.liferay.portal.kernel.log.Log;
@@ -33,6 +35,7 @@ import com.liferay.portal.kernel.portlet.PortletQNameUtil;
 import com.liferay.portal.kernel.service.PortletLocalServiceUtil;
 import com.liferay.portal.kernel.service.RoleLocalServiceUtil;
 import com.liferay.portal.kernel.servlet.DynamicServletRequest;
+import com.liferay.portal.kernel.servlet.HttpHeaders;
 import com.liferay.portal.kernel.servlet.ProtectedPrincipal;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ArrayUtil;
@@ -50,17 +53,21 @@ import com.liferay.portal.security.lang.DoPrivilegedUtil;
 import com.liferay.portal.servlet.NamespaceServletRequest;
 import com.liferay.portal.servlet.SharedSessionServletRequest;
 import com.liferay.portal.util.PropsValues;
+import com.liferay.portlet.internal.PortletAppUtil;
+import com.liferay.portlet.internal.RenderParametersImpl;
 import com.liferay.portlet.portletconfiguration.util.PublicRenderParameterConfiguration;
 
 import java.security.Principal;
 import java.security.PrivilegedAction;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -79,6 +86,7 @@ import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 import javax.portlet.PortletSession;
+import javax.portlet.RenderParameters;
 import javax.portlet.WindowState;
 import javax.portlet.filter.PortletRequestWrapper;
 
@@ -91,7 +99,9 @@ import javax.servlet.http.HttpSession;
  * @author Brian Myunghun Kim
  * @author Sergey Ponomarev
  * @author Raymond Augé
+ * @author Neil Griffin
  */
+@ProviderType
 public abstract class PortletRequestImpl implements LiferayPortletRequest {
 
 	public static PortletRequestImpl getPortletRequestImpl(
@@ -346,7 +356,8 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 	public PortletPreferences getPreferences() {
 		String lifecycle = getLifecycle();
 
-		if (lifecycle.equals(PortletRequest.RENDER_PHASE) &&
+		if ((lifecycle.equals(PortletRequest.HEADER_PHASE) ||
+			 lifecycle.equals(PortletRequest.RENDER_PHASE)) &&
 			PropsValues.PORTLET_PREFERENCES_STRICT_STORE) {
 
 			return DoPrivilegedUtil.wrap(
@@ -499,6 +510,11 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 	}
 
 	@Override
+	public RenderParameters getRenderParameters() {
+		return _renderParameters;
+	}
+
+	@Override
 	public String getRequestedSessionId() {
 		if (_session != null) {
 			return _session.getId();
@@ -543,6 +559,11 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 		return _request.getServerPort();
 	}
 
+	@Override
+	public String getUserAgent() {
+		return _request.getHeader(HttpHeaders.USER_AGENT);
+	}
+
 	public LinkedHashMap<String, String> getUserInfo() {
 		return UserInfoFactory.getUserInfo(_remoteUserId, _portlet);
 	}
@@ -566,28 +587,6 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 
 	public void invalidateSession() {
 		_invalidSession = true;
-	}
-
-	public boolean isInvalidParameter(String name) {
-		if (Validator.isNull(name) ||
-			name.startsWith(PortletQName.PUBLIC_RENDER_PARAMETER_NAMESPACE) ||
-			name.startsWith(
-				PortletQName.REMOVE_PUBLIC_RENDER_PARAMETER_NAMESPACE) ||
-			PortalUtil.isReservedParameter(name)) {
-
-			return true;
-		}
-
-		if (_strutsPortlet) {
-			Matcher matcher = _strutsPortletIgnoredParamtersPattern.matcher(
-				name);
-
-			if (matcher.matches()) {
-				return true;
-			}
-		}
-
-		return false;
 	}
 
 	@Override
@@ -804,84 +803,117 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 			}
 		}
 
+		Set<String> privateRenderParameterNames = new LinkedHashSet<>();
+
+		boolean facesPortlet = false;
+
+		if ((invokerPortlet != null) && invokerPortlet.isFacesPortlet()) {
+			facesPortlet = true;
+		}
+
 		if (portletFocus) {
-			Map<String, String[]> renderParameters = null;
+			Map<String, String[]> privateParametersFromRenderURL = null;
 
 			Map<String, String[]> parameters = request.getParameterMap();
 
 			for (Map.Entry<String, String[]> entry : parameters.entrySet()) {
-				String name = entry.getKey();
+				RequestParameter requestParameter = new RequestParameter(
+					entry.getKey(), entry.getValue(), portletNamespace);
 
-				if (isInvalidParameter(name)) {
+				if (requestParameter.isNameInvalid()) {
 					continue;
 				}
 
-				String[] values = entry.getValue();
+				if (getLifecycle().equals(PortletRequest.HEADER_PHASE) ||
+					getLifecycle().equals(PortletRequest.RENDER_PHASE)) {
 
-				if (themeDisplay.isLifecycleRender()) {
-					if (renderParameters == null) {
-						renderParameters = new HashMap<>();
+					if (privateParametersFromRenderURL == null) {
+						privateParametersFromRenderURL = new HashMap<>();
 					}
 
-					renderParameters.put(name, values);
+					privateParametersFromRenderURL.put(
+						requestParameter.getName(facesPortlet),
+						requestParameter.getValues());
+
+					privateRenderParameterNames.add(requestParameter.getName());
+				}
+				else if (requestParameter.isPrivateRenderNamespaced()) {
+					privateRenderParameterNames.add(requestParameter.getName());
 				}
 
-				if (values == null) {
+				if (requestParameter.getValues() == null) {
 					continue;
 				}
 
-				if ((invokerPortlet != null) &&
-					invokerPortlet.isFacesPortlet()) {
-
-					if (name.startsWith(portletNamespace) ||
+				if (facesPortlet) {
+					if (requestParameter.isPortletNamespaced() ||
 						!portlet.isRequiresNamespacedParameters()) {
 
-						dynamicRequest.setParameterValues(name, values);
+						dynamicRequest.setParameterValues(
+							requestParameter.getName(true),
+							requestParameter.getValues());
 					}
 				}
 				else {
-					String realName = removePortletNamespace(
-						portletNamespace, name);
-
-					if (!realName.equals(name) ||
+					if (requestParameter.isPortletNamespaced() ||
 						!portlet.isRequiresNamespacedParameters()) {
 
-						dynamicRequest.setParameterValues(realName, values);
+						dynamicRequest.setParameterValues(
+							requestParameter.getName(),
+							requestParameter.getValues());
 					}
 				}
 			}
 
-			if (getLifecycle().equals(PortletRequest.RENDER_PHASE) &&
+			if ((getLifecycle().equals(PortletRequest.HEADER_PHASE) ||
+				 getLifecycle().equals(PortletRequest.RENDER_PHASE)) &&
 				!LiferayWindowState.isExclusive(request) &&
 				!LiferayWindowState.isPopUp(request)) {
 
-				if ((renderParameters == null) || renderParameters.isEmpty()) {
+				if ((privateParametersFromRenderURL == null) ||
+					privateParametersFromRenderURL.isEmpty()) {
+
 					RenderParametersPool.clear(request, plid, _portletName);
 				}
 				else {
 					RenderParametersPool.put(
-						request, plid, _portletName, renderParameters);
+						request, plid, _portletName,
+						privateParametersFromRenderURL);
 				}
 			}
 		}
 		else {
-			Map<String, String[]> renderParameters = RenderParametersPool.get(
-				request, plid, _portletName);
+			Map<String, String[]> renderParametersPoolMap =
+				RenderParametersPool.get(request, plid, _portletName);
 
-			if (renderParameters != null) {
+			if (renderParametersPoolMap != null) {
 				for (Map.Entry<String, String[]> entry :
-						renderParameters.entrySet()) {
+						renderParametersPoolMap.entrySet()) {
 
-					String name = entry.getKey();
-					String[] values = entry.getValue();
+					Parameter privateRenderParameter = new Parameter(
+						entry.getKey(), entry.getValue(), portletNamespace);
 
-					if ((invokerPortlet == null) ||
-						!invokerPortlet.isFacesPortlet()) {
+					String publicRenderParameterName =
+						PortletQName.PUBLIC_RENDER_PARAMETER_NAMESPACE +
+							privateRenderParameter.getName();
 
-						name = removePortletNamespace(portletNamespace, name);
+					if (publicRenderParametersMap.containsKey(
+							publicRenderParameterName)) {
+
+						if (PortletAppUtil.isPortletSpec3(portletApp)) {
+							publicRenderParametersMap.put(
+								publicRenderParameterName,
+								privateRenderParameter.getValues());
+						}
+					}
+					else {
+						dynamicRequest.setParameterValues(
+							privateRenderParameter.getName(facesPortlet),
+							privateRenderParameter.getValues());
 					}
 
-					dynamicRequest.setParameterValues(name, values);
+					privateRenderParameterNames.add(
+						privateRenderParameter.getName());
 				}
 			}
 		}
@@ -940,6 +972,128 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 
 		_locale = themeDisplay.getLocale();
 		_plid = plid;
+
+		Set<String> publicRenderParameterNames = new HashSet<>();
+		Set<PublicRenderParameter> publicRenderParameters =
+			portlet.getPublicRenderParameters();
+
+		for (PublicRenderParameter publicRenderParameter :
+				publicRenderParameters) {
+
+			publicRenderParameterNames.add(
+				publicRenderParameter.getIdentifier());
+		}
+
+		Map<String, String[]> renderParameterMap = new LinkedHashMap<>();
+
+		if (getLifecycle().equals(PortletRequest.RESOURCE_PHASE)) {
+			for (PublicRenderParameter publicRenderParameter :
+					publicRenderParameters) {
+
+				renderParameterMap.put(
+					publicRenderParameter.getIdentifier(),
+					publicRenderParametersMap.get(
+						PortletQNameUtil.getPublicRenderParameterName(
+							publicRenderParameter.getQName())));
+			}
+
+			Map<String, String[]> renderParametersPoolMap =
+				RenderParametersPool.get(request, plid, _portletName);
+
+			if (renderParametersPoolMap != null) {
+				for (Map.Entry<String, String[]> mapEntry :
+						renderParametersPoolMap.entrySet()) {
+
+					String privateRenderParameterName = mapEntry.getKey();
+
+					if (renderParameterMap.containsKey(
+							privateRenderParameterName)) {
+
+						continue;
+					}
+
+					String[] values = mapEntry.getValue();
+
+					if (themeDisplay.isHubAction() ||
+						themeDisplay.isHubPartialAction() ||
+						themeDisplay.isHubResource()) {
+
+						values = dynamicRequest.getParameterValues(
+							privateRenderParameterName);
+					}
+					else {
+						String[] requestValues =
+							dynamicRequest.getParameterValues(
+								privateRenderParameterName);
+
+						if ((requestValues != null) &&
+							!Arrays.equals(requestValues, values)) {
+
+							dynamicRequest.setParameterValues(
+								privateRenderParameterName,
+								ArrayUtil.append(requestValues, values));
+						}
+					}
+
+					renderParameterMap.put(privateRenderParameterName, values);
+				}
+			}
+
+			for (String privateRenderParameterName :
+					privateRenderParameterNames) {
+
+				if (!renderParameterMap.containsKey(
+						privateRenderParameterName)) {
+
+					renderParameterMap.put(
+						privateRenderParameterName,
+						dynamicRequest.getParameterValues(
+							privateRenderParameterName));
+				}
+			}
+		}
+		else {
+			Map<String, String[]> parameterMap =
+				dynamicRequest.getParameterMap();
+
+			for (Map.Entry<String, String[]> mapEntry :
+					parameterMap.entrySet()) {
+
+				RequestParameter requestParameter = new RequestParameter(
+					mapEntry.getKey(), mapEntry.getValue(), portletNamespace);
+
+				if (publicRenderParameterNames.contains(
+						requestParameter.getName())) {
+
+					if (PortletAppUtil.isPortletSpec3(portletApp)) {
+						String publicRenderParameterName =
+							PortletQName.PUBLIC_RENDER_PARAMETER_NAMESPACE +
+								requestParameter.getName();
+
+						String[] previousValues = publicRenderParametersMap.get(
+							publicRenderParameterName);
+
+						if (previousValues != null) {
+							requestParameter.setValues(previousValues);
+						}
+					}
+				}
+				else if (!privateRenderParameterNames.contains(
+							requestParameter.getName())) {
+
+					requestParameter.setValues(null);
+				}
+
+				if (requestParameter.getValues() != null) {
+					renderParameterMap.put(
+						requestParameter.getName(),
+						requestParameter.getValues());
+				}
+			}
+		}
+
+		_renderParameters = new RenderParametersImpl(
+			renderParameterMap, publicRenderParameterNames, portletNamespace);
 	}
 
 	protected String removePortletNamespace(
@@ -1109,12 +1263,72 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 	private Profile _profile;
 	private String _remoteUser;
 	private long _remoteUserId;
+	private RenderParameters _renderParameters;
 	private HttpServletRequest _request;
 	private PortletSessionImpl _session;
 	private boolean _strutsPortlet;
 	private boolean _triggeredByActionURL;
 	private Principal _userPrincipal;
 	private WindowState _windowState;
+
+	private class Parameter {
+
+		public Parameter(
+			String name, String[] values, String portletNamespace) {
+
+			_name = name;
+
+			String portletNamespacedName = null;
+
+			if (_name != null) {
+				if (_name.startsWith(portletNamespace)) {
+					portletNamespacedName = _name;
+					_name = _name.substring(portletNamespace.length());
+				}
+			}
+
+			_portletNamespacedName = portletNamespacedName;
+
+			_values = values;
+		}
+
+		public String getName() {
+			return _name;
+		}
+
+		public String getName(boolean includePortletNamespace) {
+			if (includePortletNamespace && isPortletNamespaced()) {
+				return _portletNamespacedName;
+			}
+
+			return _name;
+		}
+
+		public String[] getValues() {
+			return _values;
+		}
+
+		public boolean isPortletNamespaced() {
+			if (_portletNamespacedName != null) {
+				return true;
+			}
+
+			return false;
+		}
+
+		public void setName(String name) {
+			_name = name;
+		}
+
+		public void setValues(String[] values) {
+			_values = values;
+		}
+
+		private String _name;
+		private final String _portletNamespacedName;
+		private String[] _values;
+
+	}
 
 	private class PortletPreferencesPrivilegedAction
 		implements PrivilegedAction<PortletPreferences> {
@@ -1123,6 +1337,85 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 		public PortletPreferences run() {
 			return new PortletPreferencesWrapper(getPreferencesImpl());
 		}
+
+	}
+
+	private class RequestParameter extends Parameter {
+
+		public RequestParameter(
+			String name, String[] values, String portletNamespace) {
+
+			super(name, values, portletNamespace);
+
+			name = getName();
+
+			boolean privateRenderNamespaced = false;
+
+			if (name != null) {
+				int pos = name.indexOf(
+					PortletQName.PRIVATE_RENDER_PARAMETER_NAMESPACE);
+
+				int privateRenderParameterNamespaceLength =
+					PortletQName.PRIVATE_RENDER_PARAMETER_NAMESPACE.length();
+
+				if (pos >= 0) {
+					privateRenderNamespaced = true;
+					name = name.substring(
+						0,
+						pos) + name.substring(
+							pos + privateRenderParameterNamespaceLength);
+				}
+			}
+
+			_privateRenderNamespaced = privateRenderNamespaced;
+
+			setName(name);
+
+			values = getValues();
+
+			if ((values != null) &&
+				PortletAppUtil.isPortletSpec3(_portlet.getPortletApp())) {
+
+				for (int i = 0; i < values.length; i++) {
+					if ((values[i] != null) && values[i].isEmpty()) {
+						values[i] = null;
+					}
+				}
+			}
+
+			setValues(values);
+		}
+
+		public boolean isNameInvalid() {
+			String name = getName();
+
+			if (Validator.isNull(name) ||
+				name.startsWith(
+					PortletQName.PUBLIC_RENDER_PARAMETER_NAMESPACE) ||
+				name.startsWith(
+					PortletQName.REMOVE_PUBLIC_RENDER_PARAMETER_NAMESPACE) ||
+				PortalUtil.isReservedParameter(name)) {
+
+				return true;
+			}
+
+			if (_strutsPortlet) {
+				Matcher matcher = _strutsPortletIgnoredParamtersPattern.matcher(
+					name);
+
+				if (matcher.matches()) {
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		public boolean isPrivateRenderNamespaced() {
+			return _privateRenderNamespaced;
+		}
+
+		private final boolean _privateRenderNamespaced;
 
 	}
 

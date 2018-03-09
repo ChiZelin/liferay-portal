@@ -14,6 +14,8 @@
 
 package com.liferay.portlet;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Layout;
@@ -24,17 +26,25 @@ import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.portlet.PortletQNameUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
+import com.liferay.portlet.internal.LiferayMutablePortletParameters;
+import com.liferay.portlet.internal.LiferayMutableRenderParameters;
+import com.liferay.portlet.internal.MutableRenderParametersImpl;
+import com.liferay.portlet.internal.PortletAppUtil;
 
 import java.io.Serializable;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.portlet.Event;
+import javax.portlet.MutableRenderParameters;
 import javax.portlet.PortletMode;
 import javax.portlet.PortletModeException;
+import javax.portlet.RenderParameters;
 import javax.portlet.StateAwareResponse;
 import javax.portlet.WindowState;
 import javax.portlet.WindowStateException;
@@ -47,6 +57,7 @@ import javax.xml.namespace.QName;
 /**
  * @author Brian Wing Shun Chan
  */
+@ProviderType
 public abstract class StateAwareResponseImpl
 	extends PortletResponseImpl implements StateAwareResponse {
 
@@ -82,7 +93,26 @@ public abstract class StateAwareResponseImpl
 
 	@Override
 	public Map<String, String[]> getRenderParameterMap() {
-		return _params;
+		Map<String, String[]> renderParameterMap = new LinkedHashMap<>();
+		Set<String> parameterNames = _mutableRenderParameters.getNames();
+
+		for (String parameterName : parameterNames) {
+			if (!_mutableRenderParameters.isPublic(parameterName) ||
+				(_mutableRenderParameters.isPublic(parameterName) &&
+				 _mutableRenderParameters.isMutated(parameterName))) {
+
+				renderParameterMap.put(
+					parameterName,
+					_mutableRenderParameters.getValues(parameterName));
+			}
+		}
+
+		return renderParameterMap;
+	}
+
+	@Override
+	public MutableRenderParameters getRenderParameters() {
+		return _mutableRenderParameters;
 	}
 
 	public User getUser() {
@@ -95,7 +125,16 @@ public abstract class StateAwareResponseImpl
 	}
 
 	public boolean isCalledSetRenderParameter() {
-		return _calledSetRenderParameter;
+		LiferayMutablePortletParameters liferayMutablePortletParameters =
+			_mutableRenderParameters;
+
+		if (_calledSetRenderParameter ||
+			liferayMutablePortletParameters.isMutated()) {
+
+			return true;
+		}
+
+		return false;
 	}
 
 	@Override
@@ -205,7 +244,7 @@ public abstract class StateAwareResponseImpl
 		}
 
 		if (!setPublicRenderParameter(name, values)) {
-			_params.put(name, values);
+			_mutableRenderParameters.setValues(name, values);
 		}
 
 		_calledSetRenderParameter = true;
@@ -221,7 +260,7 @@ public abstract class StateAwareResponseImpl
 			throw new IllegalArgumentException();
 		}
 		else {
-			Map<String, String[]> newParams = new LinkedHashMap<>();
+			_mutableRenderParameters.clear();
 
 			for (Map.Entry<String, String[]> entry : params.entrySet()) {
 				String key = entry.getKey();
@@ -238,10 +277,8 @@ public abstract class StateAwareResponseImpl
 					continue;
 				}
 
-				newParams.put(key, value);
+				_mutableRenderParameters.setValues(key, value);
 			}
-
-			_params = newParams;
 		}
 
 		_calledSetRenderParameter = true;
@@ -299,11 +336,40 @@ public abstract class StateAwareResponseImpl
 		// setPortletMode sets it to true
 
 		_calledSetRenderParameter = false;
+
+		Set<String> publicRenderParameterNames = new LinkedHashSet<>();
+		RenderParameters renderParameters =
+			portletRequestImpl.getRenderParameters();
+
+		// Since Portlet 3.0 ActionURLs can contain private render parameters,
+		// must populate the render parameter map with the render parameters
+		// found in the request.
+
+		Portlet portlet = portletRequestImpl.getPortlet();
+
+		PortletApp portletApp = portlet.getPortletApp();
+
+		if (PortletAppUtil.isPortletSpec3(portletApp)) {
+			Set<String> renderParametersNames = renderParameters.getNames();
+
+			for (String renderParameterName : renderParametersNames) {
+				if (renderParameters.isPublic(renderParameterName)) {
+					publicRenderParameterNames.add(renderParameterName);
+				}
+
+				_params.put(
+					renderParameterName,
+					renderParameters.getValues(renderParameterName));
+			}
+		}
+
+		_mutableRenderParameters = new MutableRenderParametersImpl(
+			_params, publicRenderParameterNames);
 	}
 
 	protected void reset() {
 		_events.clear();
-		_params.clear();
+		_mutableRenderParameters.clear();
 
 		try {
 			setPortletMode(PortletMode.VIEW);
@@ -363,7 +429,8 @@ public abstract class StateAwareResponseImpl
 	private boolean _calledSetRenderParameter;
 	private final List<Event> _events = new ArrayList<>();
 	private Layout _layout;
-	private Map<String, String[]> _params = new LinkedHashMap<>();
+	private LiferayMutableRenderParameters _mutableRenderParameters;
+	private final Map<String, String[]> _params = new LinkedHashMap<>();
 	private PortletMode _portletMode;
 	private Map<String, String[]> _publicRenderParameters;
 	private String _redirectLocation;

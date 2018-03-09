@@ -16,6 +16,7 @@ package com.liferay.portlet;
 
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.User;
+import com.liferay.portlet.internal.ActionResponse3Impl;
 
 import javax.portlet.PortletException;
 
@@ -31,7 +32,7 @@ public class ActionResponseFactory {
 			User user, Layout layout)
 		throws PortletException {
 
-		ActionResponseImpl actionResponseImpl = new ActionResponseImpl();
+		ActionResponseImpl actionResponseImpl = new ActionResponse3Impl();
 
 		actionResponseImpl.init(
 			actionRequestImpl, response, user, layout, true);

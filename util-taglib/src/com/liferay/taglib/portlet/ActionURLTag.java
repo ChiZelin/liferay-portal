@@ -19,7 +19,7 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.LayoutConstants;
 import com.liferay.portal.kernel.portlet.DummyPortletURL;
 import com.liferay.portal.kernel.portlet.LiferayPortletConfig;
-import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
+import com.liferay.portal.kernel.portlet.LiferayPortletResponse3;
 import com.liferay.portal.kernel.portlet.LiferayPortletURL;
 import com.liferay.portal.kernel.portlet.PortletModeFactory;
 import com.liferay.portal.kernel.portlet.PortletPreferencesFactoryConstants;
@@ -35,6 +35,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.portlet.ActionRequest;
+import javax.portlet.MimeResponse;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 import javax.portlet.PortletURL;
@@ -45,6 +46,7 @@ import javax.servlet.jsp.JspWriter;
 
 /**
  * @author Brian Wing Shun Chan
+ * @author Neil Griffin
  */
 public class ActionURLTag extends ParamAndPropertyAncestorTagImpl {
 
@@ -64,7 +66,7 @@ public class ActionURLTag extends ParamAndPropertyAncestorTagImpl {
 		}
 
 		LiferayPortletURL liferayPortletURL = _getLiferayPortletURL(
-			request, plid, portletName, lifecycle);
+			request, plid, portletName, lifecycle, copyCurrentRenderParameters);
 
 		if (liferayPortletURL == null) {
 			_log.error(
@@ -308,7 +310,7 @@ public class ActionURLTag extends ParamAndPropertyAncestorTagImpl {
 
 	private static LiferayPortletURL _getLiferayPortletURL(
 		HttpServletRequest request, long plid, String portletName,
-		String lifecycle) {
+		String lifecycle, Boolean copyCurrentRenderParameters) {
 
 		PortletRequest portletRequest = (PortletRequest)request.getAttribute(
 			JavaConstants.JAVAX_PORTLET_REQUEST);
@@ -320,11 +322,20 @@ public class ActionURLTag extends ParamAndPropertyAncestorTagImpl {
 		PortletResponse portletResponse = (PortletResponse)request.getAttribute(
 			JavaConstants.JAVAX_PORTLET_RESPONSE);
 
-		LiferayPortletResponse liferayPortletResponse =
-			PortalUtil.getLiferayPortletResponse(portletResponse);
+		LiferayPortletResponse3 liferayPortletResponse3 =
+			(LiferayPortletResponse3)PortalUtil.getLiferayPortletResponse(
+				portletResponse);
 
-		return liferayPortletResponse.createLiferayPortletURL(
-			plid, portletName, lifecycle);
+		if (((copyCurrentRenderParameters != null) &&
+			 copyCurrentRenderParameters) ||
+			lifecycle.equals(PortletRequest.RESOURCE_PHASE)) {
+
+			return liferayPortletResponse3.createLiferayPortletURL(
+				plid, portletName, lifecycle, MimeResponse.Copy.ALL);
+		}
+
+		return liferayPortletResponse3.createLiferayPortletURL(
+			plid, portletName, lifecycle, MimeResponse.Copy.NONE);
 	}
 
 	private static String _getPortletName(HttpServletRequest request) {
