@@ -2547,6 +2547,16 @@ public class PortletImpl extends PortletBaseImpl {
 		return _ajaxable;
 	}
 
+	/**
+	 * Returns <code>True</code> if the portlet supports asynchronous operation.
+	 *
+	 * @return <code>True</code> if the portlet supports asynchronous operation.
+	 */
+	@Override
+	public boolean isAsyncSupported() {
+		return _asyncSupported;
+	}
+
 	@Override
 	public boolean isFullPageDisplayable() {
 		return _applicationTypes.contains(
@@ -2952,6 +2962,17 @@ public class PortletImpl extends PortletBaseImpl {
 		List<String> assetRendererFactoryClasses) {
 
 		_assetRendererFactoryClasses = assetRendererFactoryClasses;
+	}
+
+	/**
+	 * Set to <code>True</code> if the portlet supports asynchronous operation.
+	 *
+	 * @param asyncSupported boolean value for whether the portlet supports
+	 *        asynchronous operation.
+	 */
+	@Override
+	public void setAsyncSupported(boolean asyncSupported) {
+		_asyncSupported = asyncSupported;
 	}
 
 	/**
@@ -4184,6 +4205,11 @@ public class PortletImpl extends PortletBaseImpl {
 	 * portlet.
 	 */
 	private List<String> _assetRendererFactoryClasses;
+
+	/**
+	 * <code>True</code> if the portlet supports asynchronous operation.
+	 */
+	private boolean _asyncSupported;
 
 	/**
 	 * The names of the classes that represents atom collection adapters

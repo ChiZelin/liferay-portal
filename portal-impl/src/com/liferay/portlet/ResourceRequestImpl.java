@@ -19,6 +19,7 @@ import aQute.bnd.annotation.ProviderType;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.model.Portlet;
 import com.liferay.portal.kernel.portlet.InvokerPortlet;
+import com.liferay.portal.kernel.util.JavaConstants;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.Validator;
@@ -78,10 +79,13 @@ public class ResourceRequestImpl
 
 	@Override
 	public PortletAsyncContext getPortletAsyncContext() {
+		if (!isAsyncSupported() || !isAsyncStarted()) {
+			throw new IllegalStateException();
+		}
 
 		// TODO: portlet3
 
-		return null;
+		return _portletAsyncContext;
 	}
 
 	@Override
@@ -126,7 +130,7 @@ public class ResourceRequestImpl
 
 		// TODO: portlet3
 
-		return false;
+		return _asyncStarted;
 	}
 
 	@Override
@@ -134,7 +138,9 @@ public class ResourceRequestImpl
 
 		// TODO: portlet3
 
-		return false;
+		Portlet portlet = getPortlet();
+
+		return portlet.isAsyncSupported();
 	}
 
 	@Override
@@ -143,7 +149,10 @@ public class ResourceRequestImpl
 
 		// TODO: portlet3
 
-		return null;
+		ResourceResponse resourceResponse = (ResourceResponse)getAttribute(
+			JavaConstants.JAVAX_PORTLET_RESPONSE);
+
+		return startPortletAsync(this, resourceResponse);
 	}
 
 	@Override
@@ -153,7 +162,27 @@ public class ResourceRequestImpl
 
 		// TODO: portlet3
 
-		return null;
+		if (_portletAsyncContext != null) {
+			PortletAsyncContextImpl portletAsyncContextImpl =
+				(PortletAsyncContextImpl)_portletAsyncContext;
+
+			boolean dispatched = portletAsyncContextImpl.isDispatched();
+
+			if (!dispatched) {
+				throw new IllegalStateException();
+			}
+		}
+
+		if (!isAsyncSupported() || resourceResponse.isCommitted()) {
+			throw new IllegalStateException();
+		}
+
+		_asyncStarted = true;
+
+		_portletAsyncContext = new PortletAsyncContextImpl(
+			resourceRequest, resourceResponse);
+
+		return _portletAsyncContext;
 	}
 
 	@Override
@@ -226,7 +255,9 @@ public class ResourceRequestImpl
 			resourceParameterMap, portletNamespace);
 	}
 
+	private boolean _asyncStarted;
 	private String _cacheablity;
+	private PortletAsyncContext _portletAsyncContext;
 	private String _resourceID;
 	private ResourceParameters _resourceParameters;
 
