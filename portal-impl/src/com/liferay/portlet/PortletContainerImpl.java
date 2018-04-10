@@ -198,7 +198,7 @@ public class PortletContainerImpl implements PortletContainer {
 					_processGroupId(request, portlet);
 				}
 
-				_render(request, response, portlet);
+				_render(request, response, portlet, false);
 
 				return null;
 			});
