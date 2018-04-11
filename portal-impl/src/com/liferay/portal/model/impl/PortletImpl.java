@@ -517,6 +517,7 @@ public class PortletImpl extends PortletBaseImpl {
 		portletImpl.setApplicationTypes(getApplicationTypes());
 		portletImpl.setId(getId());
 		portletImpl.setUndeployedPortlet(isUndeployedPortlet());
+		portletImpl.setAsyncSupported(isAsyncSupported());
 
 		portletImpl._rootPortletId = _rootPortletId;
 
