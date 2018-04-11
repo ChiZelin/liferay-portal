@@ -24,6 +24,8 @@ import javax.portlet.PortletAsyncListener;
 import javax.portlet.PortletException;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
+import javax.portlet.filter.ResourceRequestWrapper;
+import javax.portlet.filter.ResourceResponseWrapper;
 
 /**
  * @author Leon Chi
@@ -92,12 +94,17 @@ public class PortletAsyncContextImpl implements PortletAsyncContext {
 
 	@Override
 	public long getTimeout() {
-		return 0;
+		return _timeout;
 	}
 
 	@Override
 	public boolean hasOriginalRequestAndResponse() {
-		return false;
+		if (!(_resourceRequest instanceof ResourceRequestWrapper) &&
+			!(_resourceResponse instanceof ResourceResponseWrapper)) {
+			return false;
+		}
+
+		return true;
 	}
 
 	public boolean isDispatched() {
@@ -105,7 +112,8 @@ public class PortletAsyncContextImpl implements PortletAsyncContext {
 	}
 
 	@Override
-	public void setTimeout(long l) {
+	public void setTimeout(long timeout) {
+		_timeout = timeout;
 	}
 
 	@Override
@@ -130,5 +138,6 @@ public class PortletAsyncContextImpl implements PortletAsyncContext {
 	private boolean _dispatched;
 	private final ResourceRequest _resourceRequest;
 	private final ResourceResponse _resourceResponse;
+	private long _timeout = 30000;
 
 }
