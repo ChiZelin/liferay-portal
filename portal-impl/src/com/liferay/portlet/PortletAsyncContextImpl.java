@@ -63,7 +63,16 @@ public class PortletAsyncContextImpl implements PortletAsyncContext {
 			Class<T> aClass)
 		throws PortletException {
 
-		return null;
+		T portletAsyncListener = null;
+
+		try {
+			portletAsyncListener = aClass.newInstance();
+		}
+		catch (Exception e) {
+			throw new PortletException(e);
+		}
+
+		return (T)portletAsyncListener;
 	}
 
 	@Override
