@@ -151,8 +151,9 @@ public class PortletAsyncContextImpl implements PortletAsyncContext {
 
 	@Override
 	public boolean hasOriginalRequestAndResponse() {
-		if (!(_resourceRequest instanceof ResourceRequestWrapper) &&
-			!(_resourceResponse instanceof ResourceResponseWrapper)) {
+		if (_resourceRequest instanceof ResourceRequestWrapper ||
+			_resourceResponse instanceof ResourceResponseWrapper) {
+
 			return false;
 		}
 
