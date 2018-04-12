@@ -174,7 +174,7 @@ public class ResourceRequestImpl
 			}
 
 			portletAsyncContextImpl.callPortletAsyncListener(
-				PortletAsyncContextImpl.EventSource.STARTASYNC);
+				PortletAsyncContextImpl.EventSource.STARTASYNC, null);
 
 			portletAsyncContextImpl.clearPortletAsyncListener();
 		}
