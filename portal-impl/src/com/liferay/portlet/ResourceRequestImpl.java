@@ -61,10 +61,7 @@ public class ResourceRequestImpl
 
 	@Override
 	public DispatcherType getDispatcherType() {
-
-		// TODO: portlet3
-
-		return null;
+		return _dispatcherType;
 	}
 
 	@Override
@@ -184,6 +181,8 @@ public class ResourceRequestImpl
 
 		_asyncStarted = true;
 
+		_dispatcherType = DispatcherType.ASYNC;
+
 		_portletAsyncContext = new PortletAsyncContextImpl(
 			resourceRequest, resourceResponse);
 
@@ -262,6 +261,7 @@ public class ResourceRequestImpl
 
 	private boolean _asyncStarted;
 	private String _cacheablity;
+	private DispatcherType _dispatcherType = DispatcherType.REQUEST;
 	private PortletAsyncContext _portletAsyncContext;
 	private String _resourceID;
 	private ResourceParameters _resourceParameters;
