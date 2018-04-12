@@ -70,7 +70,7 @@ public class PortletAsyncContextImpl implements PortletAsyncContext {
 		try {
 			portletAsyncListener = aClass.newInstance();
 		}
-		catch (Exception e) {
+		catch (Throwable e) {
 			throw new PortletException(e);
 		}
 
