@@ -21,6 +21,7 @@ import java.io.IOException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 
 import javax.portlet.PortletAsyncContext;
@@ -198,7 +199,8 @@ public class PortletAsyncContextImpl implements PortletAsyncContext {
 
 	private boolean _completed;
 	private boolean _dispatched;
-	private final List<Entry> _portletAsyncListeners = new ArrayList<>();
+	private final List<Entry> _portletAsyncListeners =
+		new CopyOnWriteArrayList<>();
 	private final ResourceRequest _resourceRequest;
 	private final ResourceResponse _resourceResponse;
 	private long _timeout = 30000;
