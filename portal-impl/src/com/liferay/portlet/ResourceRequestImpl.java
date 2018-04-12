@@ -162,6 +162,10 @@ public class ResourceRequestImpl
 
 		// TODO: portlet3
 
+		if (!isAsyncSupported() || resourceResponse.isCommitted()) {
+			throw new IllegalStateException();
+		}
+
 		if (_portletAsyncContext != null) {
 			PortletAsyncContextImpl portletAsyncContextImpl =
 				(PortletAsyncContextImpl)_portletAsyncContext;
@@ -171,10 +175,11 @@ public class ResourceRequestImpl
 			if (!dispatched) {
 				throw new IllegalStateException();
 			}
-		}
 
-		if (!isAsyncSupported() || resourceResponse.isCommitted()) {
-			throw new IllegalStateException();
+			portletAsyncContextImpl.callPortletAsyncListener(
+				PortletAsyncContextImpl.EventSource.STARTASYNC);
+
+			portletAsyncContextImpl.clearPortletAsyncListener();
 		}
 
 		_asyncStarted = true;
