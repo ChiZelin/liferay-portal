@@ -17,9 +17,14 @@ package com.liferay.portlet;
 import com.liferay.petra.executor.PortalExecutorManager;
 import com.liferay.portal.kernel.util.ServiceProxyFactory;
 
+import java.io.IOException;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 import javax.portlet.PortletAsyncContext;
+import javax.portlet.PortletAsyncEvent;
 import javax.portlet.PortletAsyncListener;
 import javax.portlet.PortletException;
 import javax.portlet.ResourceRequest;
@@ -42,6 +47,8 @@ public class PortletAsyncContextImpl implements PortletAsyncContext {
 	@Override
 	public void addListener(PortletAsyncListener portletAsyncListener)
 		throws IllegalStateException {
+
+		addListener(portletAsyncListener, null, null);
 	}
 
 	@Override
@@ -49,6 +56,40 @@ public class PortletAsyncContextImpl implements PortletAsyncContext {
 			PortletAsyncListener portletAsyncListener,
 			ResourceRequest resourceRequest, ResourceResponse resourceResponse)
 		throws IllegalStateException {
+
+		_portletAsyncListeners.add(
+			new Entry(portletAsyncListener, resourceRequest, resourceResponse));
+	}
+
+	public void callPortletAsyncListener(EventSource eventSource) {
+		for (Entry entry : _portletAsyncListeners) {
+			PortletAsyncListener portletAsyncListener =
+				entry.portletAsyncListener;
+			PortletAsyncEvent portletAsyncEvent = new PortletAsyncEvent(
+				this, entry.resourceRequest, entry.resourceResponse);
+
+			try {
+				if (eventSource == EventSource.COMPLETE) {
+					portletAsyncListener.onComplete(portletAsyncEvent);
+				}
+				else if (eventSource == EventSource.ERROR) {
+					portletAsyncListener.onError(portletAsyncEvent);
+				}
+				else if (eventSource == EventSource.STARTASYNC) {
+					portletAsyncListener.onStartAsync(portletAsyncEvent);
+				}
+				else {
+					portletAsyncListener.onTimeout(portletAsyncEvent);
+				}
+			}
+			catch (IOException ioe) {
+				ioe.printStackTrace();
+			}
+		}
+	}
+
+	public void clearPortletAsyncListener() {
+		_portletAsyncListeners.clear();
 	}
 
 	@Override
@@ -56,6 +97,8 @@ public class PortletAsyncContextImpl implements PortletAsyncContext {
 		if (!_resourceRequest.isAsyncStarted() || _completed || _dispatched) {
 			throw new IllegalStateException();
 		}
+
+		callPortletAsyncListener(EventSource.COMPLETE);
 
 		_completed = true;
 	}
@@ -138,6 +181,12 @@ public class PortletAsyncContextImpl implements PortletAsyncContext {
 		executorService.execute(runnable);
 	}
 
+	public enum EventSource {
+
+		COMPLETE, ERROR, STARTASYNC, TIMEOUT
+
+	}
+
 	private static volatile PortalExecutorManager _portalExecutorManager =
 		ServiceProxyFactory.newServiceTrackedInstance(
 			PortalExecutorManager.class, PortletAsyncContextImpl.class,
@@ -145,8 +194,27 @@ public class PortletAsyncContextImpl implements PortletAsyncContext {
 
 	private boolean _completed;
 	private boolean _dispatched;
+	private final List<Entry> _portletAsyncListeners = new ArrayList<>();
 	private final ResourceRequest _resourceRequest;
 	private final ResourceResponse _resourceResponse;
 	private long _timeout = 30000;
+
+	private class Entry {
+
+		public Entry(
+			PortletAsyncListener portletAsyncListener,
+			ResourceRequest resourceRequest,
+			ResourceResponse resourceResponse) {
+
+			this.portletAsyncListener = portletAsyncListener;
+			this.resourceRequest = resourceRequest;
+			this.resourceResponse = resourceResponse;
+		}
+
+		public PortletAsyncListener portletAsyncListener;
+		public ResourceRequest resourceRequest;
+		public ResourceResponse resourceResponse;
+
+	}
 
 }
