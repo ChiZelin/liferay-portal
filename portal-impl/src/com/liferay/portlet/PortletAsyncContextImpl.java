@@ -24,6 +24,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import javax.portlet.PortletAsyncContext;
@@ -99,7 +100,11 @@ public class PortletAsyncContextImpl implements PortletAsyncContext {
 	public void checkTimeOut() {
 		long delay = _timeout - (System.currentTimeMillis() - _startTimeMillis);
 
-		_scheduledExecutorService.schedule(
+		if (_timeoutFuture != null) {
+			_timeoutFuture.cancel(true);
+		}
+
+		_timeoutFuture = _scheduledExecutorService.schedule(
 			() -> {
 				if (!isCompleted() && !isDispatched()) {
 					callPortletAsyncListener(
@@ -238,6 +243,7 @@ public class PortletAsyncContextImpl implements PortletAsyncContext {
 	private final ResourceResponse _resourceResponse;
 	private final long _startTimeMillis;
 	private long _timeout = 30000;
+	private ScheduledFuture _timeoutFuture;
 
 	private class Entry {
 
