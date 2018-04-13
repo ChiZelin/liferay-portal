@@ -195,6 +195,11 @@ public class ResourceRequestImpl
 		_portletAsyncContext = new PortletAsyncContextImpl(
 			resourceRequest, resourceResponse);
 
+		PortletAsyncContextImpl portletAsyncContextImpl =
+			(PortletAsyncContextImpl)_portletAsyncContext;
+
+		portletAsyncContextImpl.checkTimeOut();
+
 		return _portletAsyncContext;
 	}
 
