@@ -183,7 +183,15 @@ public class PortletAsyncContextImpl implements PortletAsyncContext {
 			_portalExecutorManager.getPortalExecutor(
 				PortletAsyncContextImpl.class.getName());
 
-		executorService.execute(new AsyncRunnable(runnable));
+		executorService.execute(
+			() -> {
+				try {
+					runnable.run();
+				}
+				catch (Throwable t) {
+					callPortletAsyncListener(EventSource.ERROR, t);
+				}
+		});
 	}
 
 	public enum EventSource {
@@ -204,26 +212,6 @@ public class PortletAsyncContextImpl implements PortletAsyncContext {
 	private final ResourceRequest _resourceRequest;
 	private final ResourceResponse _resourceResponse;
 	private long _timeout = 30000;
-
-	private class AsyncRunnable implements Runnable {
-
-		public AsyncRunnable(Runnable runnable) {
-			_runnable = runnable;
-		}
-
-		@Override
-		public void run() {
-			try {
-				_runnable.run();
-			}
-			catch (Throwable t) {
-				callPortletAsyncListener(EventSource.ERROR, t);
-			}
-		}
-
-		private final Runnable _runnable;
-
-	}
 
 	private class Entry {
 
