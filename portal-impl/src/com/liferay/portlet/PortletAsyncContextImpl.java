@@ -19,10 +19,12 @@ import com.liferay.portal.kernel.util.ServiceProxyFactory;
 
 import java.io.IOException;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import javax.portlet.PortletAsyncContext;
 import javax.portlet.PortletAsyncEvent;
@@ -43,6 +45,8 @@ public class PortletAsyncContextImpl implements PortletAsyncContext {
 
 		_resourceRequest = resourceRequest;
 		_resourceResponse = resourceResponse;
+
+		_startTimeMillis = System.currentTimeMillis();
 	}
 
 	@Override
@@ -90,6 +94,19 @@ public class PortletAsyncContextImpl implements PortletAsyncContext {
 				ioe.printStackTrace();
 			}
 		}
+	}
+
+	public void checkTimeOut() {
+		long delay = _timeout - (System.currentTimeMillis() - _startTimeMillis);
+
+		_scheduledExecutorService.schedule(
+			() -> {
+				if (!isCompleted() && !isDispatched()) {
+					callPortletAsyncListener(
+						PortletAsyncContextImpl.EventSource.TIMEOUT, null);
+				}
+			},
+			delay, TimeUnit.MILLISECONDS);
 	}
 
 	public void clearPortletAsyncListener() {
@@ -164,6 +181,10 @@ public class PortletAsyncContextImpl implements PortletAsyncContext {
 		return true;
 	}
 
+	public boolean isCompleted() {
+		return _completed;
+	}
+
 	public boolean isDispatched() {
 		return _dispatched;
 	}
@@ -171,6 +192,8 @@ public class PortletAsyncContextImpl implements PortletAsyncContext {
 	@Override
 	public void setTimeout(long timeout) {
 		_timeout = timeout;
+
+		checkTimeOut();
 	}
 
 	@Override
@@ -204,6 +227,8 @@ public class PortletAsyncContextImpl implements PortletAsyncContext {
 		ServiceProxyFactory.newServiceTrackedInstance(
 			PortalExecutorManager.class, PortletAsyncContextImpl.class,
 			"_portalExecutorManager", true);
+	private static volatile ScheduledExecutorService _scheduledExecutorService =
+		Executors.newScheduledThreadPool(1);
 
 	private boolean _completed;
 	private boolean _dispatched;
@@ -211,6 +236,7 @@ public class PortletAsyncContextImpl implements PortletAsyncContext {
 		new CopyOnWriteArrayList<>();
 	private final ResourceRequest _resourceRequest;
 	private final ResourceResponse _resourceResponse;
+	private final long _startTimeMillis;
 	private long _timeout = 30000;
 
 	private class Entry {
