@@ -61,6 +61,7 @@ import javax.portlet.HeaderPortlet;
 import javax.portlet.HeaderRequest;
 import javax.portlet.HeaderResponse;
 import javax.portlet.Portlet;
+import javax.portlet.PortletAsyncContext;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
@@ -593,6 +594,14 @@ public class InvokerPortletImpl
 
 		try {
 			invokeResource(resourceRequest, resourceResponse);
+
+			if (resourceRequest.isAsyncStarted()) {
+				PortletAsyncContextImpl portletAsyncContext =
+					(PortletAsyncContextImpl)
+						resourceRequest.getPortletAsyncContext();
+
+				portletAsyncContext.doStart();
+			}
 		}
 		catch (Exception e) {
 			processException(e, resourceRequest, resourceResponse);
