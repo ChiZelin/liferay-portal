@@ -19,6 +19,8 @@ import aQute.bnd.annotation.ProviderType;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.model.Portlet;
 import com.liferay.portal.kernel.portlet.InvokerPortlet;
+import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
+import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.kernel.util.JavaConstants;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
@@ -36,6 +38,7 @@ import javax.portlet.PortletContext;
 import javax.portlet.PortletMode;
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
+import javax.portlet.PortletResponse;
 import javax.portlet.RenderParameters;
 import javax.portlet.ResourceParameters;
 import javax.portlet.ResourceRequest;
@@ -45,6 +48,8 @@ import javax.portlet.WindowState;
 
 import javax.servlet.DispatcherType;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletResponseWrapper;
 
 /**
  * @author Brian Wing Shun Chan
@@ -172,24 +177,36 @@ public class ResourceRequestImpl
 			if (!dispatched) {
 				throw new IllegalStateException();
 			}
-
-			portletAsyncContextImpl.callPortletAsyncListener(
-				PortletAsyncContextImpl.EventSource.STARTASYNC, null);
-
-			portletAsyncContextImpl.clearPortletAsyncListener();
 		}
 
 		_asyncStarted = true;
 
 		_dispatcherType = DispatcherType.ASYNC;
 
+		HttpServletRequest httpServletRequest = getHttpServletRequest();
+
+		LiferayPortletResponse liferayPortletResponse =
+			PortalUtil.getLiferayPortletResponse(
+				(PortletResponse)getAttribute(
+					JavaConstants.JAVAX_PORTLET_RESPONSE));
+
+		HttpServletResponse httpServletResponse =
+			liferayPortletResponse.getHttpServletResponse();
+
+		while (httpServletRequest instanceof HttpServletResponseWrapper) {
+			httpServletResponse =
+				(HttpServletResponse)
+					((HttpServletResponseWrapper)
+						httpServletResponse).getResponse();
+		}
+
 		_portletAsyncContext = new PortletAsyncContextImpl(
-			resourceRequest, resourceResponse);
+			resourceRequest, resourceResponse,
+			httpServletRequest.startAsync(
+				httpServletRequest, httpServletResponse));
 
 		PortletAsyncContextImpl portletAsyncContextImpl =
 			(PortletAsyncContextImpl)_portletAsyncContext;
-
-		portletAsyncContextImpl.checkTimeOut();
 
 		return _portletAsyncContext;
 	}
