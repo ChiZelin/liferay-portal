@@ -19,8 +19,12 @@ import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.servlet.filters.BasePortalFilter;
 import com.liferay.portal.util.PropsValues;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 
+import javax.servlet.AsyncContext;
+import javax.servlet.AsyncEvent;
+import javax.servlet.AsyncListener;
 import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -87,12 +91,53 @@ public class ETagFilter extends BasePortalFilter {
 			ETagFilter.class.getName(), request,
 			restrictedByteBufferCacheServletResponse, filterChain);
 
+		if (!request.isAsyncSupported() || !request.isAsyncStarted()) {
+			_postProcessETag(
+				request, response, restrictedByteBufferCacheServletResponse);
+		}
+		else {
+			AsyncContext asyncContext = request.getAsyncContext();
+
+			asyncContext.addListener(new AsyncListener() {
+				@Override
+				public void onComplete(AsyncEvent asyncEvent)
+					throws IOException {
+
+					_postProcessETag(
+						request, response,
+						restrictedByteBufferCacheServletResponse);
+				}
+
+				@Override
+				public void onTimeout(AsyncEvent asyncEvent)
+					throws IOException {
+				}
+
+				@Override
+				public void onError(AsyncEvent asyncEvent)
+					throws IOException {
+				}
+
+				@Override
+				public void onStartAsync(AsyncEvent asyncEvent)
+					throws IOException {
+				}
+			});
+		}
+	}
+
+	private void _postProcessETag(
+			HttpServletRequest request, HttpServletResponse response,
+			RestrictedByteBufferCacheServletResponse
+				restrictedByteBufferCacheServletResponse)
+		throws IOException {
+
 		if (!restrictedByteBufferCacheServletResponse.isOverflowed()) {
 			ByteBuffer byteBuffer =
 				restrictedByteBufferCacheServletResponse.getByteBuffer();
 
 			if (!isEligibleForETag(
-					restrictedByteBufferCacheServletResponse.getStatus()) ||
+				restrictedByteBufferCacheServletResponse.getStatus()) ||
 				!ETagUtil.processETag(request, response, byteBuffer)) {
 
 				restrictedByteBufferCacheServletResponse.flushCache();
