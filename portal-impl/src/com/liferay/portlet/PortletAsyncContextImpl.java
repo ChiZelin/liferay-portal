@@ -26,7 +26,6 @@ import javax.portlet.filter.ResourceRequestWrapper;
 import javax.portlet.filter.ResourceResponseWrapper;
 
 import javax.servlet.AsyncContext;
-import java.io.IOException;
 
 /**
  * @author Leon Chi
@@ -41,6 +40,10 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 		_resourceRequest = resourceRequest;
 		_resourceResponse = resourceResponse;
 		_asyncContext = asyncContext;
+
+		_portletAsyncListenerAdapter =
+			new PortletAsyncListenerAdapter(
+				this, _resourceRequest, _resourceResponse);
 	}
 
 	@Override
@@ -56,9 +59,8 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 			ResourceRequest resourceRequest, ResourceResponse resourceResponse)
 		throws IllegalStateException {
 
-		_asyncContext.addListener(
-			new AsyncContextListenerAdapter(
-				this, portletAsyncListener, resourceRequest, resourceResponse));
+		_portletAsyncListenerAdapter.addListener(
+			portletAsyncListener, resourceRequest, resourceResponse);
 	}
 
 	@Override
@@ -168,6 +170,7 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 		_asyncContext.start(_pendingRunnable);
 	}
 
+	private final PortletAsyncListenerAdapter _portletAsyncListenerAdapter;
 	private AsyncContext _asyncContext;
 	private boolean _completed;
 	private boolean _dispatched;
