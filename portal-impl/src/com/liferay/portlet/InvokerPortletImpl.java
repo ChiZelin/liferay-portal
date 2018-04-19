@@ -61,7 +61,6 @@ import javax.portlet.HeaderPortlet;
 import javax.portlet.HeaderRequest;
 import javax.portlet.HeaderResponse;
 import javax.portlet.Portlet;
-import javax.portlet.PortletAsyncContext;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
@@ -86,6 +85,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletResponseWrapper;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.time.StopWatch;
@@ -650,6 +650,37 @@ public class InvokerPortletImpl
 				// allow you to specify the content type or headers
 
 				if (lifecycle.equals(PortletRequest.RESOURCE_PHASE)) {
+					if (request.isAsyncSupported()) {
+						response = new HttpServletResponseWrapper(response) {
+
+							@Override
+							public void resetBuffer() {
+								if (request.isAsyncStarted()) {
+									return;
+								}
+
+								super.resetBuffer();
+							}
+
+							@Override
+							public PrintWriter getWriter() throws IOException {
+								return new PrintWriter(super.getWriter()) {
+
+									@Override
+									public void close() {
+										if (request.isAsyncStarted()) {
+											return;
+										}
+
+										super.close();
+									}
+
+								};
+							}
+
+						};
+					}
+
 					requestDispatcher.forward(request, response);
 				}
 				else {
