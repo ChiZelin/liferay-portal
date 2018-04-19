@@ -594,14 +594,6 @@ public class InvokerPortletImpl
 
 		try {
 			invokeResource(resourceRequest, resourceResponse);
-
-			if (resourceRequest.isAsyncStarted()) {
-				PortletAsyncContextImpl portletAsyncContext =
-					(PortletAsyncContextImpl)
-						resourceRequest.getPortletAsyncContext();
-
-				portletAsyncContext.doStart();
-			}
 		}
 		catch (Exception e) {
 			processException(e, resourceRequest, resourceResponse);

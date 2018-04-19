@@ -17,6 +17,7 @@ package com.liferay.portal.kernel.servlet;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Portlet;
+import com.liferay.portal.kernel.portlet.LiferayPortletAsyncContext;
 import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.portlet.LiferayPortletSession;
 import com.liferay.portal.kernel.portlet.PortletFilterUtil;
@@ -31,9 +32,12 @@ import javax.portlet.HeaderResponse;
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
+import javax.portlet.ResourceRequest;
+import javax.portlet.ResourceResponse;
 import javax.portlet.filter.FilterChain;
 import javax.portlet.filter.HeaderFilterChain;
 
+import javax.servlet.DispatcherType;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -108,6 +112,36 @@ public class PortletServlet extends HttpServlet {
 
 		portletSession.setHttpSession(session);
 
+		/*
+		      if (request.getDispatcherType() == DispatcherType.ASYNC) {
+
+         // have to reinitialize the request context with the request under our wrapper.
+
+         ServletRequest wreq = request;
+         while ((wreq instanceof ServletRequestWrapper) &&
+               !(wreq instanceof HttpServletPortletRequestWrapper) ) {
+            wreq = ((ServletRequestWrapper) wreq).getRequest();
+         }
+
+         if (wreq instanceof HttpServletPortletRequestWrapper) {
+
+            HttpServletRequest hreq = (HttpServletRequest) ((HttpServletPortletRequestWrapper) wreq).getRequest();
+            HttpServletResponse hresp = requestContext.getServletResponse();
+
+            LOG.debug("Extracted wrapped request. Dispatch type: " + hreq.getDispatcherType());
+
+            requestContext.init(portletConfig, getServletContext(), hreq, hresp, responseContext);
+            requestContext.setAsyncServletRequest(request);       // store original request
+            responseContext.init(portletConfig, hreq, hresp);
+
+         } else {
+            LOG.debug("Couldn't find the portlet async wrapper.");
+         }
+
+         // enable contextual support for async
+         ((PortletResourceRequestContext)requestContext).getPortletAsyncContext().registerContext(false);
+		 */
+
 		try {
 			if ((portletRequest instanceof HeaderRequest) &&
 				(portletResponse instanceof HeaderResponse)) {
@@ -122,6 +156,29 @@ public class PortletServlet extends HttpServlet {
 			else {
 				PortletFilterUtil.doFilter(
 					portletRequest, portletResponse, lifecycle, filterChain);
+
+				if (lifecycle != PortletRequest.RESOURCE_PHASE) {
+					return;
+				}
+
+				ResourceRequest resourceRequest =
+					(ResourceRequest)portletRequest;
+
+				if (!resourceRequest.isAsyncSupported() ||
+					(!resourceRequest.isAsyncStarted() &&
+						(resourceRequest.getDispatcherType() !=
+							DispatcherType.ASYNC))) {
+
+					return;
+				}
+
+				LiferayPortletAsyncContext liferayPortletAsyncContext =
+					(LiferayPortletAsyncContext)
+						resourceRequest.getPortletAsyncContext();
+
+				if (liferayPortletAsyncContext != null) {
+					liferayPortletAsyncContext.doStart();
+				}
 			}
 		}
 		catch (PortletException pe) {

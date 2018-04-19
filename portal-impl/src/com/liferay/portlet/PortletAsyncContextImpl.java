@@ -14,9 +14,10 @@
 
 package com.liferay.portlet;
 
-import java.util.concurrent.ScheduledFuture;
+import com.liferay.portal.kernel.executor.CopyThreadLocalCallable;
+import com.liferay.portal.kernel.portlet.LiferayPortletAsyncContext;
+import com.liferay.portal.kernel.util.DefaultThreadLocalBinder;
 
-import javax.portlet.PortletAsyncContext;
 import javax.portlet.PortletAsyncListener;
 import javax.portlet.PortletException;
 import javax.portlet.ResourceRequest;
@@ -25,12 +26,13 @@ import javax.portlet.filter.ResourceRequestWrapper;
 import javax.portlet.filter.ResourceResponseWrapper;
 
 import javax.servlet.AsyncContext;
+import java.io.IOException;
 
 /**
  * @author Leon Chi
  * @author Dante Wang
  */
-public class PortletAsyncContextImpl implements PortletAsyncContext {
+public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 
 	public PortletAsyncContextImpl(
 		ResourceRequest resourceRequest, ResourceResponse resourceResponse,
@@ -154,16 +156,11 @@ public class PortletAsyncContextImpl implements PortletAsyncContext {
 			throw new IllegalStateException();
 		}
 
-		_pendingRunnable = () -> {
-			try {
-				runnable.run();
-			}
-			catch (Throwable t) {
-			}
-		};
+		_pendingRunnable = new PortletAsyncRunnableWrapper(runnable);
 	}
 
-	protected void doStart() {
+	@Override
+	public void doStart() {
 		if (_pendingRunnable == null) {
 			return;
 		}
@@ -177,6 +174,35 @@ public class PortletAsyncContextImpl implements PortletAsyncContext {
 	private Runnable _pendingRunnable;
 	private final ResourceRequest _resourceRequest;
 	private final ResourceResponse _resourceResponse;
-	private ScheduledFuture _timeoutFuture;
+
+	private class PortletAsyncRunnableWrapper
+		extends CopyThreadLocalCallable<Object> implements Runnable {
+
+		public PortletAsyncRunnableWrapper(Runnable runnable) {
+			super(new DefaultThreadLocalBinder(), false, true);
+
+			_runnable = runnable;
+		}
+
+		@Override
+		public Object doCall() throws Exception {
+			_runnable.run();
+
+			return null;
+		}
+
+		@Override
+		public void run() {
+			try {
+				call();
+			}
+			catch (Throwable t) {
+				t.printStackTrace();
+			}
+		}
+
+		private final Runnable _runnable;
+
+	}
 
 }

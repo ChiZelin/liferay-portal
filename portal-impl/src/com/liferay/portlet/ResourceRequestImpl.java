@@ -21,6 +21,7 @@ import com.liferay.portal.kernel.model.Portlet;
 import com.liferay.portal.kernel.portlet.InvokerPortlet;
 import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
+import com.liferay.portal.kernel.servlet.PortletServlet;
 import com.liferay.portal.kernel.util.JavaConstants;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
@@ -182,31 +183,26 @@ public class ResourceRequestImpl
 
 		_asyncStarted = true;
 
-		_dispatcherType = DispatcherType.ASYNC;
-
-		HttpServletRequest httpServletRequest = getHttpServletRequest();
-
-		LiferayPortletResponse liferayPortletResponse =
-			PortalUtil.getLiferayPortletResponse(
-				(PortletResponse)getAttribute(
-					JavaConstants.JAVAX_PORTLET_RESPONSE));
-
+		HttpServletRequest httpServletRequest =
+			(HttpServletRequest)getAttribute(
+				PortletServlet.PORTLET_SERVLET_REQUEST);
 		HttpServletResponse httpServletResponse =
-			liferayPortletResponse.getHttpServletResponse();
+			(HttpServletResponse)getAttribute(
+				PortletServlet.PORTLET_SERVLET_RESPONSE);
 
-		while (httpServletRequest instanceof HttpServletRequestWrapper) {
-			httpServletRequest =
-				(HttpServletRequest)
-					((HttpServletRequestWrapper)
-						httpServletRequest).getRequest();
-		}
-
-		while (httpServletResponse instanceof HttpServletResponseWrapper) {
-			httpServletResponse =
-				(HttpServletResponse)
-					((HttpServletResponseWrapper)
-						httpServletResponse).getResponse();
-		}
+//		while (httpServletRequest instanceof HttpServletRequestWrapper) {
+//			httpServletRequest =
+//				(HttpServletRequest)
+//					((HttpServletRequestWrapper)
+//						httpServletRequest).getRequest();
+//		}
+//
+//		while (httpServletResponse instanceof HttpServletResponseWrapper) {
+//			httpServletResponse =
+//				(HttpServletResponse)
+//					((HttpServletResponseWrapper)
+//						httpServletResponse).getResponse();
+//		}
 
 		_portletAsyncContext = new PortletAsyncContextImpl(
 			resourceRequest, resourceResponse,
