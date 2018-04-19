@@ -65,13 +65,13 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 
 	@Override
 	public void complete() throws IllegalStateException {
-		if (!_resourceRequest.isAsyncStarted() || _completed || _dispatched) {
+		if (!_resourceRequest.isAsyncStarted() || _calledComplete || _calledDispatch) {
 			throw new IllegalStateException();
 		}
 
-		_asyncContext.complete();
+		_calledComplete = true;
 
-		_completed = true;
+		_asyncContext.complete();
 	}
 
 	@Override
@@ -93,24 +93,24 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 
 	@Override
 	public void dispatch() throws IllegalStateException {
-		if (!_resourceRequest.isAsyncStarted() || _completed) {
+		if (!_resourceRequest.isAsyncStarted() || _calledComplete) {
 			throw new IllegalStateException();
 		}
 
-		//_asyncContext.dispatch();
+		_calledDispatch = true;
 
-		_dispatched = true;
+		//_asyncContext.dispatch();
 	}
 
 	@Override
 	public void dispatch(String path) throws IllegalStateException {
-		if (!_resourceRequest.isAsyncStarted() || _completed) {
+		if (!_resourceRequest.isAsyncStarted() || _calledComplete) {
 			throw new IllegalStateException();
 		}
 
-		//_asyncContext.dispatch(path);
+		_calledDispatch = true;
 
-		_dispatched = true;
+		//_asyncContext.dispatch(path);
 	}
 
 	@Override
@@ -139,12 +139,12 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 		return true;
 	}
 
-	public boolean isCompleted() {
-		return _completed;
+	public boolean isCalledComplete() {
+		return _calledComplete;
 	}
 
-	public boolean isDispatched() {
-		return _dispatched;
+	public boolean isCalledDispatch() {
+		return _calledDispatch;
 	}
 
 	@Override
@@ -154,7 +154,7 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 
 	@Override
 	public void start(Runnable runnable) throws IllegalStateException {
-		if (!_resourceRequest.isAsyncStarted() || _completed || _dispatched) {
+		if (!_resourceRequest.isAsyncStarted() || _calledComplete || _calledDispatch) {
 			throw new IllegalStateException();
 		}
 
@@ -172,8 +172,8 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 
 	private final PortletAsyncListenerAdapter _portletAsyncListenerAdapter;
 	private AsyncContext _asyncContext;
-	private boolean _completed;
-	private boolean _dispatched;
+	private boolean _calledComplete;
+	private boolean _calledDispatch;
 	private Runnable _pendingRunnable;
 	private final ResourceRequest _resourceRequest;
 	private final ResourceResponse _resourceResponse;

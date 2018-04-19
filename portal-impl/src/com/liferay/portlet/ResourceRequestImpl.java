@@ -19,8 +19,6 @@ import aQute.bnd.annotation.ProviderType;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.model.Portlet;
 import com.liferay.portal.kernel.portlet.InvokerPortlet;
-import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
-import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.kernel.servlet.PortletServlet;
 import com.liferay.portal.kernel.util.JavaConstants;
 import com.liferay.portal.kernel.util.ParamUtil;
@@ -39,7 +37,6 @@ import javax.portlet.PortletContext;
 import javax.portlet.PortletMode;
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
-import javax.portlet.PortletResponse;
 import javax.portlet.RenderParameters;
 import javax.portlet.ResourceParameters;
 import javax.portlet.ResourceRequest;
@@ -50,8 +47,6 @@ import javax.portlet.WindowState;
 import javax.servlet.DispatcherType;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletResponseWrapper;
-import javax.servlet.http.HttpServletRequestWrapper;
 
 /**
  * @author Brian Wing Shun Chan
@@ -174,7 +169,7 @@ public class ResourceRequestImpl
 			PortletAsyncContextImpl portletAsyncContextImpl =
 				(PortletAsyncContextImpl)_portletAsyncContext;
 
-			boolean dispatched = portletAsyncContextImpl.isDispatched();
+			boolean dispatched = portletAsyncContextImpl.isCalledDispatch();
 
 			if (!dispatched) {
 				throw new IllegalStateException();
