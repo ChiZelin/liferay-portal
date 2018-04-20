@@ -169,6 +169,8 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 		}
 
 		_asyncContext.start(_pendingRunnable);
+
+		_pendingRunnable = null;
 	}
 
 	private final PortletAsyncListenerAdapter _portletAsyncListenerAdapter;
@@ -200,8 +202,8 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 			try {
 				call();
 			}
-			catch (Throwable t) {
-				t.printStackTrace();
+			catch (Exception e) {
+				throw new RuntimeException(e);
 			}
 		}
 
