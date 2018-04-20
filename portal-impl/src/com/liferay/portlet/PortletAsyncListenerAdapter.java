@@ -99,7 +99,7 @@ public class PortletAsyncListenerAdapter implements AsyncListener {
 			PortletAsyncListener portletAsyncListener =
 				entry._portletAsyncListener;
 
-			portletAsyncListener.onTimeout(
+			portletAsyncListener.onError(
 				new PortletAsyncEvent(
 					_portletAsyncContext, asyncEvent.getThrowable()));
 		}
