@@ -26,6 +26,8 @@ import javax.portlet.filter.ResourceRequestWrapper;
 import javax.portlet.filter.ResourceResponseWrapper;
 
 import javax.servlet.AsyncContext;
+import javax.servlet.AsyncEvent;
+import java.io.IOException;
 
 /**
  * @author Leon Chi
@@ -202,8 +204,16 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 			try {
 				call();
 			}
-			catch (Exception e) {
-				throw new RuntimeException(e);
+			catch (Throwable t) {
+
+				// Tomcat doesn't invoke onError
+
+				try {
+					_portletAsyncListenerAdapter.onError(
+						new AsyncEvent(_asyncContext, t));
+				}
+				catch (IOException e) {
+				}
 			}
 		}
 
