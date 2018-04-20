@@ -44,6 +44,8 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 		_portletAsyncListenerAdapter =
 			new PortletAsyncListenerAdapter(
 				this, _resourceRequest, _resourceResponse);
+
+		_asyncContext.addListener(_portletAsyncListenerAdapter);
 	}
 
 	@Override
