@@ -27,6 +27,10 @@ import javax.portlet.filter.ResourceResponseWrapper;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.AsyncEvent;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletRequestWrapper;
+
 import java.io.IOException;
 
 /**
@@ -113,7 +117,33 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 
 		_calledDispatch = true;
 
-		//_asyncContext.dispatch(path);
+		// TODO: Dispatcher Handling
+		//
+		// Problem here is Tomcat's internal logic of dispatcher object obtained
+		// from the servlet context. The servlet request here is wrapped by
+		// Equinox and its servlet context will return a Equinox request
+		// dispatcher, which is not "AsyncDispatcher", and Tomcat will not
+		// dispatch it.
+		//
+		// However, if we supply the original Tomcat request's servlet context,
+		// the path will be incorrect.
+		//
+		// The idea is to prepare the full request uri here, and wrap the
+		// ServletContext with proxy to create the request dispatcher with the
+		// full uri.
+
+		ServletRequest servletRequest = _asyncContext.getRequest();
+
+		ServletRequest originalRequest = servletRequest;
+
+		while (originalRequest instanceof ServletRequestWrapper) {
+			originalRequest =
+				((ServletRequestWrapper)originalRequest).getRequest();
+		}
+
+		ServletContext servletContext = originalRequest.getServletContext();
+
+		_asyncContext.dispatch(servletContext, path);
 	}
 
 	@Override
