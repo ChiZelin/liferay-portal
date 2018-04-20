@@ -33,18 +33,15 @@ import java.util.List;
 public class PortletAsyncListenerAdapter implements AsyncListener {
 
 	public PortletAsyncListenerAdapter(
-		PortletAsyncContext portletAsyncContext,
-		ResourceRequest resourceRequest, ResourceResponse resourceResponse) {
+		PortletAsyncContext portletAsyncContext) {
 
 		_portletAsyncContext = portletAsyncContext;
-		_resourceRequest = resourceRequest;
-		_resourceResponse = resourceResponse;
 	}
 
 	public void addListener(PortletAsyncListener portletAsyncListener)
 		throws IllegalStateException {
 
-		addListener(portletAsyncListener, _resourceRequest, _resourceResponse);
+		addListener(portletAsyncListener, null, null);
 	}
 
 	public void addListener(
@@ -81,7 +78,9 @@ public class PortletAsyncListenerAdapter implements AsyncListener {
 				entry._portletAsyncListener;
 
 			portletAsyncListener.onTimeout(
-				new PortletAsyncEvent(_portletAsyncContext));
+				new PortletAsyncEvent(
+					_portletAsyncContext, entry._resourceRequest,
+					entry._resourceResponse));
 		}
 
 		try {
@@ -101,7 +100,8 @@ public class PortletAsyncListenerAdapter implements AsyncListener {
 
 			portletAsyncListener.onError(
 				new PortletAsyncEvent(
-					_portletAsyncContext, asyncEvent.getThrowable()));
+					_portletAsyncContext, entry._resourceRequest,
+					entry._resourceResponse, asyncEvent.getThrowable()));
 		}
 
 		try {
@@ -129,8 +129,6 @@ public class PortletAsyncListenerAdapter implements AsyncListener {
 	private final List<PortletAsyncListenerAdapterEntry>
 		_portletAsyncListenerAdapterEntries = new ArrayList<>();
 	private final PortletAsyncContext _portletAsyncContext;
-	private final ResourceRequest _resourceRequest;
-	private final ResourceResponse _resourceResponse;
 
 	private class PortletAsyncListenerAdapterEntry {
 

@@ -42,8 +42,7 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 		_asyncContext = asyncContext;
 
 		_portletAsyncListenerAdapter =
-			new PortletAsyncListenerAdapter(
-				this, _resourceRequest, _resourceResponse);
+			new PortletAsyncListenerAdapter(this);
 
 		_asyncContext.addListener(_portletAsyncListenerAdapter);
 	}
@@ -52,7 +51,7 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 	public void addListener(PortletAsyncListener portletAsyncListener)
 		throws IllegalStateException {
 
-		addListener(portletAsyncListener, _resourceRequest, _resourceResponse);
+		addListener(portletAsyncListener, null, null);
 	}
 
 	@Override
