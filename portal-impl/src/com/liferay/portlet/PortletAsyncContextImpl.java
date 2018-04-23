@@ -17,6 +17,7 @@ package com.liferay.portlet;
 import com.liferay.portal.kernel.executor.CopyThreadLocalCallable;
 import com.liferay.portal.kernel.portlet.LiferayPortletAsyncContext;
 import com.liferay.portal.kernel.util.DefaultThreadLocalBinder;
+import com.liferay.portal.kernel.util.ProxyUtil;
 
 import javax.portlet.PortletAsyncListener;
 import javax.portlet.PortletException;
@@ -30,8 +31,11 @@ import javax.servlet.AsyncEvent;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletRequestWrapper;
+import javax.servlet.http.HttpServletRequest;
 
 import java.io.IOException;
+
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * @author Leon Chi
@@ -131,6 +135,8 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 		// The idea is to prepare the full request uri here, and wrap the
 		// ServletContext with proxy to create the request dispatcher with the
 		// full uri.
+		//
+		// No it doesn't work.
 
 		ServletRequest servletRequest = _asyncContext.getRequest();
 
@@ -143,7 +149,27 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 
 		ServletContext servletContext = originalRequest.getServletContext();
 
-		_asyncContext.dispatch(servletContext, path);
+		ServletContext proxyServletContext =
+			(ServletContext)ProxyUtil.newProxyInstance(
+				Thread.currentThread().getContextClassLoader(),
+				new Class[]{ServletContext.class},
+				(proxy, method, args) -> {
+					if ("getRequestDispatcher".equals(method.getName())) {
+						return servletContext.getRequestDispatcher(
+							_getFullPath(
+								(HttpServletRequest)servletRequest, path));
+					}
+
+					try {
+						return method.invoke(servletContext, args);
+					}
+					catch (InvocationTargetException ite) {
+						throw ite.getCause();
+					}
+				}
+			);
+
+		_asyncContext.dispatch(proxyServletContext, path);
 	}
 
 	@Override
@@ -203,6 +229,12 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 		_asyncContext.start(_pendingRunnable);
 
 		_pendingRunnable = null;
+	}
+
+	private String _getFullPath(
+		HttpServletRequest httpServletRequest, String path) {
+
+		return httpServletRequest.getContextPath().concat(path);
 	}
 
 	private final PortletAsyncListenerAdapter _portletAsyncListenerAdapter;
