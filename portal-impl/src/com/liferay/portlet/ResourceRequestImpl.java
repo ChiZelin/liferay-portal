@@ -169,6 +169,9 @@ public class ResourceRequestImpl
 		HttpServletRequest httpServletRequest =
 			(HttpServletRequest)getAttribute(
 				PortletServlet.PORTLET_SERVLET_REQUEST);
+
+		httpServletRequest = new AsyncPortletServletRequest(httpServletRequest);
+
 		HttpServletResponse httpServletResponse =
 			(HttpServletResponse)getAttribute(
 				PortletServlet.PORTLET_SERVLET_RESPONSE);

@@ -15,6 +15,7 @@
 package com.liferay.portal.module.framework;
 
 import com.liferay.portal.kernel.util.PortalUtil;
+import com.liferay.portlet.AsyncPortletServletRequest;
 import com.liferay.registry.collections.ServiceTrackerCollections;
 
 import java.io.IOException;
@@ -44,6 +45,28 @@ public class ModuleFrameworkServletAdapter extends HttpServlet {
 				request, response);
 
 			return;
+		}
+
+		if (request.isAsyncSupported()) {
+			if (request instanceof AsyncPortletServletRequest) {
+				AsyncPortletServletRequest asyncPortletServletRequest =
+					(AsyncPortletServletRequest)request;
+
+				String requestPath = request.getRequestURI();
+
+				int index = -1;
+
+				if ((index = requestPath.indexOf('?')) == -1) {
+					requestPath = requestPath.substring(index + 1);
+				}
+
+				if (requestPath.startsWith("/o")) {
+					asyncPortletServletRequest.setContextPath("");
+					asyncPortletServletRequest.setServletPath("/o");
+					asyncPortletServletRequest.setPathInfo(
+						requestPath.substring(2));
+				}
+			}
 		}
 
 		HttpServlet httpServlet = _servlets.get(0);

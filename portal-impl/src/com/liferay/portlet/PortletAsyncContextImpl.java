@@ -14,10 +14,16 @@
 
 package com.liferay.portlet;
 
+import com.liferay.petra.string.CharPool;
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.executor.CopyThreadLocalCallable;
+import com.liferay.portal.kernel.model.Portlet;
+import com.liferay.portal.kernel.model.PortletApp;
 import com.liferay.portal.kernel.portlet.LiferayPortletAsyncContext;
 import com.liferay.portal.kernel.util.DefaultThreadLocalBinder;
 import com.liferay.portal.kernel.util.ProxyUtil;
+import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.servlet.DynamicServletRequestUtil;
 
 import javax.portlet.PortletAsyncListener;
 import javax.portlet.PortletException;
@@ -37,6 +43,10 @@ import java.io.IOException;
 
 import java.lang.reflect.InvocationTargetException;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
 /**
  * @author Leon Chi
  * @author Dante Wang
@@ -55,6 +65,9 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 			new PortletAsyncListenerAdapter(this);
 
 		_asyncContext.addListener(_portletAsyncListenerAdapter);
+
+		_asyncPortletServletRequest =
+			(AsyncPortletServletRequest)_asyncContext.getRequest();
 	}
 
 	@Override
@@ -138,9 +151,7 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 		//
 		// No it doesn't work.
 
-		ServletRequest servletRequest = _asyncContext.getRequest();
-
-		ServletRequest originalRequest = servletRequest;
+		ServletRequest originalRequest = _asyncPortletServletRequest;
 
 		while (originalRequest instanceof ServletRequestWrapper) {
 			originalRequest =
@@ -156,8 +167,7 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 				(proxy, method, args) -> {
 					if ("getRequestDispatcher".equals(method.getName())) {
 						return servletContext.getRequestDispatcher(
-							_getFullPath(
-								(HttpServletRequest)servletRequest, path));
+							_getFullPath(path));
 					}
 
 					try {
@@ -168,6 +178,8 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 					}
 				}
 			);
+
+		_updateDispatchInfo(path);
 
 		_asyncContext.dispatch(proxyServletContext, path);
 	}
@@ -231,12 +243,120 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 		_pendingRunnable = null;
 	}
 
-	private String _getFullPath(
-		HttpServletRequest httpServletRequest, String path) {
+	// TODO: Copied from PortletRequestDispatcherImpl
+	protected HttpServletRequest createDynamicServletRequest(
+		HttpServletRequest httpServletRequest,
+		PortletRequestImpl portletRequestImpl,
+		Map<String, String[]> parameterMap) {
 
-		return httpServletRequest.getContextPath().concat(path);
+		return DynamicServletRequestUtil.createDynamicServletRequest(
+			httpServletRequest, portletRequestImpl.getPortlet(), parameterMap,
+			true);
 	}
 
+	protected Map<String, String[]> toParameterMap(String queryString) {
+		Map<String, String[]> parameterMap = new HashMap<>();
+
+		for (String parameter :
+			StringUtil.split(queryString, CharPool.AMPERSAND)) {
+
+			String[] parameterArray = StringUtil.split(
+				parameter, CharPool.EQUAL);
+
+			String name = parameterArray[0];
+
+			String value = StringPool.BLANK;
+
+			if (parameterArray.length == 2) {
+				value = parameterArray[1];
+			}
+
+			String[] values = parameterMap.get(name);
+
+			if (values == null) {
+				parameterMap.put(name, new String[] {value});
+			}
+			else {
+				String[] newValues = new String[values.length + 1];
+
+				System.arraycopy(values, 0, newValues, 0, values.length);
+
+				newValues[newValues.length - 1] = value;
+
+				parameterMap.put(name, newValues);
+			}
+		}
+
+		return parameterMap;
+	}
+
+	private String _getFullPath(String path) {
+		return _resourceRequest.getContextPath().concat(path);
+	}
+
+	private void _updateDispatchInfo(String path) {
+		PortletRequestImpl portletRequestImpl =
+			PortletRequestImpl.getPortletRequestImpl(_resourceRequest);
+
+		String pathInfo = null;
+		String queryString = null;
+		String requestURI = null;
+		String servletPath = null;
+
+		if (path != null) {
+			String pathNoQueryString = path;
+
+			int pos = path.indexOf(CharPool.QUESTION);
+
+			if (pos != -1) {
+				pathNoQueryString = path.substring(0, pos);
+				queryString = path.substring(pos + 1);
+			}
+
+			Portlet portlet = portletRequestImpl.getPortlet();
+
+			PortletApp portletApp = portlet.getPortletApp();
+
+			Set<String> servletURLPatterns = portletApp.getServletURLPatterns();
+
+			for (String urlPattern : servletURLPatterns) {
+				if (urlPattern.endsWith("/*")) {
+					int length = urlPattern.length() - 2;
+
+					if ((pathNoQueryString.length() > length) &&
+						pathNoQueryString.regionMatches(
+							0, urlPattern, 0, length) &&
+						(pathNoQueryString.charAt(length) == CharPool.SLASH)) {
+
+						pathInfo = pathNoQueryString.substring(length);
+						servletPath = urlPattern.substring(0, length);
+
+						break;
+					}
+				}
+			}
+
+			if (servletPath == null) {
+				servletPath = pathNoQueryString;
+			}
+
+			String contextPath = _resourceRequest.getContextPath();
+
+			if (contextPath.equals(StringPool.SLASH)) {
+				requestURI = pathNoQueryString;
+			}
+			else {
+				requestURI = contextPath + pathNoQueryString;
+			}
+		}
+
+		_asyncPortletServletRequest.setPathInfo(pathInfo);
+		_asyncPortletServletRequest.setQueryString(queryString);
+		_asyncPortletServletRequest.setRequestURI(requestURI);
+		_asyncPortletServletRequest.setServletPath(servletPath);
+	}
+
+	private AsyncPortletServletRequest _asyncPortletServletRequest;
 	private final PortletAsyncListenerAdapter _portletAsyncListenerAdapter;
 	private AsyncContext _asyncContext;
 	private boolean _calledComplete;
