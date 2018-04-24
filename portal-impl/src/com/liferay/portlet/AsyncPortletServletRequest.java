@@ -18,7 +18,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
 /**
- * @author Leon Chi
  * @author Dante Wang
  */
 public class AsyncPortletServletRequest extends HttpServletRequestWrapper {

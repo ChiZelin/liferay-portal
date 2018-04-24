@@ -49,6 +49,7 @@ public class ModuleFrameworkServletAdapter extends HttpServlet {
 
 		if (request.isAsyncSupported()) {
 			if (request instanceof AsyncPortletServletRequest) {
+				System.out.println(request.getDispatcherType());
 				AsyncPortletServletRequest asyncPortletServletRequest =
 					(AsyncPortletServletRequest)request;
 

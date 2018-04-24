@@ -127,17 +127,11 @@ public class ResourceRequestImpl
 
 	@Override
 	public boolean isAsyncStarted() {
-
-		// TODO: portlet3
-
 		return _asyncStarted;
 	}
 
 	@Override
 	public boolean isAsyncSupported() {
-
-		// TODO: portlet3
-
 		Portlet portlet = getPortlet();
 
 		return portlet.isAsyncSupported();
@@ -146,8 +140,6 @@ public class ResourceRequestImpl
 	@Override
 	public PortletAsyncContext startPortletAsync()
 		throws IllegalStateException {
-
-		// TODO: portlet3
 
 		ResourceResponse resourceResponse = (ResourceResponse)getAttribute(
 			JavaConstants.JAVAX_PORTLET_RESPONSE);
@@ -159,8 +151,6 @@ public class ResourceRequestImpl
 	public PortletAsyncContext startPortletAsync(
 			ResourceRequest resourceRequest, ResourceResponse resourceResponse)
 		throws IllegalStateException {
-
-		// TODO: portlet3
 
 		if (!isAsyncSupported() || resourceResponse.isCommitted()) {
 			throw new IllegalStateException();
@@ -176,19 +166,8 @@ public class ResourceRequestImpl
 			(HttpServletResponse)getAttribute(
 				PortletServlet.PORTLET_SERVLET_RESPONSE);
 
-//		while (httpServletRequest instanceof HttpServletRequestWrapper) {
-//			httpServletRequest =
-//				(HttpServletRequest)
-//					((HttpServletRequestWrapper)
-//						httpServletRequest).getRequest();
-//		}
-//
-//		while (httpServletResponse instanceof HttpServletResponseWrapper) {
-//			httpServletResponse =
-//				(HttpServletResponse)
-//					((HttpServletResponseWrapper)
-//						httpServletResponse).getResponse();
-//		}
+		httpServletResponse = new AsyncPortletServletResponse(
+			httpServletResponse);
 
 		AsyncContext asyncContext =
 			httpServletRequest.startAsync(
