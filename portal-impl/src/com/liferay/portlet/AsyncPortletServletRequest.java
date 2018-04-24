@@ -14,6 +14,7 @@
 
 package com.liferay.portlet;
 
+import javax.servlet.DispatcherType;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
@@ -26,10 +27,14 @@ public class AsyncPortletServletRequest extends HttpServletRequestWrapper {
 		super(request);
 
 		_contextPath = super.getContextPath();
-		_pathInfo = super.getPathInfo();
 		_queryString = super.getQueryString();
 		_requestURI = super.getRequestURI();
 		_servletPath = super.getServletPath();
+	}
+
+	@Override
+	public DispatcherType getDispatcherType() {
+		return DispatcherType.ASYNC;
 	}
 
 	@Override

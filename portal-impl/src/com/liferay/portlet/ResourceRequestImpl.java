@@ -64,7 +64,13 @@ public class ResourceRequestImpl
 
 	@Override
 	public DispatcherType getDispatcherType() {
-		return getHttpServletRequest().getDispatcherType();
+		if ((_portletAsyncContext != null &&
+			_portletAsyncContext.isCalledDispatch())) {
+
+			return DispatcherType.ASYNC;
+		}
+
+		return DispatcherType.REQUEST;
 	}
 
 	@Override
@@ -253,7 +259,7 @@ public class ResourceRequestImpl
 
 	private boolean _asyncStarted;
 	private String _cacheablity;
-	private PortletAsyncContext _portletAsyncContext;
+	private PortletAsyncContextImpl _portletAsyncContext;
 	private String _resourceID;
 	private ResourceParameters _resourceParameters;
 
