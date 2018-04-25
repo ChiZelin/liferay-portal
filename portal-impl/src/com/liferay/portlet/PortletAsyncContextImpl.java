@@ -17,13 +17,9 @@ package com.liferay.portlet;
 import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.executor.CopyThreadLocalCallable;
-import com.liferay.portal.kernel.model.Portlet;
-import com.liferay.portal.kernel.model.PortletApp;
 import com.liferay.portal.kernel.portlet.LiferayPortletAsyncContext;
 import com.liferay.portal.kernel.util.DefaultThreadLocalBinder;
 import com.liferay.portal.kernel.util.ProxyUtil;
-import com.liferay.portal.kernel.util.StringUtil;
-import com.liferay.portal.servlet.DynamicServletRequestUtil;
 
 import javax.portlet.PortletAsyncListener;
 import javax.portlet.PortletException;
@@ -35,17 +31,19 @@ import javax.portlet.filter.ResourceResponseWrapper;
 import javax.servlet.AsyncContext;
 import javax.servlet.AsyncEvent;
 import javax.servlet.ServletContext;
+import javax.servlet.ServletRegistration;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletRequestWrapper;
-import javax.servlet.http.HttpServletRequest;
 
 import java.io.IOException;
 
 import java.lang.reflect.InvocationTargetException;
 
-import java.util.HashMap;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author Leon Chi
@@ -134,23 +132,6 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 
 		_calledDispatch = true;
 
-		// TODO: Dispatcher Handling
-		//
-		// Problem here is Tomcat's internal logic of dispatcher object obtained
-		// from the servlet context. The servlet request here is wrapped by
-		// Equinox and its servlet context will return a Equinox request
-		// dispatcher, which is not "AsyncDispatcher", and Tomcat will not
-		// dispatch it.
-		//
-		// However, if we supply the original Tomcat request's servlet context,
-		// the path will be incorrect.
-		//
-		// The idea is to prepare the full request uri here, and wrap the
-		// ServletContext with proxy to create the request dispatcher with the
-		// full uri.
-		//
-		// No it doesn't work.
-
 		ServletRequest originalRequest = _asyncPortletServletRequest;
 
 		while (originalRequest instanceof ServletRequestWrapper) {
@@ -160,14 +141,15 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 
 		ServletContext servletContext = originalRequest.getServletContext();
 
+		String fullPath = _getFullPath(path);
+
 		ServletContext proxyServletContext =
 			(ServletContext)ProxyUtil.newProxyInstance(
 				Thread.currentThread().getContextClassLoader(),
 				new Class[]{ServletContext.class},
 				(proxy, method, args) -> {
 					if ("getRequestDispatcher".equals(method.getName())) {
-						return servletContext.getRequestDispatcher(
-							_getFullPath(path));
+						return servletContext.getRequestDispatcher(fullPath);
 					}
 
 					try {
@@ -179,7 +161,7 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 				}
 			);
 
-		_updateDispatchInfo(path);
+		_updateDispatchInfo(servletContext, fullPath);
 
 		_asyncContext.dispatch(proxyServletContext, path);
 	}
@@ -243,65 +225,38 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 		_pendingRunnable = null;
 	}
 
-	// TODO: Copied from PortletRequestDispatcherImpl
-	protected HttpServletRequest createDynamicServletRequest(
-		HttpServletRequest httpServletRequest,
-		PortletRequestImpl portletRequestImpl,
-		Map<String, String[]> parameterMap) {
-
-		return DynamicServletRequestUtil.createDynamicServletRequest(
-			httpServletRequest, portletRequestImpl.getPortlet(), parameterMap,
-			true);
-	}
-
-	protected Map<String, String[]> toParameterMap(String queryString) {
-		Map<String, String[]> parameterMap = new HashMap<>();
-
-		for (String parameter :
-			StringUtil.split(queryString, CharPool.AMPERSAND)) {
-
-			String[] parameterArray = StringUtil.split(
-				parameter, CharPool.EQUAL);
-
-			String name = parameterArray[0];
-
-			String value = StringPool.BLANK;
-
-			if (parameterArray.length == 2) {
-				value = parameterArray[1];
-			}
-
-			String[] values = parameterMap.get(name);
-
-			if (values == null) {
-				parameterMap.put(name, new String[] {value});
-			}
-			else {
-				String[] newValues = new String[values.length + 1];
-
-				System.arraycopy(values, 0, newValues, 0, values.length);
-
-				newValues[newValues.length - 1] = value;
-
-				parameterMap.put(name, newValues);
-			}
-		}
-
-		return parameterMap;
-	}
-
 	private String _getFullPath(String path) {
 		return _resourceRequest.getContextPath().concat(path);
 	}
 
-	private void _updateDispatchInfo(String path) {
-		PortletRequestImpl portletRequestImpl =
-			PortletRequestImpl.getPortletRequestImpl(_resourceRequest);
+	private void _updateDispatchInfo(
+		ServletContext servletContext, String path) {
 
+		Map<String, ServletRegistration> servletRegistrationMap =
+			(Map<String, ServletRegistration>)
+				servletContext.getServletRegistrations();
+
+		Collection<ServletRegistration> servletRegistrations =
+			servletRegistrationMap.values();
+
+		Stream<ServletRegistration> servletRegistrationStream =
+			servletRegistrations.stream();
+
+		Set<String> servletURLPatterns = servletRegistrationStream.flatMap(
+			servletRegistration -> servletRegistration.getMappings().stream()
+		).collect(Collectors.toSet());
+
+		String contextPath = servletContext.getContextPath();
 		String pathInfo = null;
 		String queryString = null;
 		String requestURI = null;
 		String servletPath = null;
+
+		// TODO: what if Liferay is deployed into e.g. /liferay?
+
+		if ((contextPath.length() > 0) && path.startsWith(contextPath)) {
+			path = path.substring(contextPath.length());
+		}
 
 		if (path != null) {
 			String pathNoQueryString = path;
@@ -312,12 +267,6 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 				pathNoQueryString = path.substring(0, pos);
 				queryString = path.substring(pos + 1);
 			}
-
-			Portlet portlet = portletRequestImpl.getPortlet();
-
-			PortletApp portletApp = portlet.getPortletApp();
-
-			Set<String> servletURLPatterns = portletApp.getServletURLPatterns();
 
 			for (String urlPattern : servletURLPatterns) {
 				if (urlPattern.endsWith("/*")) {
@@ -340,8 +289,6 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 				servletPath = pathNoQueryString;
 			}
 
-			String contextPath = _resourceRequest.getContextPath();
-
 			if (contextPath.equals(StringPool.SLASH)) {
 				requestURI = pathNoQueryString;
 			}
@@ -350,6 +297,7 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 			}
 		}
 
+		_asyncPortletServletRequest.setContextPath(contextPath);
 		_asyncPortletServletRequest.setPathInfo(pathInfo);
 		_asyncPortletServletRequest.setQueryString(queryString);
 		_asyncPortletServletRequest.setRequestURI(requestURI);

@@ -47,29 +47,6 @@ public class ModuleFrameworkServletAdapter extends HttpServlet {
 			return;
 		}
 
-		if (request.isAsyncSupported()) {
-			if (request instanceof AsyncPortletServletRequest) {
-				System.out.println(request.getDispatcherType());
-				AsyncPortletServletRequest asyncPortletServletRequest =
-					(AsyncPortletServletRequest)request;
-
-				String requestPath = request.getRequestURI();
-
-				int index = -1;
-
-				if ((index = requestPath.indexOf('?')) == -1) {
-					requestPath = requestPath.substring(index + 1);
-				}
-
-				if (requestPath.startsWith("/o")) {
-					asyncPortletServletRequest.setContextPath("");
-					asyncPortletServletRequest.setServletPath("/o");
-					asyncPortletServletRequest.setPathInfo(
-						requestPath.substring(2));
-				}
-			}
-		}
-
 		HttpServlet httpServlet = _servlets.get(0);
 
 		httpServlet.service(request, response);
