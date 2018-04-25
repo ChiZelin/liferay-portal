@@ -19,7 +19,6 @@ import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.executor.CopyThreadLocalCallable;
 import com.liferay.portal.kernel.portlet.LiferayPortletAsyncContext;
 import com.liferay.portal.kernel.util.DefaultThreadLocalBinder;
-import com.liferay.portal.kernel.util.ProxyUtil;
 
 import javax.portlet.PortletAsyncListener;
 import javax.portlet.PortletException;
@@ -36,8 +35,6 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletRequestWrapper;
 
 import java.io.IOException;
-
-import java.lang.reflect.InvocationTargetException;
 
 import java.util.Collection;
 import java.util.Map;
@@ -143,27 +140,9 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 
 		String fullPath = _getFullPath(path);
 
-		ServletContext proxyServletContext =
-			(ServletContext)ProxyUtil.newProxyInstance(
-				Thread.currentThread().getContextClassLoader(),
-				new Class[]{ServletContext.class},
-				(proxy, method, args) -> {
-					if ("getRequestDispatcher".equals(method.getName())) {
-						return servletContext.getRequestDispatcher(fullPath);
-					}
-
-					try {
-						return method.invoke(servletContext, args);
-					}
-					catch (InvocationTargetException ite) {
-						throw ite.getCause();
-					}
-				}
-			);
-
 		_updateDispatchInfo(servletContext, fullPath);
 
-		_asyncContext.dispatch(proxyServletContext, path);
+		_asyncContext.dispatch(servletContext, fullPath);
 	}
 
 	@Override
