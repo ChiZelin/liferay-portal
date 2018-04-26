@@ -14,6 +14,8 @@
 
 package com.liferay.portlet;
 
+import com.liferay.portal.kernel.servlet.DynamicServletRequest;
+
 import javax.servlet.DispatcherType;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
@@ -30,6 +32,23 @@ public class AsyncPortletServletRequest extends HttpServletRequestWrapper {
 		_queryString = super.getQueryString();
 		_requestURI = super.getRequestURI();
 		_servletPath = super.getServletPath();
+	}
+
+	public static AsyncPortletServletRequest getAsyncPortletServletRequest(
+		HttpServletRequest httpServletRequest) {
+
+		while (httpServletRequest instanceof HttpServletRequestWrapper) {
+			if (httpServletRequest instanceof AsyncPortletServletRequest) {
+				return (AsyncPortletServletRequest)httpServletRequest;
+			}
+
+			httpServletRequest =
+				(HttpServletRequest)
+					((HttpServletRequestWrapper)
+						httpServletRequest).getRequest();
+		}
+
+		return null;
 	}
 
 	@Override
@@ -72,6 +91,9 @@ public class AsyncPortletServletRequest extends HttpServletRequestWrapper {
 
 	public void setQueryString(String queryString) {
 		_queryString = queryString;
+
+		setRequest(DynamicServletRequest.addQueryString(
+			(HttpServletRequest)getRequest(), queryString, true));
 	}
 
 	public void setRequestURI(String requestUri) {

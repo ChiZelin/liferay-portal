@@ -14,6 +14,8 @@
 
 package com.liferay.portlet;
 
+import javax.servlet.ServletResponse;
+import javax.servlet.ServletResponseWrapper;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
@@ -24,6 +26,13 @@ public class AsyncPortletServletResponse extends HttpServletResponseWrapper {
 
 	public AsyncPortletServletResponse(HttpServletResponse response) {
 		super(response);
+
+		_originalResponse = response;
+
+		while (_originalResponse instanceof ServletResponseWrapper) {
+			_originalResponse =
+				((ServletResponseWrapper)_originalResponse).getResponse();
+		}
 	}
 
 	@Override
@@ -32,5 +41,12 @@ public class AsyncPortletServletResponse extends HttpServletResponseWrapper {
 			super.resetBuffer();
 		}
 	}
+
+	@Override
+	public boolean isCommitted() {
+		return _originalResponse.isCommitted();
+	}
+
+	private ServletResponse _originalResponse;
 
 }
