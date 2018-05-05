@@ -17,7 +17,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <%@ taglib uri="http://liferay.com/tld/aui" prefix="aui" %><%@
-taglib uri="http://liferay.com/tld/theme" prefix="liferay-theme" %>
+taglib uri="http://liferay.com/tld/theme" prefix="liferay-theme" %><%@
+taglib uri="http://java.sun.com/portlet" prefix="portlet" %>
 
 <%@ page import="com.liferay.asset.constants.AssetWebKeys" %><%@
 page import="com.liferay.asset.util.AssetHelper" %><%@
@@ -38,12 +39,10 @@ page import="com.liferay.portal.kernel.util.JavaConstants" %>
 page import="javax.portlet.PortletResponse" %><%@
 page import="javax.portlet.PortletURL" %>
 
+<portlet:defineObjects />
+
 <liferay-theme:defineObjects />
 
 <%
 AssetHelper assetHelper = (AssetHelper)request.getAttribute(AssetWebKeys.ASSET_HELPER);
-
-PortletRequest portletRequest = (PortletRequest)request.getAttribute(JavaConstants.JAVAX_PORTLET_REQUEST);
-
-PortletResponse portletResponse = (PortletResponse)request.getAttribute(JavaConstants.JAVAX_PORTLET_RESPONSE);
 %>

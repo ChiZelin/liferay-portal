@@ -18,10 +18,8 @@ import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.io.unsync.UnsyncStringReader;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.Portlet;
-import com.liferay.portal.kernel.portlet.LiferayPortletResponse3;
-import com.liferay.portal.kernel.portlet.LiferayPortletURL;
+import com.liferay.portal.kernel.model.PortletDependency;
 import com.liferay.portal.kernel.servlet.taglib.util.OutputData;
 import com.liferay.portal.kernel.theme.PortletDisplay;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
@@ -31,10 +29,9 @@ import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
-import com.liferay.portal.security.lang.DoPrivilegedUtil;
 import com.liferay.portal.xml.StAXReaderUtil;
 import com.liferay.portlet.MimeResponseImpl;
-import com.liferay.portlet.PortletURLImpl;
+import com.liferay.portlet.PortletRequestImpl;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -43,21 +40,16 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 
-import java.lang.reflect.Constructor;
-
 import java.util.Iterator;
-import java.util.Map;
+import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
-import javax.portlet.ActionURL;
 import javax.portlet.HeaderRequest;
 import javax.portlet.HeaderResponse;
-import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
-import javax.portlet.RenderURL;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
@@ -68,8 +60,7 @@ import javax.xml.stream.XMLStreamReader;
  * @author Neil Griffin
  */
 public class HeaderResponseImpl
-	extends MimeResponseImpl
-	implements HeaderResponse, LiferayPortletResponse3 {
+	extends MimeResponseImpl implements HeaderResponse {
 
 	@Override
 	public void addDependency(String name, String scope, String version) {
@@ -91,70 +82,26 @@ public class HeaderResponseImpl
 		ThemeDisplay themeDisplay = (ThemeDisplay)
 			portletRequestImpl.getAttribute(WebKeys.THEME_DISPLAY);
 
-		ClientDependency clientDependency = new ClientDependency(
-			themeDisplay.getCDNBaseURL(), name, scope, version, markup);
+		Portlet portlet = getPortlet();
 
-		_addMarkupToHead(name, scope, version, clientDependency.toString());
-	}
+		PortletDependencyURL portletDependencyURL = new PortletDependencyURL(
+			themeDisplay.getCDNBaseURL(),
+			portlet.getCdnPortletCssDependenciesPath(),
+			portlet.getCdnPortletJavaScriptDependenciesPath(), name, scope,
+			version, markup);
 
-	@Override
-	public ActionURL createActionURL(Copy copy) {
-		return (ActionURL)createActionURL(getPortletName(), copy);
-	}
+		if ((PortletDependencyURL.Type.CSS.equals(
+				portletDependencyURL.getType()) &&
+			 portlet.isCdnPortletCssDependenciesEnabled()) ||
+			(PortletDependencyURL.Type.JAVASCRIPT.equals(
+			portletDependencyURL.getType()) &&
+			 portlet.isCdnPortletJavaScriptDependenciesEnabled()) ||
+			PortletDependencyURL.Type.OTHER.equals(
+			portletDependencyURL.getType())) {
 
-	@Override
-	public LiferayPortletURL createActionURL(String portletName, Copy copy) {
-		return createLiferayPortletURL(
-			portletName, PortletRequest.ACTION_PHASE, copy);
-	}
-
-	@Override
-	public LiferayPortletURL createLiferayPortletURL(
-		long plid, String portletName, String lifecycle,
-		boolean includeLinkToLayoutUuid, Copy copy) {
-
-		ThemeDisplay themeDisplay = (ThemeDisplay)
-			portletRequestImpl.getAttribute(WebKeys.THEME_DISPLAY);
-
-		Layout layout = PortletResponseUtil.getLayout(
-			portletRequestImpl, themeDisplay);
-
-		if (_portletSetup == null) {
-			_portletSetup = PortletResponseUtil.getPortletSetup(
-				themeDisplay, layout, portletName);
+			_addMarkupToHead(
+				name, scope, version, portletDependencyURL.toString());
 		}
-
-		return DoPrivilegedUtil.wrap(
-			new LiferayPortletURLPrivilegedAction(
-				plid, portletName, lifecycle, includeLinkToLayoutUuid, copy,
-				layout, getPortlet(), _portletSetup, portletRequestImpl, this,
-				getPlid(), _constructors));
-	}
-
-	@Override
-	public LiferayPortletURL createLiferayPortletURL(
-		long plid, String portletName, String lifecycle, Copy copy) {
-
-		return createLiferayPortletURL(
-			plid, portletName, lifecycle, true, copy);
-	}
-
-	@Override
-	public LiferayPortletURL createLiferayPortletURL(
-		String portletName, String lifecycle, Copy copy) {
-
-		return createLiferayPortletURL(getPlid(), portletName, lifecycle, copy);
-	}
-
-	@Override
-	public RenderURL createRenderURL(Copy copy) {
-		return (RenderURL)createRenderURL(getPortletName(), copy);
-	}
-
-	@Override
-	public LiferayPortletURL createRenderURL(String portletName, Copy copy) {
-		return createLiferayPortletURL(
-			portletName, PortletRequest.RENDER_PHASE, copy);
 	}
 
 	@Override
@@ -221,6 +168,21 @@ public class HeaderResponseImpl
 		_calledGetWriter = true;
 
 		return _printWriter;
+	}
+
+	public void init(
+		PortletRequestImpl portletRequestImpl, HttpServletResponse response,
+		List<PortletDependency> portletDependencies) {
+
+		super.init(portletRequestImpl, response);
+
+		if (portletDependencies != null) {
+			for (PortletDependency portletDependency : portletDependencies) {
+				addDependency(
+					portletDependency.getName(), portletDependency.getScope(),
+					portletDependency.getVersion());
+			}
+		}
 	}
 
 	@Override
@@ -334,6 +296,7 @@ public class HeaderResponseImpl
 					(event == XMLStreamConstants.END_ELEMENT)) {
 
 					String elementName = xmlStreamReader.getLocalName();
+
 					elementName = StringUtil.toLowerCase(elementName);
 
 					if (!elementName.equals("script") &&
@@ -432,7 +395,7 @@ public class HeaderResponseImpl
 		String scope = getNamespace();
 		Portlet portlet = getPortlet();
 
-		String version = Long.toString(portlet.getMvccVersion());
+		String version = String.valueOf(portlet.getMvccVersion());
 
 		try {
 			if (_portletOutputStream != null) {
@@ -457,10 +420,7 @@ public class HeaderResponseImpl
 	private boolean _calledFlushBuffer;
 	private boolean _calledGetPortletOutputStream;
 	private boolean _calledGetWriter;
-	private final Map<String, Constructor<? extends PortletURLImpl>> _constructors =
-		new ConcurrentHashMap<>();
 	private OutputStream _portletOutputStream;
-	private PortletPreferences _portletSetup;
 	private PrintWriter _printWriter;
 	private String _title;
 	private Boolean _useDefaultTemplate;

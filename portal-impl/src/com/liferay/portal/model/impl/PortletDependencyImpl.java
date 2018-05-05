@@ -12,23 +12,38 @@
  * details.
  */
 
-package com.liferay.portlet;
+package com.liferay.portal.model.impl;
 
-import javax.servlet.http.HttpServletResponse;
+import com.liferay.portal.kernel.model.PortletDependency;
 
 /**
- * @author Brian Wing Shun Chan
+ * @author Neil Griffin
  */
-public class RenderResponseFactory {
+public class PortletDependencyImpl implements PortletDependency {
 
-	public static RenderResponseImpl create(
-		RenderRequestImpl renderRequestImpl, HttpServletResponse response) {
-
-		RenderResponseImpl renderResponseImpl = new RenderResponseImpl();
-
-		renderResponseImpl.init(renderRequestImpl, response);
-
-		return renderResponseImpl;
+	public PortletDependencyImpl(String name, String scope, String version) {
+		_name = name;
+		_scope = scope;
+		_version = version;
 	}
+
+	@Override
+	public String getName() {
+		return _name;
+	}
+
+	@Override
+	public String getScope() {
+		return _scope;
+	}
+
+	@Override
+	public String getVersion() {
+		return _version;
+	}
+
+	private final String _name;
+	private final String _scope;
+	private final String _version;
 
 }

@@ -19,10 +19,11 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.LayoutConstants;
 import com.liferay.portal.kernel.portlet.DummyPortletURL;
 import com.liferay.portal.kernel.portlet.LiferayPortletConfig;
-import com.liferay.portal.kernel.portlet.LiferayPortletResponse3;
+import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.kernel.portlet.LiferayPortletURL;
 import com.liferay.portal.kernel.portlet.PortletModeFactory;
 import com.liferay.portal.kernel.portlet.PortletPreferencesFactoryConstants;
+import com.liferay.portal.kernel.portlet.PortletQName;
 import com.liferay.portal.kernel.portlet.WindowStateFactory;
 import com.liferay.portal.kernel.util.JavaConstants;
 import com.liferay.portal.kernel.util.ParamUtil;
@@ -186,6 +187,15 @@ public class ActionURLTag extends ParamAndPropertyAncestorTagImpl {
 	}
 
 	@Override
+	public void addParam(String name, String type, String value) {
+		if ("render".equals(type) && Validator.isNotNull(name)) {
+			name = PortletQName.PRIVATE_RENDER_PARAMETER_NAMESPACE + name;
+		}
+
+		super.addParam(name, type, value);
+	}
+
+	@Override
 	public int doEndTag() throws JspException {
 		try {
 			PortletURL portletURL = doTag(
@@ -322,19 +332,18 @@ public class ActionURLTag extends ParamAndPropertyAncestorTagImpl {
 		PortletResponse portletResponse = (PortletResponse)request.getAttribute(
 			JavaConstants.JAVAX_PORTLET_RESPONSE);
 
-		LiferayPortletResponse3 liferayPortletResponse3 =
-			(LiferayPortletResponse3)PortalUtil.getLiferayPortletResponse(
-				portletResponse);
+		LiferayPortletResponse liferayPortletResponse =
+			PortalUtil.getLiferayPortletResponse(portletResponse);
 
 		if (((copyCurrentRenderParameters != null) &&
 			 copyCurrentRenderParameters) ||
 			lifecycle.equals(PortletRequest.RESOURCE_PHASE)) {
 
-			return liferayPortletResponse3.createLiferayPortletURL(
+			return liferayPortletResponse.createLiferayPortletURL(
 				plid, portletName, lifecycle, MimeResponse.Copy.ALL);
 		}
 
-		return liferayPortletResponse3.createLiferayPortletURL(
+		return liferayPortletResponse.createLiferayPortletURL(
 			plid, portletName, lifecycle, MimeResponse.Copy.NONE);
 	}
 

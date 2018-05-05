@@ -85,6 +85,7 @@ import com.liferay.portal.kernel.xml.QName;
 import com.liferay.portal.kernel.xml.UnsecureSAXReaderUtil;
 import com.liferay.portal.model.impl.EventDefinitionImpl;
 import com.liferay.portal.model.impl.PortletAppImpl;
+import com.liferay.portal.model.impl.PortletDependencyImpl;
 import com.liferay.portal.model.impl.PortletFilterImpl;
 import com.liferay.portal.model.impl.PortletImpl;
 import com.liferay.portal.model.impl.PortletURLListenerImpl;
@@ -2030,6 +2031,15 @@ public class PortletLocalServiceImpl extends PortletLocalServiceBaseImpl {
 			GetterUtil.getBoolean(
 				portletElement.elementText("include"),
 				portletModel.isInclude()));
+		portletModel.setCdnPortletCssDependenciesPath(
+			GetterUtil.getString(
+				portletElement.elementText("cdn-portlet-dependency-path-css"),
+				portletModel.getCdnPortletCssDependenciesPath()));
+		portletModel.setCdnPortletJavaScriptDependenciesPath(
+			GetterUtil.getString(
+				portletElement.elementText(
+					"cdn-portlet-dependency-path-javascript"),
+				portletModel.getCdnPortletJavaScriptDependenciesPath()));
 
 		if (Validator.isNull(servletContextName)) {
 			portletModel.setReady(true);
@@ -2414,13 +2424,35 @@ public class PortletLocalServiceImpl extends PortletLocalServiceBaseImpl {
 			for (Element valueElement :
 					containerRuntimeOptionElement.elements("value")) {
 
-				values.add(valueElement.getTextTrim());
+				String value = valueElement.getTextTrim();
+
+				values.add(value);
 			}
 
 			containerRuntimeOptions.put(
 				containerRuntimeOptionPrefix.concat(name),
 				values.toArray(new String[values.size()]));
 		}
+
+		for (Element dependencyElement :
+				portletElement.elements("dependency")) {
+
+			String name = GetterUtil.getString(
+				dependencyElement.elementText("name"));
+
+			String scope = GetterUtil.getString(
+				dependencyElement.elementText("scope"));
+
+			String version = GetterUtil.getString(
+				dependencyElement.elementText("version"));
+
+			portletModel.addPortletDependency(
+				new PortletDependencyImpl(name, scope, version));
+		}
+
+		portletModel.setAsyncSupported(
+			GetterUtil.getBoolean(
+				portletElement.elementText("async-supported")));
 
 		portletsMap.put(portletId, portletModel);
 	}
@@ -2462,26 +2494,6 @@ public class PortletLocalServiceImpl extends PortletLocalServiceBaseImpl {
 				if (versionAttributeParts.length > 1) {
 					portletApp.setSpecMinorVersion(
 						GetterUtil.getInteger(versionAttributeParts[1]));
-				}
-			}
-		}
-
-		portletApp.setSpecMajorVersion(2);
-		portletApp.setSpecMinorVersion(0);
-
-		Attribute rootVersionAttribute = rootElement.attribute("version");
-
-		if (rootVersionAttribute != null) {
-			String[] portletSpecVersion = StringUtil.split(
-				rootVersionAttribute.getValue(), CharPool.PERIOD);
-
-			if (portletSpecVersion.length > 0) {
-				portletApp.setSpecMajorVersion(
-					GetterUtil.getInteger(portletSpecVersion[0], 2));
-
-				if (portletSpecVersion.length > 1) {
-					portletApp.setSpecMinorVersion(
-						GetterUtil.getInteger(portletSpecVersion[1]));
 				}
 			}
 		}
@@ -2556,7 +2568,9 @@ public class PortletLocalServiceImpl extends PortletLocalServiceBaseImpl {
 			for (Element valueElement :
 					containerRuntimeOptionElement.elements("value")) {
 
-				values.add(valueElement.getTextTrim());
+				String value = valueElement.getTextTrim();
+
+				values.add(value);
 			}
 
 			Map<String, String[]> containerRuntimeOptions =
