@@ -49,6 +49,31 @@ public class PortletAsyncListenerAdapter implements AsyncListener {
 			ResourceRequest resourceRequest, ResourceResponse resourceResponse)
 		throws IllegalStateException {
 
+		try {
+			if (firedOnComplete) {
+				portletAsyncListener.onComplete(
+					new PortletAsyncEvent(
+						_portletAsyncContext, resourceRequest,
+						resourceResponse));
+			}
+
+			if (firedOnError) {
+				portletAsyncListener.onError(
+					new PortletAsyncEvent(
+						_portletAsyncContext, resourceRequest,
+						resourceResponse));
+			}
+
+			if (firedOnTimeout) {
+				portletAsyncListener.onTimeout(
+					new PortletAsyncEvent(
+						_portletAsyncContext, resourceRequest,
+						resourceResponse));
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 		_portletAsyncListenerAdapterEntries.add(
 			new PortletAsyncListenerAdapterEntry(
 				portletAsyncListener, resourceRequest, resourceResponse));
@@ -67,6 +92,8 @@ public class PortletAsyncListenerAdapter implements AsyncListener {
 					_portletAsyncContext, entry._resourceRequest,
 					entry._resourceResponse));
 		}
+
+		firedOnComplete = true;
 	}
 
 	@Override
@@ -82,6 +109,8 @@ public class PortletAsyncListenerAdapter implements AsyncListener {
 					_portletAsyncContext, entry._resourceRequest,
 					entry._resourceResponse));
 		}
+
+		firedOnTimeout = true;
 
 		try {
 			_portletAsyncContext.complete();
@@ -103,6 +132,8 @@ public class PortletAsyncListenerAdapter implements AsyncListener {
 					_portletAsyncContext, entry._resourceRequest,
 					entry._resourceResponse, asyncEvent.getThrowable()));
 		}
+
+		firedOnError = true;
 
 		try {
 			_portletAsyncContext.complete();
@@ -132,6 +163,10 @@ public class PortletAsyncListenerAdapter implements AsyncListener {
 					_portletAsyncContext, entry._resourceRequest,
 					entry._resourceResponse));
 		}
+
+		firedOnComplete = false;
+		firedOnError = false;
+		firedOnTimeout = false;
 	}
 
 	private final List<PortletAsyncListenerAdapterEntry>
@@ -155,5 +190,9 @@ public class PortletAsyncListenerAdapter implements AsyncListener {
 		private final ResourceResponse _resourceResponse;
 
 	}
+	
+	private boolean firedOnComplete;
+	private boolean firedOnTimeout;
+	private boolean firedOnError;
 
 }
