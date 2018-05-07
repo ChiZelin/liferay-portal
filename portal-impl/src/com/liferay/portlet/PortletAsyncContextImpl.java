@@ -29,6 +29,7 @@ import javax.portlet.filter.ResourceResponseWrapper;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.AsyncEvent;
+import javax.servlet.AsyncListener;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletRegistration;
 import javax.servlet.ServletRequest;
@@ -155,6 +156,10 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 			ResourceRequest resourceRequest, ResourceResponse resourceResponse)
 		throws IllegalStateException {
 
+		if (!_resourceRequest.isAsyncStarted() || _calledComplete || _calledDispatch) {
+			throw new IllegalStateException();
+		}
+
 		_portletAsyncListenerAdapter.addListener(
 			portletAsyncListener, resourceRequest, resourceResponse);
 	}
@@ -265,6 +270,22 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 		return true;
 	}
 
+	public void reStart(){
+		_calledDispatch = false;
+		_calledComplete = false;
+		_pendingRunnable = null;
+	}
+
+	public void addPortletAsyncListenerAdapter(){
+		_asyncContext.addListener(_portletAsyncListenerAdapter);
+	}
+
+	public void addPostProcessETagAsyncListener(){
+		if(_postProcessETagAsyncListener != null){
+			_asyncContext.addListener(_postProcessETagAsyncListener);
+		}
+	}
+
 	public boolean isCalledComplete() {
 		return _calledComplete;
 	}
@@ -298,6 +319,12 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 		_pendingRunnable = null;
 	}
 
+	public void setPostProcessETagAsyncListener(
+		AsyncListener postProcessETagAsyncListener){
+
+		_postProcessETagAsyncListener = postProcessETagAsyncListener;
+	}
+
 	private String _getFullPath(String path) {
 		return _resourceRequest.getContextPath().concat(path);
 	}
@@ -310,6 +337,7 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 	private Runnable _pendingRunnable;
 	private final ResourceRequest _resourceRequest;
 	private final ResourceResponse _resourceResponse;
+	private AsyncListener _postProcessETagAsyncListener;
 
 	private class PortletAsyncRunnableWrapper
 		extends CopyThreadLocalCallable<Object> implements Runnable {

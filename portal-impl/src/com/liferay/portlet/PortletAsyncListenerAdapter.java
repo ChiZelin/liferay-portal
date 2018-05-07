@@ -113,8 +113,16 @@ public class PortletAsyncListenerAdapter implements AsyncListener {
 
 	@Override
 	public void onStartAsync(AsyncEvent asyncEvent) throws IOException {
+		List<PortletAsyncListenerAdapterEntry>
+			portletAsyncListenerAdapterEntriesCopy = new ArrayList<>();
+
+		portletAsyncListenerAdapterEntriesCopy.addAll(
+			_portletAsyncListenerAdapterEntries);
+
+		_portletAsyncListenerAdapterEntries.clear();
+
 		for (PortletAsyncListenerAdapterEntry entry :
-			_portletAsyncListenerAdapterEntries) {
+			portletAsyncListenerAdapterEntriesCopy) {
 
 			PortletAsyncListener portletAsyncListener =
 				entry._portletAsyncListener;

@@ -15,9 +15,12 @@
 package com.liferay.portal.servlet.filters.etag;
 
 import com.liferay.portal.kernel.servlet.RestrictedByteBufferCacheServletResponse;
+import com.liferay.portal.kernel.util.JavaConstants;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.servlet.filters.BasePortalFilter;
 import com.liferay.portal.util.PropsValues;
+import com.liferay.portlet.PortletAsyncContextImpl;
+import com.liferay.portlet.ResourceRequestImpl;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -96,9 +99,15 @@ public class ETagFilter extends BasePortalFilter {
 				request, response, restrictedByteBufferCacheServletResponse);
 		}
 		else {
-			AsyncContext asyncContext = request.getAsyncContext();
+			ResourceRequestImpl resourceRequestImpl =
+				(ResourceRequestImpl)request.getAttribute(
+					JavaConstants.JAVAX_PORTLET_REQUEST);
 
-			asyncContext.addListener(new AsyncListener() {
+			PortletAsyncContextImpl portletAsyncContextImpl =
+				(PortletAsyncContextImpl)
+					resourceRequestImpl.getPortletAsyncContext();
+
+			AsyncListener postProcessETagAsyncListener = new AsyncListener() {
 				@Override
 				public void onComplete(AsyncEvent asyncEvent)
 					throws IOException {
@@ -106,6 +115,8 @@ public class ETagFilter extends BasePortalFilter {
 					_postProcessETag(
 						request, response,
 						restrictedByteBufferCacheServletResponse);
+
+					portletAsyncContextImpl.setPostProcessETagAsyncListener(null);
 				}
 
 				@Override
@@ -122,7 +133,14 @@ public class ETagFilter extends BasePortalFilter {
 				public void onStartAsync(AsyncEvent asyncEvent)
 					throws IOException {
 				}
-			});
+			};
+
+			portletAsyncContextImpl.setPostProcessETagAsyncListener(
+				postProcessETagAsyncListener);
+
+			AsyncContext asyncContext = request.getAsyncContext();
+
+			asyncContext.addListener(postProcessETagAsyncListener);
 		}
 	}
 
