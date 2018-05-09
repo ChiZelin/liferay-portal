@@ -197,6 +197,19 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 		_asyncContext.addListener(_portletAsyncListenerAdapter);
 	}
 
+	public void addPostProcessETagAsyncListener(){
+		if(_postProcessETagAsyncListener != null){
+			_asyncContext.addListener(_postProcessETagAsyncListener);
+		}
+	}
+
+	public void addUnsyncPrintWriterPoolListener(){
+		if(_unsyncPrintWriterPoolListener != null){
+			_asyncContext.addListener(
+				_unsyncPrintWriterPoolListener);
+		}
+	}
+
 	public boolean isCalledDispatch() {
 		return _calledDispatch;
 	}
@@ -226,6 +239,18 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 		_pendingRunnable = null;
 	}
 
+	public void setPostProcessETagAsyncListener(
+		AsyncListener postProcessETagAsyncListener){
+
+		_postProcessETagAsyncListener = postProcessETagAsyncListener;
+	}
+
+	public void setUnsyncPrintWriterPoolListener(
+		AsyncListener unsyncPrintWriterPoolListener){
+		_unsyncPrintWriterPoolListener =
+			unsyncPrintWriterPoolListener;
+	}
+
 	private String _getFullPath(String path) {
 		return _resourceRequest.getContextPath().concat(path);
 	}
@@ -250,6 +275,8 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 	private Runnable _pendingRunnable;
 	private final ResourceRequest _resourceRequest;
 	private final ResourceResponse _resourceResponse;
+	private AsyncListener _postProcessETagAsyncListener;
+	private AsyncListener _unsyncPrintWriterPoolListener;
 
 	private class PortletAsyncRunnableWrapper
 		extends CopyThreadLocalCallable<Object> implements Runnable {
