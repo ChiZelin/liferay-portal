@@ -32,6 +32,7 @@ import javax.portlet.filter.ResourceResponseWrapper;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.AsyncEvent;
+import javax.servlet.AsyncListener;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletRequestWrapper;
@@ -84,6 +85,18 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 
 	public void addPortletAsyncListenerAdapter() {
 		_asyncContext.addListener(_portletAsyncListenerAdapter);
+	}
+
+	public void addPostProcessETagAsyncListener() {
+		if (_postProcessETagAsyncListener != null) {
+			_asyncContext.addListener(_postProcessETagAsyncListener);
+		}
+	}
+
+	public void addUnsyncPrintWriterPoolListener() {
+		if (_unsyncPrintWriterPoolListener != null) {
+			_asyncContext.addListener(_unsyncPrintWriterPoolListener);
+		}
 	}
 
 	@Override
@@ -211,9 +224,21 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 		_pendingRunnable = null;
 	}
 
+	public void setPostProcessETagAsyncListener(
+		AsyncListener postProcessETagAsyncListener) {
+
+		_postProcessETagAsyncListener = postProcessETagAsyncListener;
+	}
+
 	@Override
 	public void setTimeout(long timeout) {
 		_asyncContext.setTimeout(timeout);
+	}
+
+	public void setUnsyncPrintWriterPoolListener(
+		AsyncListener unsyncPrintWriterPoolListener) {
+
+		_unsyncPrintWriterPoolListener = unsyncPrintWriterPoolListener;
 	}
 
 	@Override
@@ -248,8 +273,10 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 	private boolean _calledDispatch;
 	private Runnable _pendingRunnable;
 	private final PortletAsyncListenerAdapter _portletAsyncListenerAdapter;
+	private AsyncListener _postProcessETagAsyncListener;
 	private final ResourceRequest _resourceRequest;
 	private final ResourceResponse _resourceResponse;
+	private AsyncListener _unsyncPrintWriterPoolListener;
 
 	private class PortletAsyncRunnableWrapper
 		extends CopyThreadLocalCallable<Object> implements Runnable {

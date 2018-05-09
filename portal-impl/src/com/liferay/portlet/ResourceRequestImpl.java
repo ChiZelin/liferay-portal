@@ -200,6 +200,12 @@ public class ResourceRequestImpl
 
 			((PortletAsyncContextImpl)
 				_portletAsyncContext).addPortletAsyncListenerAdapter();
+
+			((PortletAsyncContextImpl)
+				_portletAsyncContext).addPostProcessETagAsyncListener();
+
+			((PortletAsyncContextImpl)
+				_portletAsyncContext).addUnsyncPrintWriterPoolListener();
 		}
 
 		return _portletAsyncContext;
