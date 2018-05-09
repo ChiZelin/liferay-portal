@@ -207,6 +207,10 @@ public class ResourceRequestImpl
 		return _portletAsyncContext;
 	}
 
+	public void setAsyncStarted(boolean asyncStarted){
+		_asyncStarted = asyncStarted;
+	}
+
 	@Override
 	protected void init(
 		HttpServletRequest request, Portlet portlet,
