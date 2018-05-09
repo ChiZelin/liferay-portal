@@ -19,12 +19,15 @@ import aQute.bnd.annotation.ProviderType;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.model.Portlet;
 import com.liferay.portal.kernel.portlet.InvokerPortlet;
+import com.liferay.portal.kernel.servlet.PortletServlet;
+import com.liferay.portal.kernel.util.JavaConstants;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portlet.internal.PortletAsyncContextImpl;
 import com.liferay.portlet.internal.ResourceParametersImpl;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -43,8 +46,13 @@ import javax.portlet.ResourceResponse;
 import javax.portlet.ResourceURL;
 import javax.portlet.WindowState;
 
+import javax.servlet.AsyncContext;
 import javax.servlet.DispatcherType;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletRequestWrapper;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * @author Brian Wing Shun Chan
@@ -61,10 +69,14 @@ public class ResourceRequestImpl
 
 	@Override
 	public DispatcherType getDispatcherType() {
+		if ((_portletAsyncContext != null) &&
+			((PortletAsyncContextImpl)
+				_portletAsyncContext).isCalledDispatch()) {
 
-		// TODO: portlet3
+			return DispatcherType.ASYNC;
+		}
 
-		return null;
+		return DispatcherType.REQUEST;
 	}
 
 	@Override
@@ -79,6 +91,14 @@ public class ResourceRequestImpl
 
 	@Override
 	public PortletAsyncContext getPortletAsyncContext() {
+		if (!isAsyncSupported() || !isAsyncStarted()) {
+			if(_portletAsyncContext == null){
+				throw new IllegalStateException();
+			}
+		}
+
+		// TODO: portlet3
+
 		return _portletAsyncContext;
 	}
 
@@ -121,10 +141,7 @@ public class ResourceRequestImpl
 
 	@Override
 	public boolean isAsyncStarted() {
-
-		// TODO: portlet3
-
-		return false;
+		return _asyncStarted;
 	}
 
 	@Override
@@ -138,23 +155,49 @@ public class ResourceRequestImpl
 	public PortletAsyncContext startPortletAsync()
 		throws IllegalStateException {
 
-		if (!isAsyncSupported()) {
-			throw new IllegalStateException();
-		}
+		ResourceResponse resourceResponse = (ResourceResponse)getAttribute(
+			JavaConstants.JAVAX_PORTLET_RESPONSE);
 
-		_portletAsyncContext = new PortletAsyncContextImpl();
-
-		return _portletAsyncContext;
+		return startPortletAsync(this, resourceResponse);
 	}
 
 	@Override
 	public PortletAsyncContext startPortletAsync(
 			ResourceRequest resourceRequest, ResourceResponse resourceResponse)
 		throws IllegalStateException {
+		
+		if (!isAsyncSupported()) {
+			throw new IllegalStateException();
+		}
 
-		// TODO: portlet3 - Ignoring ResourceRequest and ResourceResponse
+		_asyncStarted = true;
 
-		_portletAsyncContext = new PortletAsyncContextImpl();
+		HttpServletRequest httpServletRequest =
+			(HttpServletRequest)getAttribute(
+				PortletServlet.PORTLET_SERVLET_REQUEST);
+
+		HttpServletResponse httpServletResponse =
+			(HttpServletResponse)getAttribute(
+				PortletServlet.PORTLET_SERVLET_RESPONSE);
+
+		if(_portletAsyncContext == null){
+			AsyncContext asyncContext =
+				httpServletRequest.startAsync(
+					httpServletRequest, httpServletResponse);
+
+			_portletAsyncContext = new PortletAsyncContextImpl(
+				resourceRequest, resourceResponse, asyncContext);
+		}
+		else{
+			((PortletAsyncContextImpl)
+				_portletAsyncContext).reStart();
+
+			httpServletRequest.startAsync(
+				httpServletRequest, httpServletResponse);
+
+			((PortletAsyncContextImpl)
+				_portletAsyncContext).addPortletAsyncListenerAdapter();
+		}
 
 		return _portletAsyncContext;
 	}
@@ -229,6 +272,7 @@ public class ResourceRequestImpl
 			resourceParameterMap, portletNamespace);
 	}
 
+	private boolean _asyncStarted;
 	private String _cacheablity;
 	private PortletAsyncContext _portletAsyncContext;
 	private String _resourceID;

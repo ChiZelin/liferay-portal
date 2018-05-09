@@ -14,20 +14,64 @@
 
 package com.liferay.portlet.internal;
 
+import com.liferay.petra.string.CharPool;
+import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.executor.CopyThreadLocalCallable;
+import com.liferay.portal.kernel.portlet.LiferayPortletAsyncContext;
+import com.liferay.portal.kernel.util.DefaultThreadLocalBinder;
+import com.liferay.portal.util.DispatchInfoUtil;
+import com.liferay.portlet.AsyncPortletServletRequest;
+import com.liferay.portlet.PortletAsyncListenerAdapter;
+
 import javax.portlet.PortletAsyncContext;
 import javax.portlet.PortletAsyncListener;
 import javax.portlet.PortletException;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
+import javax.portlet.filter.ResourceRequestWrapper;
+import javax.portlet.filter.ResourceResponseWrapper;
+
+import javax.servlet.AsyncContext;
+import javax.servlet.AsyncEvent;
+import javax.servlet.AsyncListener;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletRegistration;
+import javax.servlet.ServletRequestWrapper;
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author Neil Griffin
+ * @author Leon Chi
+ * @author Dante Wang
  */
-public class PortletAsyncContextImpl implements PortletAsyncContext {
+public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
+
+	public PortletAsyncContextImpl(
+		ResourceRequest resourceRequest, ResourceResponse resourceResponse,
+		AsyncContext asyncContext) {
+
+		_resourceRequest = resourceRequest;
+		_resourceResponse = resourceResponse;
+		_asyncContext = asyncContext;
+
+		_portletAsyncListenerAdapter =
+			new PortletAsyncListenerAdapter(this);
+
+		_asyncContext.addListener(_portletAsyncListenerAdapter);
+	}
 
 	@Override
 	public void addListener(PortletAsyncListener portletAsyncListener)
 		throws IllegalStateException {
+
+		addListener(portletAsyncListener, null, null);
 	}
 
 	@Override
@@ -35,10 +79,24 @@ public class PortletAsyncContextImpl implements PortletAsyncContext {
 			PortletAsyncListener portletAsyncListener,
 			ResourceRequest resourceRequest, ResourceResponse resourceResponse)
 		throws IllegalStateException {
+
+		if (!_resourceRequest.isAsyncStarted() || _calledComplete || _calledDispatch) {
+			throw new IllegalStateException();
+		}
+
+		_portletAsyncListenerAdapter.addListener(
+			portletAsyncListener, resourceRequest, resourceResponse);
 	}
 
 	@Override
 	public void complete() throws IllegalStateException {
+		if (!_resourceRequest.isAsyncStarted() || _calledComplete || _calledDispatch) {
+			throw new IllegalStateException();
+		}
+
+		_calledComplete = true;
+
+		_asyncContext.complete();
 	}
 
 	@Override
@@ -53,45 +111,142 @@ public class PortletAsyncContextImpl implements PortletAsyncContext {
 
 			return listenerClass.newInstance();
 		}
-		catch (Exception e) {
+		catch (Throwable e) {
 			throw new PortletException(e);
 		}
 	}
 
 	@Override
 	public void dispatch() throws IllegalStateException {
+		if (!_resourceRequest.isAsyncStarted() || _calledComplete || _calledDispatch) {
+			throw new IllegalStateException();
+		}
+
+		_calledDispatch = true;
+
+		_asyncContext.dispatch();
 	}
 
 	@Override
-	public void dispatch(String s) throws IllegalStateException {
+	public void dispatch(String path) throws IllegalStateException {
+		if (!_resourceRequest.isAsyncStarted() || _calledComplete || _calledDispatch) {
+			throw new IllegalStateException();
+		}
+
+		_calledDispatch = true;
+
+		_asyncContext.dispatch(path);
 	}
 
 	@Override
 	public ResourceRequest getResourceRequest() throws IllegalStateException {
-		return null;
+		return _resourceRequest;
 	}
 
 	@Override
 	public ResourceResponse getResourceResponse() throws IllegalStateException {
-		return null;
+		return _resourceResponse;
 	}
 
 	@Override
 	public long getTimeout() {
-		return 0;
+		return _asyncContext.getTimeout();
 	}
 
 	@Override
 	public boolean hasOriginalRequestAndResponse() {
-		return false;
+		if (_resourceRequest instanceof ResourceRequestWrapper ||
+			_resourceResponse instanceof ResourceResponseWrapper) {
+
+			return false;
+		}
+
+		return true;
+	}
+
+	public void reStart(){
+		_calledDispatch = false;
+		_calledComplete = false;
+		_pendingRunnable = null;
+	}
+
+	public void addPortletAsyncListenerAdapter(){
+		_asyncContext.addListener(_portletAsyncListenerAdapter);
+	}
+
+	public boolean isCalledDispatch() {
+		return _calledDispatch;
 	}
 
 	@Override
 	public void setTimeout(long timeout) {
+		_asyncContext.setTimeout(timeout);
 	}
 
 	@Override
 	public void start(Runnable runnable) throws IllegalStateException {
+		if (!_resourceRequest.isAsyncStarted() || _calledComplete || _calledDispatch) {
+			throw new IllegalStateException();
+		}
+
+		_pendingRunnable = new PortletAsyncRunnableWrapper(runnable);
+	}
+
+	@Override
+	public void doStart() {
+		if (_pendingRunnable == null) {
+			return;
+		}
+
+		_asyncContext.start(_pendingRunnable);
+
+		_pendingRunnable = null;
+	}
+
+	private final PortletAsyncListenerAdapter _portletAsyncListenerAdapter;
+	private AsyncContext _asyncContext;
+	private boolean _calledComplete;
+	private boolean _calledDispatch;
+	private Runnable _pendingRunnable;
+	private final ResourceRequest _resourceRequest;
+	private final ResourceResponse _resourceResponse;
+
+	private class PortletAsyncRunnableWrapper
+		extends CopyThreadLocalCallable<Object> implements Runnable {
+
+		public PortletAsyncRunnableWrapper(Runnable runnable) {
+			super(new DefaultThreadLocalBinder(), false, true);
+
+			_runnable = runnable;
+		}
+
+		@Override
+		public Object doCall() throws Exception {
+			_runnable.run();
+
+			return null;
+		}
+
+		@Override
+		public void run() {
+			try {
+				call();
+			}
+			catch (Throwable t) {
+
+				// Tomcat doesn't invoke onError
+
+				try {
+					_portletAsyncListenerAdapter.onError(
+						new AsyncEvent(_asyncContext, t));
+				}
+				catch (IOException e) {
+				}
+			}
+		}
+
+		private final Runnable _runnable;
+
 	}
 
 }
