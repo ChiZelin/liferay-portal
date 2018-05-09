@@ -65,6 +65,9 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 			new PortletAsyncListenerAdapter(this);
 
 		_asyncContext.addListener(_portletAsyncListenerAdapter);
+
+		_asyncPortletServletRequest =
+			(AsyncPortletServletRequest)_asyncContext.getRequest();
 	}
 
 	@Override
@@ -124,7 +127,18 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 
 		_calledDispatch = true;
 
-		_asyncContext.dispatch();
+		ServletRequest originalRequest = _getOriginalRequest();
+
+		String path = ((HttpServletRequest)originalRequest).getRequestURI();
+
+		path = path.concat("?").concat(
+			((HttpServletRequest)originalRequest).getQueryString());
+
+		ServletContext servletContext = originalRequest.getServletContext();
+
+		DispatchInfoUtil.updateDispatchInfo(_asyncPortletServletRequest, servletContext, path);
+
+		_asyncContext.dispatch(servletContext, path);
 	}
 
 	@Override
@@ -135,7 +149,16 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 
 		_calledDispatch = true;
 
-		_asyncContext.dispatch(path);
+		ServletRequest originalRequest = _getOriginalRequest();
+
+		ServletContext servletContext = originalRequest.getServletContext();
+
+		String fullPath = _getFullPath(path);
+
+		DispatchInfoUtil.updateDispatchInfo(
+			_asyncPortletServletRequest, servletContext, fullPath);
+
+		_asyncContext.dispatch(servletContext, fullPath);
 	}
 
 	@Override
@@ -203,6 +226,23 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 		_pendingRunnable = null;
 	}
 
+	private String _getFullPath(String path) {
+		return _resourceRequest.getContextPath().concat(path);
+	}
+
+	private ServletRequest _getOriginalRequest(){
+
+		ServletRequest originalRequest = _asyncPortletServletRequest;
+
+		while (originalRequest instanceof ServletRequestWrapper) {
+			originalRequest =
+				((ServletRequestWrapper)originalRequest).getRequest();
+		}
+
+		return originalRequest;
+	}
+
+	private AsyncPortletServletRequest _asyncPortletServletRequest;
 	private final PortletAsyncListenerAdapter _portletAsyncListenerAdapter;
 	private AsyncContext _asyncContext;
 	private boolean _calledComplete;

@@ -181,6 +181,8 @@ public class ResourceRequestImpl
 				PortletServlet.PORTLET_SERVLET_RESPONSE);
 
 		if(_portletAsyncContext == null){
+			httpServletRequest = new AsyncPortletServletRequest(httpServletRequest);
+
 			httpServletResponse = new AsyncPortletServletResponse(
 				httpServletResponse);
 
