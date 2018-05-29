@@ -149,6 +149,10 @@ public class ResourceRequestImpl
 		throw new UnsupportedOperationException();
 	}
 
+	public void setAsyncStarted(boolean asyncStarted) {
+		_asyncStarted = asyncStarted;
+	}
+
 	@Override
 	public PortletAsyncContext startPortletAsync()
 		throws IllegalStateException {
