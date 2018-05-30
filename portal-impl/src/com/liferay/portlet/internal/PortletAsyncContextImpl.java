@@ -64,6 +64,11 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 	}
 
 	@Override
+	public void addListener(AsyncListener asyncListener) {
+		_asyncListeners.add(asyncListener);
+	}
+
+	@Override
 	public void addListener(PortletAsyncListener portletAsyncListener)
 		throws IllegalStateException {
 
@@ -157,11 +162,6 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 			_asyncPortletServletRequest, servletContext, fullPath);
 
 		_asyncContext.dispatch(servletContext, fullPath);
-	}
-
-	@Override
-	public void addListener(AsyncListener asyncListener) {
-		_asyncListeners.add(asyncListener);
 	}
 
 	@Override

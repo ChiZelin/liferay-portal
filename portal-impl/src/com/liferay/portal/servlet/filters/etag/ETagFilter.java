@@ -23,6 +23,7 @@ import com.liferay.portal.util.PropsValues;
 import com.liferay.portlet.ResourceRequestImpl;
 
 import java.io.IOException;
+
 import java.nio.ByteBuffer;
 
 import javax.servlet.AsyncContext;
@@ -108,25 +109,17 @@ public class ETagFilter extends BasePortalFilter {
 					resourceRequestImpl.getPortletAsyncContext();
 
 			AsyncListener postProcessETagAsyncListener = new AsyncListener() {
+
 				@Override
 				public void onComplete(AsyncEvent asyncEvent)
 					throws IOException {
 
-					_doPostProcessETag();
+					_cleanUp();
 				}
 
 				@Override
-				public void onTimeout(AsyncEvent asyncEvent)
-					throws IOException {
-
-					_doPostProcessETag();
-				}
-
-				@Override
-				public void onError(AsyncEvent asyncEvent)
-					throws IOException {
-
-					_doPostProcessETag();
+				public void onError(AsyncEvent asyncEvent) throws IOException {
+					_cleanUp();
 				}
 
 				@Override
@@ -134,13 +127,21 @@ public class ETagFilter extends BasePortalFilter {
 					throws IOException {
 				}
 
-				private void _doPostProcessETag() throws IOException {
+				@Override
+				public void onTimeout(AsyncEvent asyncEvent)
+					throws IOException {
+
+					_cleanUp();
+				}
+
+				private void _cleanUp() throws IOException {
 					_postProcessETag(
 						request, response,
 						restrictedByteBufferCacheServletResponse);
 
 					portletAsyncContext.removeListener(this);
 				}
+
 			};
 
 			portletAsyncContext.addListener(postProcessETagAsyncListener);
@@ -162,7 +163,7 @@ public class ETagFilter extends BasePortalFilter {
 				restrictedByteBufferCacheServletResponse.getByteBuffer();
 
 			if (!isEligibleForETag(
-				restrictedByteBufferCacheServletResponse.getStatus()) ||
+					restrictedByteBufferCacheServletResponse.getStatus()) ||
 				!ETagUtil.processETag(request, response, byteBuffer)) {
 
 				restrictedByteBufferCacheServletResponse.flushCache();

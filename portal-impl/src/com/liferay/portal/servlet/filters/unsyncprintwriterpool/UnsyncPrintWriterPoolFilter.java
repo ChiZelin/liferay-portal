@@ -21,13 +21,13 @@ import com.liferay.portal.kernel.util.UnsyncPrintWriterPool;
 import com.liferay.portal.servlet.filters.BasePortalFilter;
 import com.liferay.portlet.ResourceRequestImpl;
 
+import java.io.IOException;
+
 import javax.servlet.AsyncContext;
 import javax.servlet.AsyncEvent;
 import javax.servlet.AsyncListener;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import java.io.IOException;
 
 /**
  * @author Shuyang Zhou
@@ -55,38 +55,39 @@ public class UnsyncPrintWriterPoolFilter
 			AsyncListener unsyncPrintWriterPoolCleanUpAsyncListener =
 				new AsyncListener() {
 
-				@Override
-				public void onComplete(AsyncEvent asyncEvent)
-					throws IOException {
+					@Override
+					public void onComplete(AsyncEvent asyncEvent)
+						throws IOException {
 
-					_doCleanUp();
-				}
+						_cleanUp();
+					}
 
-				@Override
-				public void onTimeout(AsyncEvent asyncEvent)
-					throws IOException {
+					@Override
+					public void onError(AsyncEvent asyncEvent)
+						throws IOException {
 
-					_doCleanUp();
-				}
+						_cleanUp();
+					}
 
-				@Override
-				public void onError(AsyncEvent asyncEvent)
-					throws IOException {
+					@Override
+					public void onStartAsync(AsyncEvent asyncEvent)
+						throws IOException {
+					}
 
-					_doCleanUp();
-				}
+					@Override
+					public void onTimeout(AsyncEvent asyncEvent)
+						throws IOException {
 
-				@Override
-				public void onStartAsync(AsyncEvent asyncEvent)
-					throws IOException {
-				}
+						_cleanUp();
+					}
 
-				private void _doCleanUp() {
-					UnsyncPrintWriterPool.cleanUp();
+					private void _cleanUp() {
+						UnsyncPrintWriterPool.cleanUp();
 
-					portletAsyncContext.removeListener(this);
-				}
-			};
+						portletAsyncContext.removeListener(this);
+					}
+
+				};
 
 			portletAsyncContext.addListener(
 				unsyncPrintWriterPoolCleanUpAsyncListener);
