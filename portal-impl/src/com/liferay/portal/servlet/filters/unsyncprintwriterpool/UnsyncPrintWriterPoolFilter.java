@@ -14,11 +14,11 @@
 
 package com.liferay.portal.servlet.filters.unsyncprintwriterpool;
 
+import com.liferay.portal.kernel.portlet.LiferayPortletAsyncContext;
 import com.liferay.portal.kernel.servlet.TryFinallyFilter;
 import com.liferay.portal.kernel.util.JavaConstants;
 import com.liferay.portal.kernel.util.UnsyncPrintWriterPool;
 import com.liferay.portal.servlet.filters.BasePortalFilter;
-import com.liferay.portlet.internal.PortletAsyncContextImpl;
 import com.liferay.portlet.ResourceRequestImpl;
 
 import javax.servlet.AsyncContext;
@@ -26,6 +26,7 @@ import javax.servlet.AsyncEvent;
 import javax.servlet.AsyncListener;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 
 /**
@@ -47,8 +48,8 @@ public class UnsyncPrintWriterPoolFilter
 				(ResourceRequestImpl)request.getAttribute(
 					JavaConstants.JAVAX_PORTLET_REQUEST);
 
-			PortletAsyncContextImpl portletAsyncContextImpl =
-				(PortletAsyncContextImpl)
+			LiferayPortletAsyncContext portletAsyncContext =
+				(LiferayPortletAsyncContext)
 					resourceRequestImpl.getPortletAsyncContext();
 
 			AsyncListener unsyncPrintWriterPoolCleanUpAsyncListener =
@@ -58,34 +59,40 @@ public class UnsyncPrintWriterPoolFilter
 				public void onComplete(AsyncEvent asyncEvent)
 					throws IOException {
 
-					UnsyncPrintWriterPool.cleanUp();
-
-					portletAsyncContextImpl.setUnsyncPrintWriterPoolListener(
-						null);
+					_doCleanUp();
 				}
 
 				@Override
 				public void onTimeout(AsyncEvent asyncEvent)
 					throws IOException {
+
+					_doCleanUp();
 				}
 
 				@Override
 				public void onError(AsyncEvent asyncEvent)
 					throws IOException {
+
+					_doCleanUp();
 				}
 
 				@Override
 				public void onStartAsync(AsyncEvent asyncEvent)
 					throws IOException {
 				}
+
+				private void _doCleanUp() {
+					UnsyncPrintWriterPool.cleanUp();
+
+					portletAsyncContext.removeListener(this);
+				}
 			};
 
-			portletAsyncContextImpl.setUnsyncPrintWriterPoolListener(
+			portletAsyncContext.addListener(
 				unsyncPrintWriterPoolCleanUpAsyncListener);
 
 			AsyncContext asyncContext = request.getAsyncContext();
 
-			// TODO: Memory leak of the ThreadLocal
 			asyncContext.addListener(unsyncPrintWriterPoolCleanUpAsyncListener);
 		}
 	}

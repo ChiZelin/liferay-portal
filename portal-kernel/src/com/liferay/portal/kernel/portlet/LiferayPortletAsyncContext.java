@@ -16,11 +16,22 @@ package com.liferay.portal.kernel.portlet;
 
 import javax.portlet.PortletAsyncContext;
 
+import javax.servlet.AsyncContext;
+import javax.servlet.AsyncListener;
+
 /**
  * @author Dante Wang
  */
 public interface LiferayPortletAsyncContext extends PortletAsyncContext {
 
+	public void addListener(AsyncListener asyncListener);
+
 	public void doStart();
+
+	public boolean isCalledDispatch();
+
+	public void removeListener(AsyncListener asyncListener);
+
+	public void reset(AsyncContext asyncContext);
 
 }

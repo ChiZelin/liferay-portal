@@ -18,6 +18,7 @@ import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.model.Portlet;
 import com.liferay.portal.kernel.model.PublicRenderParameter;
 import com.liferay.portal.kernel.portlet.InvokerPortlet;
+import com.liferay.portal.kernel.portlet.LiferayPortletAsyncContext;
 import com.liferay.portal.kernel.servlet.PortletServlet;
 import com.liferay.portal.kernel.util.JavaConstants;
 import com.liferay.portal.kernel.util.ParamUtil;
@@ -59,11 +60,8 @@ public class ResourceRequestImpl
 
 	@Override
 	public DispatcherType getDispatcherType() {
-		PortletAsyncContextImpl portletAsyncContextImpl =
-			(PortletAsyncContextImpl)_portletAsyncContext;
-
 		if ((_portletAsyncContext != null) &&
-			portletAsyncContextImpl.isCalledDispatch()) {
+			_portletAsyncContext.isCalledDispatch()) {
 
 			return DispatcherType.ASYNC;
 		}
@@ -88,8 +86,6 @@ public class ResourceRequestImpl
 				throw new IllegalStateException();
 			}
 		}
-
-		// TODO: portlet3
 
 		return _portletAsyncContext;
 	}
@@ -193,19 +189,10 @@ public class ResourceRequestImpl
 				resourceRequest, resourceResponse, asyncContext);
 		}
 		else {
-			((PortletAsyncContextImpl)_portletAsyncContext).reStart();
-
-			httpServletRequest.startAsync(
+			AsyncContext asyncContext = httpServletRequest.startAsync(
 				httpServletRequest, httpServletResponse);
 
-			((PortletAsyncContextImpl)
-				_portletAsyncContext).addPortletAsyncListenerAdapter();
-
-			((PortletAsyncContextImpl)
-				_portletAsyncContext).addPostProcessETagAsyncListener();
-
-			((PortletAsyncContextImpl)
-				_portletAsyncContext).addUnsyncPrintWriterPoolListener();
+			_portletAsyncContext.reset(asyncContext);
 		}
 
 		return _portletAsyncContext;
@@ -242,7 +229,7 @@ public class ResourceRequestImpl
 
 	private boolean _asyncStarted;
 	private String _cacheablity;
-	private PortletAsyncContext _portletAsyncContext;
+	private LiferayPortletAsyncContext _portletAsyncContext;
 	private String _resourceID;
 
 }

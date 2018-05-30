@@ -23,6 +23,9 @@ import com.liferay.portlet.PortletAsyncListenerAdapter;
 
 import java.io.IOException;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.portlet.PortletAsyncListener;
 import javax.portlet.PortletException;
 import javax.portlet.ResourceRequest;
@@ -83,22 +86,6 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 			portletAsyncListener, resourceRequest, resourceResponse);
 	}
 
-	public void addPortletAsyncListenerAdapter() {
-		_asyncContext.addListener(_portletAsyncListenerAdapter);
-	}
-
-	public void addPostProcessETagAsyncListener() {
-		if (_postProcessETagAsyncListener != null) {
-			_asyncContext.addListener(_postProcessETagAsyncListener);
-		}
-	}
-
-	public void addUnsyncPrintWriterPoolListener() {
-		if (_unsyncPrintWriterPoolListener != null) {
-			_asyncContext.addListener(_unsyncPrintWriterPoolListener);
-		}
-	}
-
 	@Override
 	public void complete() throws IllegalStateException {
 		if (!_resourceRequest.isAsyncStarted() || _calledComplete ||
@@ -118,11 +105,6 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 		throws PortletException {
 
 		try {
-
-			// TODO: Needs to support CDI. Would need to delegate to the
-			// BeanPortletInvoker in order to create the managed bean via the
-			// help of the CDI BeanManager.
-
 			return listenerClass.newInstance();
 		}
 		catch (Throwable e) {
@@ -178,6 +160,11 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 	}
 
 	@Override
+	public void addListener(AsyncListener asyncListener) {
+		_asyncListeners.add(asyncListener);
+	}
+
+	@Override
 	public void doStart() {
 		if (_pendingRunnable == null) {
 			return;
@@ -214,31 +201,34 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 		return true;
 	}
 
+	@Override
 	public boolean isCalledDispatch() {
 		return _calledDispatch;
 	}
 
-	public void reStart() {
+	@Override
+	public void removeListener(AsyncListener asyncListener) {
+		_asyncListeners.remove(asyncListener);
+	}
+
+	@Override
+	public void reset(AsyncContext asyncContext) {
 		_calledDispatch = false;
 		_calledComplete = false;
 		_pendingRunnable = null;
-	}
 
-	public void setPostProcessETagAsyncListener(
-		AsyncListener postProcessETagAsyncListener) {
+		_asyncContext = asyncContext;
 
-		_postProcessETagAsyncListener = postProcessETagAsyncListener;
+		_asyncContext.addListener(_portletAsyncListenerAdapter);
+
+		for (AsyncListener asyncListener : _asyncListeners) {
+			_asyncContext.addListener(asyncListener);
+		}
 	}
 
 	@Override
 	public void setTimeout(long timeout) {
 		_asyncContext.setTimeout(timeout);
-	}
-
-	public void setUnsyncPrintWriterPoolListener(
-		AsyncListener unsyncPrintWriterPoolListener) {
-
-		_unsyncPrintWriterPoolListener = unsyncPrintWriterPoolListener;
 	}
 
 	@Override
@@ -267,16 +257,15 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 		return originalRequest;
 	}
 
-	private final AsyncContext _asyncContext;
+	private AsyncContext _asyncContext;
+	private final List<AsyncListener> _asyncListeners = new ArrayList<>();
 	private final AsyncPortletServletRequest _asyncPortletServletRequest;
 	private boolean _calledComplete;
 	private boolean _calledDispatch;
 	private Runnable _pendingRunnable;
 	private final PortletAsyncListenerAdapter _portletAsyncListenerAdapter;
-	private AsyncListener _postProcessETagAsyncListener;
 	private final ResourceRequest _resourceRequest;
 	private final ResourceResponse _resourceResponse;
-	private AsyncListener _unsyncPrintWriterPoolListener;
 
 	private class PortletAsyncRunnableWrapper
 		extends CopyThreadLocalCallable<Object> implements Runnable {
@@ -288,7 +277,7 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 		}
 
 		@Override
-		public Object doCall() throws Exception {
+		public Object doCall() {
 			_runnable.run();
 
 			return null;
@@ -300,9 +289,6 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 				call();
 			}
 			catch (Throwable t) {
-
-				// Tomcat doesn't invoke onError
-
 				try {
 					_portletAsyncListenerAdapter.onError(
 						new AsyncEvent(_asyncContext, t));
