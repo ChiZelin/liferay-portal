@@ -14,7 +14,8 @@
 
 package com.liferay.portlet.internal;
 
-import javax.portlet.PortletAsyncContext;
+import com.liferay.portal.kernel.portlet.LiferayPortletAsyncContext;
+
 import javax.portlet.PortletAsyncListener;
 import javax.portlet.PortletException;
 import javax.portlet.ResourceRequest;
@@ -29,7 +30,7 @@ import javax.servlet.AsyncContext;
  * @author Dante Wang
  * @author Leon Chi
  */
-public class PortletAsyncContextImpl implements PortletAsyncContext {
+public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 
 	public PortletAsyncContextImpl(
 		ResourceRequest resourceRequest, ResourceResponse resourceResponse,
@@ -131,10 +132,12 @@ public class PortletAsyncContextImpl implements PortletAsyncContext {
 		return true;
 	}
 
+	@Override
 	public boolean isCalledDispatch() {
 		return _calledDispatch;
 	}
 
+	@Override
 	public void reset(AsyncContext asyncContext) {
 		_calledDispatch = false;
 		_calledComplete = false;
