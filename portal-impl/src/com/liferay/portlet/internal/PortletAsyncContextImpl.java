@@ -131,6 +131,17 @@ public class PortletAsyncContextImpl implements PortletAsyncContext {
 		return true;
 	}
 
+	public boolean isCalledDispatch() {
+		return _calledDispatch;
+	}
+
+	public void reset(AsyncContext asyncContext) {
+		_calledDispatch = false;
+		_calledComplete = false;
+
+		_asyncContext = asyncContext;
+	}
+
 	@Override
 	public void setTimeout(long timeout) {
 		_asyncContext.setTimeout(timeout);
