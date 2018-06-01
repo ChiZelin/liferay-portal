@@ -21,6 +21,9 @@ import com.liferay.portlet.PortletAsyncListenerAdapter;
 
 import java.io.IOException;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.portlet.PortletAsyncListener;
 import javax.portlet.PortletException;
 import javax.portlet.ResourceRequest;
@@ -30,6 +33,7 @@ import javax.portlet.filter.ResourceResponseWrapper;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.AsyncEvent;
+import javax.servlet.AsyncListener;
 
 /**
  * @author Neil Griffin
@@ -49,6 +53,11 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 		_portletAsyncListenerAdapter = new PortletAsyncListenerAdapter(this);
 
 		_asyncContext.addListener(_portletAsyncListenerAdapter);
+	}
+
+	@Override
+	public void addListener(AsyncListener asyncListener) {
+		_asyncListeners.add(asyncListener);
 	}
 
 	@Override
@@ -160,6 +169,11 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 	}
 
 	@Override
+	public void removeListener(AsyncListener asyncListener) {
+		_asyncListeners.remove(asyncListener);
+	}
+
+	@Override
 	public void reset(AsyncContext asyncContext) {
 		_calledDispatch = false;
 		_calledComplete = false;
@@ -186,6 +200,7 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 	}
 
 	private AsyncContext _asyncContext;
+	private final List<AsyncListener> _asyncListeners = new ArrayList<>();
 	private boolean _calledComplete;
 	private boolean _calledDispatch;
 	private Runnable _pendingRunnable;
