@@ -23,6 +23,8 @@ import javax.servlet.AsyncContext;
  */
 public interface LiferayPortletAsyncContext extends PortletAsyncContext {
 
+	public void doStart();
+
 	public boolean isCalledDispatch();
 
 	public void reset(AsyncContext asyncContext);
