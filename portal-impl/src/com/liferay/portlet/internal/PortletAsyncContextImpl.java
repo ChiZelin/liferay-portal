@@ -15,6 +15,7 @@
 package com.liferay.portlet.internal;
 
 import com.liferay.portal.kernel.portlet.LiferayPortletAsyncContext;
+import com.liferay.portlet.PortletAsyncListenerAdapter;
 
 import javax.portlet.PortletAsyncListener;
 import javax.portlet.PortletException;
@@ -39,15 +40,17 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 		_resourceRequest = resourceRequest;
 		_resourceResponse = resourceResponse;
 		_asyncContext = asyncContext;
+
+		_portletAsyncListenerAdapter = new PortletAsyncListenerAdapter(this);
+
+		_asyncContext.addListener(_portletAsyncListenerAdapter);
 	}
 
 	@Override
 	public void addListener(PortletAsyncListener portletAsyncListener)
 		throws IllegalStateException {
 
-		// TODO
-
-		throw new UnsupportedOperationException();
+		addListener(portletAsyncListener, null, null);
 	}
 
 	@Override
@@ -56,9 +59,12 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 			ResourceRequest resourceRequest, ResourceResponse resourceResponse)
 		throws IllegalStateException {
 
-		// TODO
+		if (!_resourceRequest.isAsyncStarted() || _calledDispatch) {
+			throw new IllegalStateException();
+		}
 
-		throw new UnsupportedOperationException();
+		_portletAsyncListenerAdapter.addListener(
+			portletAsyncListener, resourceRequest, resourceResponse);
 	}
 
 	@Override
@@ -140,6 +146,8 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 		_calledComplete = false;
 
 		_asyncContext = asyncContext;
+
+		_asyncContext.addListener(_portletAsyncListenerAdapter);
 	}
 
 	@Override
@@ -158,6 +166,7 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 	private AsyncContext _asyncContext;
 	private boolean _calledComplete;
 	private boolean _calledDispatch;
+	private final PortletAsyncListenerAdapter _portletAsyncListenerAdapter;
 	private final ResourceRequest _resourceRequest;
 	private final ResourceResponse _resourceResponse;
 
