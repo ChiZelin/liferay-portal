@@ -167,66 +167,66 @@ if (!inTrash) {
 
 			<div class="liferay-rating-vote thumbrating" id="<%= randomNamespace + ratingIdPrefix %>">
 				<div class="helper-clearfix rating-content thumbrating-content" id="<%= randomNamespace + ratingIdPrefix %>Content">
-					<liferay-util:whitespace-remover>
 
-						<%
-						int positiveVotes = (int)Math.round(totalScore);
+					<%
+					int positiveVotes = (int)Math.round(totalScore);
 
-						int negativeVotes = totalEntries - positiveVotes;
+					int negativeVotes = totalEntries - positiveVotes;
 
-						boolean thumbUp = (yourScore != -1.0) && (yourScore >= 0.5);
-						boolean thumbDown = (yourScore != -1.0) && (yourScore < 0.5);
-						%>
+					boolean thumbUp = (yourScore != -1.0) && (yourScore >= 0.5);
+					boolean thumbDown = (yourScore != -1.0) && (yourScore < 0.5);
+					%>
 
-						<c:choose>
-							<c:when test="<%= !themeDisplay.isSignedIn() || !enabled %>">
+					<c:choose>
+						<c:when test="<%= !themeDisplay.isSignedIn() || !enabled %>">
 
-								<%
-								String thumbsTitle = StringPool.BLANK;
+							<%
+							String thumbsTitle = StringPool.BLANK;
 
-								if (inTrash) {
-									thumbsTitle = LanguageUtil.get(resourceBundle, "ratings-are-disabled-because-this-entry-is-in-the-recycle-bin");
-								}
-								else if (!enabled) {
-									thumbsTitle = LanguageUtil.get(resourceBundle, "ratings-are-disabled-in-staging");
-								}
-								%>
+							if (inTrash) {
+								thumbsTitle = LanguageUtil.get(resourceBundle, "ratings-are-disabled-because-this-entry-is-in-the-recycle-bin");
+							}
+							else if (!enabled) {
+								thumbsTitle = LanguageUtil.get(resourceBundle, "ratings-are-disabled-in-staging");
+							}
+							%>
 
-								<span class="btn btn-outline-borderless btn-outline-secondary btn-sm rating-element rating-thumb-up rating-<%= thumbUp ? "on" : "off" %>" title="<%= thumbsTitle %>">
+							<span class="btn btn-outline-borderless btn-outline-secondary btn-sm rating-element rating-thumb-up rating-<%= thumbUp ? "on" : "off" %>" title="<%= thumbsTitle %>">
+								<span class="inline-item inline-item-before">
+									<svg aria-hidden="true" class="lexicon-icon lexicon-icon-thumbs-up">
+										<use xlink:href="<%= themeDisplay.getPathThemeImages() %>/lexicon/icons.svg#thumbs-up" />
+									</svg>
+								</span>
+
+								<%= positiveVotes %>
+							</span>
+
+							<c:if test="<%= type.equals(RatingsType.THUMBS.getValue()) %>">
+								<span class="rating-element rating-thumb-down rating-<%= thumbDown ? "on" : "off" %>" title="<%= thumbsTitle %>">
 									<span class="inline-item inline-item-before">
-										<svg aria-hidden="true" class="lexicon-icon lexicon-icon-thumbs-up">
-											<use xlink:href="<%= themeDisplay.getPathThemeImages() %>/lexicon/icons.svg#thumbs-up" />
+										<svg aria-hidden="true" class="lexicon-icon lexicon-icon-thumbs-down">
+											<use xlink:href="<%= themeDisplay.getPathThemeImages() %>/lexicon/icons.svg#thumbs-down" />
 										</svg>
 									</span>
 
-									<%= positiveVotes %>
+									<%= negativeVotes %>
 								</span>
+							</c:if>
+						</c:when>
+						<c:otherwise>
 
-								<c:if test="<%= type.equals(RatingsType.THUMBS.getValue()) %>">
-									<span class="rating-element rating-thumb-down rating-<%= thumbDown ? "on" : "off" %>" title="<%= thumbsTitle %>">
-										<span class="inline-item inline-item-before">
-											<svg aria-hidden="true" class="lexicon-icon lexicon-icon-thumbs-down">
-												<use xlink:href="<%= themeDisplay.getPathThemeImages() %>/lexicon/icons.svg#thumbs-down" />
-											</svg>
-										</span>
+							<%
+							String positiveRatingMessage = null;
 
-										<%= negativeVotes %>
-									</span>
-								</c:if>
-							</c:when>
-							<c:otherwise>
+							if (type.equals(RatingsType.THUMBS.getValue())) {
+								positiveRatingMessage = (thumbUp) ? "you-have-rated-this-as-good" : "rate-this-as-good";
+							}
+							else {
+								positiveRatingMessage = (thumbUp) ? "unlike-this" : "like-this";
+							}
+							%>
 
-								<%
-								String positiveRatingMessage = null;
-
-								if (type.equals(RatingsType.THUMBS.getValue())) {
-									positiveRatingMessage = (thumbUp) ? "you-have-rated-this-as-good" : "rate-this-as-good";
-								}
-								else {
-									positiveRatingMessage = (thumbUp) ? "unlike-this" : "like-this";
-								}
-								%>
-
+							<liferay-util:whitespace-remover>
 								<a class="btn btn-outline-borderless btn-outline-secondary btn-sm rating-element rating-thumb-up rating-<%= thumbUp ? "on" : "off" %>" href="javascript:;" title="<liferay-ui:message key="<%= positiveRatingMessage %>" />">
 									<span class="inline-item inline-item-before">
 										<svg aria-hidden="true" class="lexicon-icon lexicon-icon-thumbs-up">
@@ -246,27 +246,27 @@ if (!inTrash) {
 										<span class="votes"><%= negativeVotes %></span>
 									</a>
 								</c:if>
+							</liferay-util:whitespace-remover>
 
-								<div class="rating-input-container">
+							<div class="rating-input-container">
+
+								<%
+								String ratingId = PortalUtil.generateRandomKey(request, "taglib_ui_ratings_page_rating");
+								%>
+
+								<input class="rating-input" id="<%= ratingId %>" name="<portlet:namespace /><%= ratingIdPrefix %>" type="radio" value="up">
+
+								<c:if test="<%= type.equals(RatingsType.THUMBS.getValue()) %>">
 
 									<%
-									String ratingId = PortalUtil.generateRandomKey(request, "taglib_ui_ratings_page_rating");
+									ratingId = PortalUtil.generateRandomKey(request, "taglib_ui_ratings_page_rating");
 									%>
 
-									<input class="rating-input" id="<%= ratingId %>" name="<portlet:namespace /><%= ratingIdPrefix %>" type="radio" value="up">
-
-									<c:if test="<%= type.equals(RatingsType.THUMBS.getValue()) %>">
-
-										<%
-										ratingId = PortalUtil.generateRandomKey(request, "taglib_ui_ratings_page_rating");
-										%>
-
-										<input class="rating-input" id="<%= ratingId %>" name="<portlet:namespace /><%= ratingIdPrefix %>" type="radio" value="down">
-									</c:if>
-								</div>
-							</c:otherwise>
-						</c:choose>
-					</liferay-util:whitespace-remover>
+									<input class="rating-input" id="<%= ratingId %>" name="<portlet:namespace /><%= ratingIdPrefix %>" type="radio" value="down">
+								</c:if>
+							</div>
+						</c:otherwise>
+					</c:choose>
 				</div>
 			</div>
 		</c:when>
