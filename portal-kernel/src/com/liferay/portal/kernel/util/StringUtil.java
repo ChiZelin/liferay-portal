@@ -27,12 +27,16 @@ import java.net.URL;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 /**
  * The String utility class.
@@ -2851,11 +2855,57 @@ public class StringUtil {
 			return s;
 		}
 
-		for (int i = 0; i < oldSubs.length; i++) {
-			s = replace(s, oldSubs[i], newSubs[i]);
-		}
+		Map<Integer, Integer> replaceMap = new HashMap<>();
 
-		return s;
+		_initReplaceMap(s, oldSubs, replaceMap);
+
+		if (!replaceMap.isEmpty()) {
+			StringBundler sb = new StringBundler();
+
+			Map.Entry<Integer, Integer> replaceEntry = _getNextReplaceEntry(
+				replaceMap);
+
+			int subsIndex = replaceEntry.getKey();
+			int endIndex = replaceEntry.getValue();
+
+			int length = oldSubs[subsIndex].length();
+			int beginIndex = 0;
+
+			while (beginIndex <= endIndex) {
+				sb.append(s.substring(beginIndex, endIndex));
+				sb.append(newSubs[subsIndex]);
+
+				beginIndex = endIndex + length;
+
+				int indexOf = s.indexOf(oldSubs[subsIndex], beginIndex);
+
+				if (indexOf >= 0) {
+					replaceMap.put(subsIndex, indexOf);
+				}
+				else {
+					replaceMap.remove(subsIndex);
+				}
+
+				if (!replaceMap.isEmpty()) {
+					replaceEntry = _getNextReplaceEntry(replaceMap);
+
+					subsIndex = replaceEntry.getKey();
+					endIndex = replaceEntry.getValue();
+
+					length = oldSubs[subsIndex].length();
+				}
+				else {
+					endIndex = -1;
+				}
+			}
+
+			sb.append(s.substring(beginIndex));
+
+			return sb.toString();
+		}
+		else {
+			return s;
+		}
 	}
 
 	/**
@@ -5176,6 +5226,42 @@ public class StringUtil {
 		'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd',
 		'e', 'f'
 	};
+
+	private static Map.Entry<Integer, Integer> _getNextReplaceEntry(
+		Map<Integer, Integer> replaceMap) {
+
+		Set<Map.Entry<Integer, Integer>> entrySet = replaceMap.entrySet();
+
+		Stream<Map.Entry<Integer, Integer>> stream = entrySet.stream();
+
+		return stream.min(
+			Comparator.comparing(Map.Entry<Integer, Integer>::getValue)
+		).get();
+	}
+
+	private static void _initReplaceMap(
+		String s, String[] oldSubs, Map<Integer, Integer> replaceMap) {
+
+		for (int i = 0; i < oldSubs.length; i++) {
+			if (_isReplaceable(oldSubs, i)) {
+				int indexOf = s.indexOf(oldSubs[i]);
+
+				if (indexOf >= 0) {
+					replaceMap.put(i, indexOf);
+				}
+			}
+		}
+	}
+
+	private static boolean _isReplaceable(String[] oldSubs, int i) {
+		for (int j = 0; j < i; j++) {
+			if (oldSubs[j].indexOf(oldSubs[i]) >= 0) {
+				return false;
+			}
+		}
+
+		return true;
+	}
 
 	/**
 	 * Returns <code>false</code> if the character is not whitespace or is equal
