@@ -62,7 +62,13 @@ public class ResourceRequestImpl
 
 	@Override
 	public DispatcherType getDispatcherType() {
-		return getHttpServletRequest().getDispatcherType();
+		if ((_portletAsyncContext != null) &&
+			_portletAsyncContext.isCalledDispatch()) {
+
+			return DispatcherType.ASYNC;
+		}
+
+		return DispatcherType.REQUEST;
 	}
 
 	@Override
@@ -78,7 +84,9 @@ public class ResourceRequestImpl
 	@Override
 	public PortletAsyncContext getPortletAsyncContext() {
 		if (!isAsyncSupported() || !isAsyncStarted()) {
-			throw new IllegalStateException();
+			if (_portletAsyncContext == null) {
+				throw new IllegalStateException();
+			}
 		}
 
 		return _portletAsyncContext;
@@ -203,11 +211,19 @@ public class ResourceRequestImpl
 			(HttpServletResponse)getAttribute(
 				PortletServlet.PORTLET_SERVLET_RESPONSE);
 
-		AsyncContext asyncContext = httpServletRequest.startAsync(
-			httpServletRequest, httpServletResponse);
+		if (_portletAsyncContext == null) {
+			AsyncContext asyncContext = httpServletRequest.startAsync(
+				httpServletRequest, httpServletResponse);
 
-		_portletAsyncContext = new PortletAsyncContextImpl(
-			resourceRequest, resourceResponse, asyncContext);
+			_portletAsyncContext = new PortletAsyncContextImpl(
+				resourceRequest, resourceResponse, asyncContext);
+		}
+		else {
+			AsyncContext asyncContext = httpServletRequest.startAsync(
+				httpServletRequest, httpServletResponse);
+
+			_portletAsyncContext.reset(asyncContext);
+		}
 
 		return _portletAsyncContext;
 	}
