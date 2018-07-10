@@ -21,6 +21,9 @@ import com.liferay.portlet.PortletAsyncListenerAdapter;
 
 import java.io.IOException;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.portlet.PortletAsyncListener;
 import javax.portlet.PortletException;
 import javax.portlet.ResourceRequest;
@@ -54,10 +57,7 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 
 	@Override
 	public void addListener(AsyncListener asyncListener) {
-
-		// TODO
-
-		throw new UnsupportedOperationException();
+		_asyncListeners.add(asyncListener);
 	}
 
 	@Override
@@ -170,10 +170,7 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 
 	@Override
 	public void removeListener(AsyncListener asyncListener) {
-
-		// TODO
-
-		throw new UnsupportedOperationException();
+		_asyncListeners.remove(asyncListener);
 	}
 
 	@Override
@@ -203,6 +200,7 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 	}
 
 	private AsyncContext _asyncContext;
+	private final List<AsyncListener> _asyncListeners = new ArrayList<>();
 	private boolean _calledComplete;
 	private boolean _calledDispatch;
 	private Runnable _pendingRunnable;
