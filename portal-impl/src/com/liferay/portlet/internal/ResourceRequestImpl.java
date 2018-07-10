@@ -24,6 +24,7 @@ import com.liferay.portal.kernel.util.JavaConstants;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portlet.AsyncPortletServletRequest;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -211,6 +212,9 @@ public class ResourceRequestImpl
 				PortletServlet.PORTLET_SERVLET_RESPONSE);
 
 		if (_portletAsyncContext == null) {
+			httpServletRequest = new AsyncPortletServletRequest(
+				httpServletRequest);
+
 			AsyncContext asyncContext = httpServletRequest.startAsync(
 				httpServletRequest, httpServletResponse);
 
