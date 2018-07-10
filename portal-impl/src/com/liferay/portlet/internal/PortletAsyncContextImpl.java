@@ -14,8 +14,12 @@
 
 package com.liferay.portlet.internal;
 
+import com.liferay.portal.kernel.executor.CopyThreadLocalCallable;
 import com.liferay.portal.kernel.portlet.LiferayPortletAsyncContext;
+import com.liferay.portal.kernel.util.DefaultThreadLocalBinder;
 import com.liferay.portlet.PortletAsyncListenerAdapter;
+
+import java.io.IOException;
 
 import javax.portlet.PortletAsyncListener;
 import javax.portlet.PortletException;
@@ -25,6 +29,7 @@ import javax.portlet.filter.ResourceRequestWrapper;
 import javax.portlet.filter.ResourceResponseWrapper;
 
 import javax.servlet.AsyncContext;
+import javax.servlet.AsyncEvent;
 import javax.servlet.AsyncListener;
 
 /**
@@ -123,10 +128,13 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 
 	@Override
 	public void doStart() {
+		if (_pendingRunnable == null) {
+			return;
+		}
 
-		// TODO
+		_asyncContext.start(_pendingRunnable);
 
-		throw new UnsupportedOperationException();
+		_pendingRunnable = null;
 	}
 
 	@Override
@@ -185,17 +193,59 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 
 	@Override
 	public void start(Runnable runnable) throws IllegalStateException {
+		if (!_resourceRequest.isAsyncStarted() || _calledComplete ||
+			_calledDispatch) {
 
-		// TODO
+			throw new IllegalStateException();
+		}
 
-		throw new UnsupportedOperationException();
+		_pendingRunnable = new PortletAsyncRunnableWrapper(runnable);
 	}
 
 	private AsyncContext _asyncContext;
 	private boolean _calledComplete;
 	private boolean _calledDispatch;
+	private Runnable _pendingRunnable;
 	private final PortletAsyncListenerAdapter _portletAsyncListenerAdapter;
 	private final ResourceRequest _resourceRequest;
 	private final ResourceResponse _resourceResponse;
+
+	private class PortletAsyncRunnableWrapper
+		extends CopyThreadLocalCallable<Object> implements Runnable {
+
+		public PortletAsyncRunnableWrapper(Runnable runnable) {
+			super(new DefaultThreadLocalBinder(), false, true);
+
+			_runnable = runnable;
+		}
+
+		@Override
+		public Object doCall() throws Exception {
+			_runnable.run();
+
+			return null;
+		}
+
+		@Override
+		public void run() {
+			try {
+				call();
+			}
+			catch (Throwable t) {
+
+				// Tomcat doesn't invoke onError
+
+				try {
+					_portletAsyncListenerAdapter.onError(
+						new AsyncEvent(_asyncContext, t));
+				}
+				catch (IOException ioe) {
+				}
+			}
+		}
+
+		private final Runnable _runnable;
+
+	}
 
 }
