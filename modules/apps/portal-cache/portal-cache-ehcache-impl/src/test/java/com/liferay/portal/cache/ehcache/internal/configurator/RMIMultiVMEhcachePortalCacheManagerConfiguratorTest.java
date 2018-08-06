@@ -89,8 +89,6 @@ public class RMIMultiVMEhcachePortalCacheManagerConfiguratorTest {
 
 		_activate(true);
 
-		_rmiMultiVMEhcachePortalCacheManagerConfigurator.activate();
-
 		peerListenerFactoryClass = ReflectionTestUtil.getFieldValue(
 			_rmiMultiVMEhcachePortalCacheManagerConfigurator,
 			"_peerListenerFactoryClass");
