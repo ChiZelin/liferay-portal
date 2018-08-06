@@ -48,10 +48,6 @@ public class PropsInvocationHandler implements InvocationHandler {
 		EHCACHE_RMI_PEER_PROVIDER_FACTORY_PROPERTIES_VALUE =
 			{"value3", "value4"};
 
-	public PropsInvocationHandler() {
-		this(true);
-	}
-
 	public PropsInvocationHandler(boolean clusterEnabled) {
 		_clusterEnabled = clusterEnabled;
 	}
