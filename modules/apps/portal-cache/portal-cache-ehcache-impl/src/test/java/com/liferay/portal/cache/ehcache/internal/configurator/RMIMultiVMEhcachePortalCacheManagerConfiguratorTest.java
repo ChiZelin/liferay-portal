@@ -197,9 +197,7 @@ public class RMIMultiVMEhcachePortalCacheManagerConfiguratorTest {
 			_classLoader, new Class<?>[] {Props.class},
 			new PropsInvocationHandler(clusterEnabled));
 
-		ReflectionTestUtil.setFieldValue(
-			_rmiMultiVMEhcachePortalCacheManagerConfigurator, "props",
-			proxyProps);
+		_rmiMultiVMEhcachePortalCacheManagerConfigurator.setProps(proxyProps);
 
 		_rmiMultiVMEhcachePortalCacheManagerConfigurator.activate();
 	}
