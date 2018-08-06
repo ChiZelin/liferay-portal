@@ -25,6 +25,7 @@ import com.liferay.portal.kernel.util.StringBundler;
 
 import java.util.List;
 
+import com.liferay.portal.kernel.util.StringUtil;
 import net.sf.ehcache.config.Configuration;
 import net.sf.ehcache.config.FactoryConfiguration;
 
@@ -201,24 +202,7 @@ public class RMIMultiVMEhcachePortalCacheManagerConfiguratorTest {
 	}
 
 	private String _getPortalPropertiesString(String[] array) {
-		if (array.length == 0) {
-			return null;
-		}
-
-		if (array.length == 1) {
-			return array[0];
-		}
-
-		StringBundler sb = new StringBundler(array.length * 2);
-
-		for (String value : array) {
-			sb.append(value);
-			sb.append(StringPool.COMMA);
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		return sb.toString();
+		return StringUtil.merge(array, StringPool.COMMA);
 	}
 
 	private static final ClassLoader _classLoader =
