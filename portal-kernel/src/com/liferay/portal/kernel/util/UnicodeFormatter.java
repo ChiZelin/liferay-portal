@@ -70,7 +70,7 @@ public class UnicodeFormatter {
 	}
 
 	public static byte[] hexToBytes(String hexString) {
-		if ((hexString.length() % 2) != 0) {
+		if ((hexString == null) || (hexString.length() % 2) != 0) {
 			return new byte[0];
 		}
 
@@ -91,6 +91,10 @@ public class UnicodeFormatter {
 	}
 
 	public static String parseString(String hexString) {
+		if (hexString == null) {
+			return null;
+		}
+
 		StringBuilder sb = new StringBuilder();
 
 		char[] array = hexString.toCharArray();
@@ -120,6 +124,10 @@ public class UnicodeFormatter {
 	}
 
 	public static String toString(char[] array) {
+		if (array == null) {
+			return null;
+		}
+
 		StringBuilder sb = new StringBuilder(array.length * 6);
 
 		char[] hexes = new char[4];
