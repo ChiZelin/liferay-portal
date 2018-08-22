@@ -146,13 +146,14 @@ public class MethodKeyTest {
 			"com.liferay.portal.kernel.util.MethodKeyTest$TestMethodKey." +
 				"testMethod(java.lang.String)",
 			_methodKey.toString());
+		Assert.assertEquals(
+			"com.liferay.portal.kernel.util.MethodKeyTest$TestMethodKey." +
+				"testMethod(java.lang.String)",
+			ReflectionTestUtil.getFieldValue(_methodKey, "_toString"));
 
-		MethodKey methodKey = new MethodKey(
-			TestClass1.class, "testMethod", String.class);
+		ReflectionTestUtil.setFieldValue(_methodKey, "_toString", "testString");
 
-		ReflectionTestUtil.setFieldValue(methodKey, "_toString", "testString");
-
-		Assert.assertEquals("testString", methodKey.toString());
+		Assert.assertEquals("testString", _methodKey.toString());
 	}
 
 	@Test
