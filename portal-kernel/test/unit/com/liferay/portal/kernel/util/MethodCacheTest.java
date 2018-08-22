@@ -45,12 +45,11 @@ public class MethodCacheTest {
 			MethodCache.class, "_methods");
 
 		MethodKey publicMethodKey = new MethodKey(
-			TestMethodCache.class, "publicMethod", String.class);
+			TestClass.class, "publicMethod", String.class);
 
 		Method method = MethodCache.get(publicMethodKey);
 
 		Assert.assertTrue(method.isAccessible());
-
 		Assert.assertEquals(methods.toString(), 1, methods.size());
 
 		method.setAccessible(false);
@@ -58,7 +57,6 @@ public class MethodCacheTest {
 		Method method1 = MethodCache.get(publicMethodKey);
 
 		Assert.assertSame(method, method1);
-
 		Assert.assertFalse(method.isAccessible());
 		Assert.assertEquals(methods.toString(), 1, methods.size());
 
@@ -67,7 +65,7 @@ public class MethodCacheTest {
 		Assert.assertEquals(methods.toString(), 0, methods.size());
 	}
 
-	private class TestMethodCache {
+	private class TestClass {
 
 		public void publicMethod(String string) {
 		}
