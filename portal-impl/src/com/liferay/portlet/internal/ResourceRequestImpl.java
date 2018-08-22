@@ -191,10 +191,6 @@ public class ResourceRequestImpl
 			throw new IllegalStateException();
 		}
 
-		if (_portletAsyncContextImpl != null) {
-			return _portletAsyncContextImpl;
-		}
-
 		HttpServletRequest httpServletRequest =
 			(HttpServletRequest)getAttribute(
 				PortletServlet.PORTLET_SERVLET_REQUEST);
@@ -203,21 +199,29 @@ public class ResourceRequestImpl
 			(HttpServletResponse)getAttribute(
 				PortletServlet.PORTLET_SERVLET_RESPONSE);
 
-		AsyncContext asyncContext = httpServletRequest.startAsync(
-			httpServletRequest, httpServletResponse);
+		if (_portletAsyncContextImpl == null) {
+			AsyncContext asyncContext = httpServletRequest.startAsync(
+				httpServletRequest, httpServletResponse);
 
-		boolean hasOriginalRequestAndResponse = false;
+			boolean hasOriginalRequestAndResponse = false;
 
-		if ((resourceRequest == this) &&
-			(resourceResponse == getAttribute(
-				JavaConstants.JAVAX_PORTLET_RESPONSE))) {
+			if ((resourceRequest == this) &&
+				(resourceResponse == getAttribute(
+					JavaConstants.JAVAX_PORTLET_RESPONSE))) {
 
-			hasOriginalRequestAndResponse = true;
+				hasOriginalRequestAndResponse = true;
+			}
+
+			_portletAsyncContextImpl = new PortletAsyncContextImpl(
+				resourceRequest, resourceResponse, asyncContext,
+				hasOriginalRequestAndResponse);
 		}
+		else {
+			AsyncContext asyncContext = httpServletRequest.startAsync(
+				httpServletRequest, httpServletResponse);
 
-		_portletAsyncContextImpl = new PortletAsyncContextImpl(
-			resourceRequest, resourceResponse, asyncContext,
-			hasOriginalRequestAndResponse);
+			_portletAsyncContextImpl.reset(asyncContext);
+		}
 
 		//The portletConfig is already set by PortletRequestImpl.defineObjects
 

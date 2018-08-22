@@ -176,10 +176,10 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 
 	@Override
 	public void reset(AsyncContext asyncContext) {
+		_calledDispatch = false;
+		_calledComplete = false;
 
-		// TODO
-
-		throw new UnsupportedOperationException();
+		_asyncContext = asyncContext;
 	}
 
 	@Override
@@ -198,7 +198,7 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 		_asyncContext.start(runnable);
 	}
 
-	private final AsyncContext _asyncContext;
+	private AsyncContext _asyncContext;
 	private boolean _calledComplete;
 	private boolean _calledDispatch;
 	private final boolean _hasOriginalRequestAndResponse;
