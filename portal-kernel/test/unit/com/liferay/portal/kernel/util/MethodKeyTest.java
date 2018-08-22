@@ -42,12 +42,13 @@ public class MethodKeyTest {
 
 	@Before
 	public void setUp() {
-		_methodKey = new MethodKey(_clazz, "testMethod", String.class);
+		_methodKey = new MethodKey(
+			TestClass1.class, "testMethod", String.class);
 	}
 
 	@Test
 	public void testConstructors() throws NoSuchMethodException {
-		Assert.assertEquals(_clazz, _methodKey.getDeclaringClass());
+		Assert.assertEquals(TestClass1.class, _methodKey.getDeclaringClass());
 		Assert.assertEquals("testMethod", _methodKey.getMethodName());
 		Assert.assertEquals(String.class, _methodKey.getParameterTypes()[0]);
 
@@ -57,11 +58,11 @@ public class MethodKeyTest {
 		Assert.assertNull(methodKey.getMethodName());
 		Assert.assertNull(methodKey.getParameterTypes());
 
-		Method method = _clazz.getMethod("testMethod", String.class);
+		Method method = TestClass1.class.getMethod("testMethod", String.class);
 
 		methodKey = new MethodKey(method);
 
-		Assert.assertEquals(_clazz, methodKey.getDeclaringClass());
+		Assert.assertEquals(TestClass1.class, methodKey.getDeclaringClass());
 		Assert.assertEquals("testMethod", methodKey.getMethodName());
 		Assert.assertEquals(String.class, methodKey.getParameterTypes()[0]);
 
@@ -69,12 +70,13 @@ public class MethodKeyTest {
 			"com.liferay.portal.kernel.util.MethodKeyTest$TestMethodKey",
 			"testMethod", String.class);
 
-		Assert.assertEquals(_clazz, methodKey.getDeclaringClass());
+		Assert.assertEquals(TestClass1.class, methodKey.getDeclaringClass());
 		Assert.assertEquals("testMethod", methodKey.getMethodName());
 		Assert.assertEquals(String.class, methodKey.getParameterTypes()[0]);
 
 		try {
 			new MethodKey("ClassNotFound", "testMethod", String.class);
+
 			Assert.fail("No RuntimeException throw!");
 		}
 		catch (RuntimeException re) {
@@ -86,24 +88,26 @@ public class MethodKeyTest {
 	public void testEquals() {
 		Assert.assertTrue(_methodKey.equals(_methodKey));
 
-		TestMethodKey testMethodKey = new TestMethodKey();
+		TestClass1 testClass = new TestClass1();
 
-		Assert.assertFalse(_methodKey.equals(testMethodKey));
+		Assert.assertFalse(_methodKey.equals(testClass));
 
-		MethodKey methodKey = new MethodKey(_clazz, "testMethod", String.class);
+		MethodKey methodKey = new MethodKey(
+			TestClass1.class, "testMethod", String.class);
 
 		Assert.assertTrue(_methodKey.equals(methodKey));
 
-		methodKey = new MethodKey(_clazz, "testMethod", int.class);
-
-		Assert.assertFalse(_methodKey.equals(methodKey));
-
-		methodKey = new MethodKey(_clazz, "testMethod1", String.class);
+		methodKey = new MethodKey(TestClass1.class, "testMethod", int.class);
 
 		Assert.assertFalse(_methodKey.equals(methodKey));
 
 		methodKey = new MethodKey(
-			TestMethodKey1.class, "testMethod", String.class);
+			TestClass1.class, "testMethod1", String.class);
+
+		Assert.assertFalse(_methodKey.equals(methodKey));
+
+		methodKey = new MethodKey(
+			TestClass2.class, "testMethod", String.class);
 
 		Assert.assertFalse(_methodKey.equals(methodKey));
 	}
@@ -114,16 +118,17 @@ public class MethodKeyTest {
 			   NoSuchMethodException {
 
 		Method method = _methodKey.getMethod();
-		TestMethodKey testMethodKey = new TestMethodKey();
 
-		String result = (String)method.invoke(testMethodKey, "test");
+		TestClass1 testClass = new TestClass1();
+
+		String result = (String)method.invoke(testClass, "test");
 
 		Assert.assertEquals("test", result);
 	}
 
 	@Test
 	public void testHashCode() throws NoSuchMethodException {
-		Method method = _clazz.getMethod("testMethod", String.class);
+		Method method = TestClass1.class.getMethod("testMethod", String.class);
 
 		Assert.assertEquals(method.hashCode(), _methodKey.hashCode());
 	}
@@ -135,7 +140,8 @@ public class MethodKeyTest {
 				"testMethod(java.lang.String)",
 			_methodKey.toString());
 
-		MethodKey methodKey = new MethodKey(_clazz, "testMethod", String.class);
+		MethodKey methodKey = new MethodKey(
+			TestClass1.class, "testMethod", String.class);
 
 		ReflectionTestUtil.setFieldValue(methodKey, "_toString", "testString");
 
@@ -182,26 +188,25 @@ public class MethodKeyTest {
 		Assert.assertTrue(_methodKey.equals(methodKey));
 	}
 
-	private final Class<?> _clazz = TestMethodKey.class;
 	private MethodKey _methodKey;
 
-	private class TestMethodKey {
+	private class TestClass1 {
 
-		public void testMethod(int string) {
+		public void testMethod(int parameter) {
 		}
 
-		public String testMethod(String string) {
-			return string;
+		public String testMethod(String parameter) {
+			return parameter;
 		}
 
-		public void testMethod1(String string) {
+		public void testMethod1(String parameter) {
 		}
 
 	}
 
-	private class TestMethodKey1 {
+	private class TestClass2 {
 
-		public void testMethod(String string) {
+		public void testMethod(String parameter) {
 		}
 
 	}
