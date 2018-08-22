@@ -108,8 +108,7 @@ public class MethodKeyTest {
 
 		Assert.assertFalse(_methodKey.equals(methodKey));
 
-		methodKey = new MethodKey(
-			TestClass2.class, "testMethod", String.class);
+		methodKey = new MethodKey(TestClass2.class, "testMethod", String.class);
 
 		Assert.assertFalse(_methodKey.equals(methodKey));
 	}
@@ -174,7 +173,7 @@ public class MethodKeyTest {
 		MethodKey methodKey = new MethodKey();
 
 		try (UnsyncByteArrayOutputStream unsyncByteArrayOutputStream =
-				 new UnsyncByteArrayOutputStream()) {
+				new UnsyncByteArrayOutputStream()) {
 
 			try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(
 					unsyncByteArrayOutputStream)) {
@@ -184,10 +183,10 @@ public class MethodKeyTest {
 
 			try (UnsyncByteArrayInputStream unsyncByteArrayInputStream =
 					new UnsyncByteArrayInputStream(
-						unsyncByteArrayOutputStream.unsafeGetByteArray(),
-						0, unsyncByteArrayOutputStream.size());
+						unsyncByteArrayOutputStream.unsafeGetByteArray(), 0,
+						unsyncByteArrayOutputStream.size());
 				ObjectInputStream objectInputStream = new ObjectInputStream(
-				 	unsyncByteArrayInputStream)) {
+					unsyncByteArrayInputStream)) {
 
 				methodKey.readExternal(objectInputStream);
 			}
