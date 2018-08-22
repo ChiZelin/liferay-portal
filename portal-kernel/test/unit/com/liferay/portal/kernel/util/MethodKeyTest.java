@@ -14,11 +14,11 @@
 
 package com.liferay.portal.kernel.util;
 
+import com.liferay.petra.io.unsync.UnsyncByteArrayInputStream;
+import com.liferay.petra.io.unsync.UnsyncByteArrayOutputStream;
 import com.liferay.portal.kernel.test.ReflectionTestUtil;
 import com.liferay.portal.kernel.test.rule.CodeCoverageAssertor;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -171,27 +171,27 @@ public class MethodKeyTest {
 	public void testWriteAndReadExternal()
 		throws ClassNotFoundException, IOException {
 
-		ByteArrayOutputStream byteArrayOutputStream =
-			new ByteArrayOutputStream();
-
-		ObjectOutputStream objectOutputStream = new ObjectOutputStream(
-			byteArrayOutputStream);
-
-		_methodKey.writeExternal(objectOutputStream);
-
-		objectOutputStream.close();
-
-		ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(
-			byteArrayOutputStream.toByteArray());
-
-		ObjectInputStream objectInputStream = new ObjectInputStream(
-			byteArrayInputStream);
-
 		MethodKey methodKey = new MethodKey();
 
-		methodKey.readExternal(objectInputStream);
+		try (UnsyncByteArrayOutputStream unsyncByteArrayOutputStream =
+				 new UnsyncByteArrayOutputStream()) {
 
-		objectInputStream.close();
+			try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(
+					unsyncByteArrayOutputStream)) {
+
+				_methodKey.writeExternal(objectOutputStream);
+			}
+
+			try (UnsyncByteArrayInputStream unsyncByteArrayInputStream =
+					new UnsyncByteArrayInputStream(
+						unsyncByteArrayOutputStream.unsafeGetByteArray(),
+						0, unsyncByteArrayOutputStream.size());
+				ObjectInputStream objectInputStream = new ObjectInputStream(
+				 	unsyncByteArrayInputStream)) {
+
+				methodKey.readExternal(objectInputStream);
+			}
+		}
 
 		Assert.assertTrue(_methodKey.equals(methodKey));
 	}
