@@ -90,9 +90,9 @@ public class MethodKeyTest {
 	public void testEquals() {
 		Assert.assertTrue(_methodKey.equals(_methodKey));
 
-		TestClass1 testClass = new TestClass1();
+		Object object = new Object();
 
-		Assert.assertFalse(_methodKey.equals(testClass));
+		Assert.assertFalse(_methodKey.equals(object));
 
 		MethodKey methodKey = new MethodKey(
 			TestClass1.class, "testMethod", String.class);
