@@ -119,11 +119,16 @@ public class MethodKeyTest {
 		throws IllegalAccessException, InvocationTargetException,
 			   NoSuchMethodException {
 
-		Method method = _methodKey.getMethod();
+		Method expectedMethod = TestClass1.class.getMethod(
+			"testMethod", String.class);
+
+		Method actualMethod = _methodKey.getMethod();
+
+		Assert.assertEquals(expectedMethod, actualMethod);
 
 		TestClass1 testClass = new TestClass1();
 
-		String result = (String)method.invoke(testClass, "test");
+		String result = (String)actualMethod.invoke(testClass, "test");
 
 		Assert.assertEquals("test", result);
 	}
