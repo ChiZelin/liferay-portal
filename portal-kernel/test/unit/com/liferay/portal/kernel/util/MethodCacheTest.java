@@ -57,7 +57,7 @@ public class MethodCacheTest {
 		Method method1 = MethodCache.get(publicMethodKey);
 
 		Assert.assertSame(method, method1);
-		Assert.assertFalse(method.isAccessible());
+		Assert.assertFalse(method1.isAccessible());
 		Assert.assertEquals(methods.toString(), 1, methods.size());
 
 		MethodCache.reset();
