@@ -256,7 +256,12 @@ public class FinderCacheImplTest {
 
 		finderCacheImpl.setProps(_props);
 
-		finderCacheImpl.activate();
+		try {
+			finderCacheImpl.activate();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 
 		return finderCacheImpl;
 	}
@@ -299,7 +304,12 @@ public class FinderCacheImplTest {
 
 		finderCacheImpl.setProps(props);
 
-		finderCacheImpl.activate();
+		try {
+			finderCacheImpl.activate();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 
 		boolean valueObjectFinderCacheEnabled =
 			ReflectionTestUtil.getFieldValue(
@@ -461,7 +471,12 @@ public class FinderCacheImplTest {
 		finderCacheImpl.setMultiVMPool(multiVMPool);
 		finderCacheImpl.setProps(_props);
 
-		finderCacheImpl.activate();
+		try {
+			finderCacheImpl.activate();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 
 		PortalCache<Serializable, Serializable> portalCache =
 			ReflectionTestUtil.invoke(
@@ -585,7 +600,12 @@ public class FinderCacheImplTest {
 
 		finderCacheImpl.setProps(_props);
 
-		finderCacheImpl.activate();
+		try {
+			finderCacheImpl.activate();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 
 		finderCacheImpl.putResult(finderPath, _KEY1, proxyBaseModel, true);
 
