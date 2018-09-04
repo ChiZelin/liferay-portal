@@ -17,6 +17,8 @@ package com.liferay.portlet.internal;
 import com.liferay.portal.kernel.executor.CopyThreadLocalCallable;
 import com.liferay.portal.kernel.portlet.LiferayPortletAsyncContext;
 import com.liferay.portal.kernel.util.DefaultThreadLocalBinder;
+import com.liferay.portal.util.DispatchInfoUtil;
+import com.liferay.portlet.AsyncPortletServletRequest;
 import com.liferay.portlet.PortletAsyncListenerAdapter;
 
 import java.io.IOException;
@@ -29,6 +31,10 @@ import javax.portlet.ResourceResponse;
 import javax.servlet.AsyncContext;
 import javax.servlet.AsyncEvent;
 import javax.servlet.AsyncListener;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletRequestWrapper;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author Neil Griffin
@@ -85,14 +91,48 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 
 	@Override
 	public void dispatch() throws IllegalStateException {
-		_asyncContext.dispatch();
+		if (!_resourceRequest.isAsyncStarted() || _calledComplete ||
+			_calledDispatch) {
+
+			throw new IllegalStateException();
+		}
+
+		ServletRequest originalRequest = _getOriginalRequest();
+
+		String path = ((HttpServletRequest)originalRequest).getRequestURI();
+
+		path = path.concat("?");
+		path = path.concat(
+			((HttpServletRequest)originalRequest).getQueryString());
+
+		ServletContext servletContext = originalRequest.getServletContext();
+
+		DispatchInfoUtil.updateDispatchInfo(
+			_asyncPortletServletRequest, servletContext, path);
+
+		_asyncContext.dispatch(servletContext, path);
 
 		_calledDispatch = true;
 	}
 
 	@Override
 	public void dispatch(String path) throws IllegalStateException {
-		_asyncContext.dispatch(path);
+		if (!_resourceRequest.isAsyncStarted() || _calledComplete ||
+			_calledDispatch) {
+
+			throw new IllegalStateException();
+		}
+
+		ServletRequest originalRequest = _getOriginalRequest();
+
+		ServletContext servletContext = originalRequest.getServletContext();
+
+		String fullPath = _getFullPath(path);
+
+		DispatchInfoUtil.updateDispatchInfo(
+			_asyncPortletServletRequest, servletContext, fullPath);
+
+		_asyncContext.dispatch(servletContext, fullPath);
 
 		_calledDispatch = true;
 	}
@@ -196,9 +236,32 @@ public class PortletAsyncContextImpl implements LiferayPortletAsyncContext {
 
 			_asyncContext.addListener(_portletAsyncListenerAdapter);
 		}
+
+		if (_asyncPortletServletRequest == null) {
+			_asyncPortletServletRequest =
+				(AsyncPortletServletRequest)_asyncContext.getRequest();
+		}
+	}
+
+	private String _getFullPath(String path) {
+		String contextPath = _resourceRequest.getContextPath();
+
+		return contextPath.concat(path);
+	}
+
+	private ServletRequest _getOriginalRequest() {
+		ServletRequest originalRequest = _asyncPortletServletRequest;
+
+		while (originalRequest instanceof ServletRequestWrapper) {
+			originalRequest =
+				((ServletRequestWrapper)originalRequest).getRequest();
+		}
+
+		return originalRequest;
 	}
 
 	private AsyncContext _asyncContext;
+	private AsyncPortletServletRequest _asyncPortletServletRequest;
 	private boolean _calledComplete;
 	private boolean _calledDispatch;
 	private boolean _hasOriginalRequestAndResponse;
