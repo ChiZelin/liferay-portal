@@ -38,12 +38,21 @@ public class UnicodeFormatter {
 		return new String(array);
 	}
 
+	/**
+	 * @deprecated As of Judson (7.1.x), with no direct replacement
+	 */
+	@Deprecated
 	public static String byteToHex(byte b) {
 		char[] array = {_HEX_DIGITS[(b >> 4) & 0x0f], _HEX_DIGITS[b & 0x0f]};
 
 		return new String(array);
 	}
 
+	/**
+	 * @deprecated As of Judson (7.1.x), replaced by {@link
+	 *             #byteToHex(byte, char[], boolean)}
+	 */
+	@Deprecated
 	public static char[] byteToHex(byte b, char[] hexes) {
 		return byteToHex(b, hexes, false);
 	}
@@ -57,6 +66,10 @@ public class UnicodeFormatter {
 		}
 	}
 
+	/**
+	 * @deprecated As of Judson (7.1.x), with no direct replacement
+	 */
+	@Deprecated
 	public static String charToHex(char c) {
 		byte hi = (byte)(c >>> 8);
 		byte lo = (byte)(c & 0xff);
@@ -119,6 +132,10 @@ public class UnicodeFormatter {
 		return sb.toString();
 	}
 
+	/**
+	 * @deprecated As of Judson (7.1.x), with no direct replacement
+	 */
+	@Deprecated
 	public static String toString(char[] array) {
 		StringBuilder sb = new StringBuilder(array.length * 6);
 
