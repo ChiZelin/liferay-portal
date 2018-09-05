@@ -191,11 +191,10 @@ public class URLCodec {
 			}
 
 			for (int j = byteBuffer.position(); j < byteBuffer.limit(); j++) {
-				sb.append(CharPool.PERCENT);
-
 				UnicodeFormatter.byteToHexCharArray(
 					byteBuffer.get(), hexes, true);
 
+				sb.append(CharPool.PERCENT);
 				sb.append(hexes);
 			}
 		}
