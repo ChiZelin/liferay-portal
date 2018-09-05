@@ -62,10 +62,10 @@ public class UnicodeFormatter {
 	@Deprecated
 	public static char[] byteToHex(byte b, char[] hexes, boolean upperCase) {
 		if (upperCase) {
-			_byteToHexCharArray(b, hexes, _HEX_DIGITS_UPPER_CASE);
+			_byteToHex(b, hexes, _HEX_DIGITS_UPPER_CASE);
 		}
 		else {
-			_byteToHexCharArray(b, hexes, _HEX_DIGITS);
+			_byteToHex(b, hexes, _HEX_DIGITS);
 		}
 
 		return hexes;
@@ -79,10 +79,10 @@ public class UnicodeFormatter {
 		byte b, char[] hexes, boolean upperCase) {
 
 		if (upperCase) {
-			_byteToHexCharArray(b, hexes, _HEX_DIGITS_UPPER_CASE);
+			_byteToHex(b, hexes, _HEX_DIGITS_UPPER_CASE);
 		}
 		else {
-			_byteToHexCharArray(b, hexes, _HEX_DIGITS);
+			_byteToHex(b, hexes, _HEX_DIGITS);
 		}
 	}
 
@@ -154,8 +154,9 @@ public class UnicodeFormatter {
 		char[] hexes = new char[4];
 
 		for (char c : array) {
+			_charToHex(c, hexes);
+
 			sb.append(UNICODE_PREFIX);
-			_charToHexCharArray(c, hexes);
 			sb.append(hexes);
 		}
 
@@ -172,22 +173,21 @@ public class UnicodeFormatter {
 		char[] hexes = new char[4];
 
 		for (int i = 0; i < s.length(); i++) {
+			_charToHex(s.charAt(i), hexes);
+
 			sb.append(UNICODE_PREFIX);
-			_charToHexCharArray(s.charAt(i), hexes);
 			sb.append(hexes);
 		}
 
 		return sb.toString();
 	}
 
-	private static void _byteToHexCharArray(
-		byte b, char[] hexes, char[] table) {
-
+	private static void _byteToHex(byte b, char[] hexes, char[] table) {
 		hexes[0] = table[(b >> 4) & 0x0f];
 		hexes[1] = table[b & 0x0f];
 	}
 
-	private static void _charToHexCharArray(char c, char[] hexes) {
+	private static void _charToHex(char c, char[] hexes) {
 		byte hi = (byte)(c >>> 8);
 		byte lo = (byte)(c & 0xff);
 
