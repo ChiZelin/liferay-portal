@@ -49,7 +49,7 @@ import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Leonardo Barros
- * @author Harlan Bruno
+ * @author Harlan Brun
  */
 @Component(
 	immediate = true,
