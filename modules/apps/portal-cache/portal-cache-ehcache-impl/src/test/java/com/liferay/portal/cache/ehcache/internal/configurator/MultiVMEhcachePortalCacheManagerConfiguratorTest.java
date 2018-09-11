@@ -858,26 +858,26 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest {
 
 	@Test
 	public void testSetProps() {
-		Props proxyProps = (Props)ProxyUtil.newProxyInstance(
+		Props props = (Props)ProxyUtil.newProxyInstance(
 			_classLoader, new Class<?>[] {Props.class},
 			new PropsInvocationHandler(true, true));
 
-		_multiVMEhcachePortalCacheManagerConfigurator.setProps(proxyProps);
+		_multiVMEhcachePortalCacheManagerConfigurator.setProps(props);
 
 		Props proxy = ReflectionTestUtil.getFieldValue(
 			_multiVMEhcachePortalCacheManagerConfigurator, "props");
 
-		Assert.assertSame(proxyProps, proxy);
+		Assert.assertSame(props, proxy);
 	}
 
 	private void _activate(
 		boolean clusterEnabled, boolean bootstrapLoaderEnabled) {
 
-		Props proxyProps = (Props)ProxyUtil.newProxyInstance(
+		Props props = (Props)ProxyUtil.newProxyInstance(
 			_classLoader, new Class<?>[] {Props.class},
 			new PropsInvocationHandler(clusterEnabled, bootstrapLoaderEnabled));
 
-		_multiVMEhcachePortalCacheManagerConfigurator.setProps(proxyProps);
+		_multiVMEhcachePortalCacheManagerConfigurator.setProps(props);
 
 		_multiVMEhcachePortalCacheManagerConfigurator.activate();
 	}
