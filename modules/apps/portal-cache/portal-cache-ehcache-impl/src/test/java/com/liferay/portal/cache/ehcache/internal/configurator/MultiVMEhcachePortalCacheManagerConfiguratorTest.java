@@ -83,11 +83,12 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest {
 			"_replicatorProperties");
 
 		Assert.assertTrue(bootstrapLoaderEnabled);
+		Assert.assertTrue(clusterEnabled);
+
 		Assert.assertEquals(
 			PropsInvocationHandler.
 				EHCACHE_BOOTSTRAP_CACHE_LOADER_PROPERTIES_VALUE,
 			bootstrapLoaderProperties);
-		Assert.assertTrue(clusterEnabled);
 		Assert.assertEquals(
 			StringUtil.merge(
 				PropsInvocationHandler.
