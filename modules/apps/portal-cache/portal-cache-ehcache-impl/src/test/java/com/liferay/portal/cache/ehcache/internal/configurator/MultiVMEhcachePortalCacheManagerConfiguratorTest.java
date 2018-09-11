@@ -117,7 +117,7 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest {
 				_multiVMEhcachePortalCacheManagerConfigurator,
 				"_getMergedPropertiesMap", null, null);
 
-		Assert.assertTrue(MapUtil.isEmpty(mergedPropertiesMap));
+		Assert.assertTrue(mergedPropertiesMap.isEmpty());
 
 		// Test 2: _bootstrapLoaderEnabled is true, _bootstrapLoaderProperties
 		// and _replicatorProperties are non-empty
