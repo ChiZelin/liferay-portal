@@ -44,10 +44,18 @@ public class UnicodeFormatter {
 		return new String(array);
 	}
 
+	/**
+	 * @deprecated As of Judson (7.1.x), replaced by {@link #byteToHex(byte)}
+	 */
+	@Deprecated
 	public static char[] byteToHex(byte b, char[] hexes) {
 		return byteToHex(b, hexes, false);
 	}
 
+	/**
+	 * @deprecated As of Judson (7.1.x), replaced by {@link #byteToHex(byte)}
+	 */
+	@Deprecated
 	public static char[] byteToHex(byte b, char[] hexes, boolean upperCase) {
 		if (upperCase) {
 			return _byteToHex(b, hexes, _HEX_DIGITS_UPPER_CASE);

@@ -130,7 +130,7 @@ public class URLCodec {
 		}
 
 		CharsetEncoder charsetEncoder = null;
-		char[] hexes = new char[2];
+
 		int lastReplacementIndex = 0;
 		StringBuilder sb = null;
 
@@ -193,8 +193,7 @@ public class URLCodec {
 			for (int j = byteBuffer.position(); j < byteBuffer.limit(); j++) {
 				sb.append(CharPool.PERCENT);
 
-				sb.append(
-					UnicodeFormatter.byteToHex(byteBuffer.get(), hexes, true));
+				sb.append(UnicodeFormatter.byteToHex(byteBuffer.get()));
 			}
 		}
 
