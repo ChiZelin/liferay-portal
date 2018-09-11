@@ -109,9 +109,8 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest {
 	public void testGetMergedPropertiesMap() {
 		_activate(true, true);
 
-		// test case1: _bootstrapLoaderEnabled is true,
-		// _bootstrapLoaderProperties and _replicatorProperties are both setted
-		// an empty properties
+		// Test 1: _bootstrapLoaderEnabled is true, _bootstrapLoaderProperties
+		// and _replicatorProperties are empty
 
 		Map<String, ObjectValuePair<Properties, Properties>>
 			mergedPropertiesMap = ReflectionTestUtil.invoke(
@@ -120,9 +119,8 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest {
 
 		Assert.assertTrue(MapUtil.isEmpty(mergedPropertiesMap));
 
-		// test case2: _bootstrapLoaderEnabled is true,
-		// _bootstrapLoaderProperties and _replicatorProperties are both setted
-		// a non-empty properties
+		// Test 2: _bootstrapLoaderEnabled is true, _bootstrapLoaderProperties
+		// and _replicatorProperties are non-empty
 
 		ReflectionTestUtil.setFieldValue(
 			_multiVMEhcachePortalCacheManagerConfigurator,
@@ -182,9 +180,8 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest {
 			Assert.assertTrue((boolean)valueProperties.get("replicator"));
 		}
 
-		// test case3: _bootstrapLoaderEnabled is true,
-		// _bootstrapLoaderProperties is setted an empty properties,
-		// _replicatorProperties is setted a non-empty properties
+		// Test 3: _bootstrapLoaderEnabled is true, _bootstrapLoaderProperties
+		// is empty, _replicatorProperties is non-empty
 
 		ReflectionTestUtil.setFieldValue(
 			_multiVMEhcachePortalCacheManagerConfigurator,
@@ -237,9 +234,8 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest {
 			Assert.assertTrue((boolean)valueProperties.get("replicator"));
 		}
 
-		// test case4: _bootstrapLoaderEnabled is false,
-		// _bootstrapLoaderProperties and _replicatorProperties are both setted
-		// a non-empty properties
+		// Test 4: _bootstrapLoaderEnabled is false, _bootstrapLoaderProperties
+		// and _replicatorProperties are non-empty
 
 		ReflectionTestUtil.setFieldValue(
 			_multiVMEhcachePortalCacheManagerConfigurator,
@@ -342,7 +338,7 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest {
 	public void testManageConfiguration() {
 		_activate(false, true);
 
-		// test case1: clusterEnabled is false
+		// Test 1: clusterEnabled is false
 
 		Configuration configuration = new Configuration();
 
@@ -368,7 +364,7 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest {
 
 		Assert.assertFalse(calledGetDefaultPortalCacheConfiguration.get());
 
-		// test case2: clusterEnabled is true, mergedPropertiesMap is empty
+		// Test 2: clusterEnabled is true, mergedPropertiesMap is empty
 
 		ReflectionTestUtil.setFieldValue(
 			_multiVMEhcachePortalCacheManagerConfigurator, "clusterEnabled",
@@ -396,8 +392,8 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest {
 
 		Assert.assertEquals(1, countGetDefaultPortalCacheConfiguration.get());
 
-		// test case3: clusterEnabled is true, _bootstrapLoaderProperties and
-		// _replicatorProperties are both setted a non-empty properties
+		// Test 3: clusterEnabled is true, _bootstrapLoaderProperties and
+		// _replicatorProperties are non-empty
 
 		ReflectionTestUtil.setFieldValue(
 			_multiVMEhcachePortalCacheManagerConfigurator,
@@ -486,9 +482,8 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest {
 			Assert.assertEquals(1, count);
 		}
 
-		// test case4: clusterEnabled and _bootstrapLoaderEnabled are true,
-		// _bootstrapLoaderProperties is setted an empty properties,
-		// _replicatorProperties is setted a non-empty properties
+		// Test 4: clusterEnabled and _bootstrapLoaderEnabled are true,
+		// _bootstrapLoaderProperties is empty, _replicatorProperties non-empty
 
 		ReflectionTestUtil.setFieldValue(
 			_multiVMEhcachePortalCacheManagerConfigurator,
@@ -537,9 +532,9 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest {
 				(boolean)properties.get(PortalCacheReplicator.REPLICATOR));
 		}
 
-		// test case5: clusterEnabled is true, _bootstrapLoaderEnabled is false,
-		// _bootstrapLoaderProperties is setted an empty properties,
-		// _replicatorProperties is setted a non-empty properties
+		// Test 5: clusterEnabled is true, _bootstrapLoaderEnabled is false,
+		// _bootstrapLoaderProperties is empty, _replicatorProperties is
+		// non-empty
 
 		ReflectionTestUtil.setFieldValue(
 			_multiVMEhcachePortalCacheManagerConfigurator,
@@ -591,9 +586,8 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest {
 				(boolean)properties.get(PortalCacheReplicator.REPLICATOR));
 		}
 
-		// test case6: clusterEnabled is true, _bootstrapLoaderEnabled is true,
-		// _bootstrapLoaderProperties is setted a non-empty properties,
-		// _replicatorProperties is setted an empty properties
+		// Test 6: clusterEnabled is true, _bootstrapLoaderEnabled is true,
+		// _bootstrapLoaderProperties non-empty, _replicatorProperties is empty
 
 		ReflectionTestUtil.setFieldValue(
 			_multiVMEhcachePortalCacheManagerConfigurator,
@@ -638,9 +632,8 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest {
 			Assert.assertNull(propertiesPair.getValue());
 		}
 
-		// test case6: clusterEnabled is true, _bootstrapLoaderEnabled is true,
-		// _bootstrapLoaderProperties and _replicatorProperties are both setted
-		// a non-empty properties
+		// Test 7: clusterEnabled is true, _bootstrapLoaderEnabled is true,
+		// _bootstrapLoaderProperties and _replicatorProperties are non-empty
 
 		ReflectionTestUtil.setFieldValue(
 			_multiVMEhcachePortalCacheManagerConfigurator,
@@ -703,9 +696,8 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest {
 	public void testParseCacheListenerConfigurations() {
 		_activate(false, true);
 
-		// test case1: clusterEnabled is false, _bootstrapLoaderEnabled is true,
-		// _bootstrapLoaderProperties and _replicatorProperties are setted an
-		// empty properties
+		// Test 1: clusterEnabled is false, _bootstrapLoaderEnabled is true,
+		// _bootstrapLoaderProperties and _replicatorProperties are empty
 
 		CacheConfiguration cacheConfiguration = new CacheConfiguration();
 
@@ -724,9 +716,8 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest {
 				portalCacheConfiguration.
 					getPortalCacheListenerPropertiesSet()));
 
-		// test case2: clusterEnabled and _bootstrapLoaderEnabled are true,
-		// _bootstrapLoaderProperties and _replicatorProperties are setted an
-		// empty properties
+		// Test 2: clusterEnabled and _bootstrapLoaderEnabled are true,
+		// _bootstrapLoaderProperties and _replicatorProperties are empty
 
 		ReflectionTestUtil.setFieldValue(
 			_multiVMEhcachePortalCacheManagerConfigurator, "clusterEnabled",
@@ -773,9 +764,8 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest {
 				(Boolean)properties.get(PortalCacheReplicator.REPLICATOR));
 		}
 
-		// test case3: clusterEnabled is true, _bootstrapLoaderEnabled is false,
-		// _bootstrapLoaderProperties and _replicatorProperties are setted an
-		// empty properties
+		// Test 3: clusterEnabled is true, _bootstrapLoaderEnabled is false,
+		// _bootstrapLoaderProperties and _replicatorProperties are empty
 
 		ReflectionTestUtil.setFieldValue(
 			_multiVMEhcachePortalCacheManagerConfigurator,
@@ -813,9 +803,8 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest {
 				(Boolean)properties.get(PortalCacheReplicator.REPLICATOR));
 		}
 
-		// test case4: clusterEnabled and _bootstrapLoaderEnabled are true,
-		// _bootstrapLoaderProperties and _replicatorProperties are setted a
-		// non-empty properties
+		// Test 4: clusterEnabled and _bootstrapLoaderEnabled are true,
+		// _bootstrapLoaderProperties and _replicatorProperties are non-empty
 
 		ReflectionTestUtil.setFieldValue(
 			_multiVMEhcachePortalCacheManagerConfigurator,
