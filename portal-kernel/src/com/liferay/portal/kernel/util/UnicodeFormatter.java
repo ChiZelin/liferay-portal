@@ -132,8 +132,10 @@ public class UnicodeFormatter {
 		char[] hexes = new char[4];
 
 		for (char c : array) {
+			_charToHex(c, hexes);
+
 			sb.append(UNICODE_PREFIX);
-			sb.append(_charToHex(c, hexes));
+			sb.append(hexes);
 		}
 
 		return sb.toString();
@@ -149,8 +151,10 @@ public class UnicodeFormatter {
 		char[] hexes = new char[4];
 
 		for (int i = 0; i < s.length(); i++) {
+			_charToHex(s.charAt(i), hexes);
+
 			sb.append(UNICODE_PREFIX);
-			sb.append(_charToHex(s.charAt(i), hexes));
+			sb.append(hexes);
 		}
 
 		return sb.toString();
@@ -163,7 +167,7 @@ public class UnicodeFormatter {
 		return hexes;
 	}
 
-	private static char[] _charToHex(char c, char[] hexes) {
+	private static void _charToHex(char c, char[] hexes) {
 		byte hi = (byte)(c >>> 8);
 		byte lo = (byte)(c & 0xff);
 
@@ -171,8 +175,6 @@ public class UnicodeFormatter {
 		hexes[1] = _HEX_DIGITS[hi & 0x0f];
 		hexes[2] = _HEX_DIGITS[(lo >> 4) & 0x0f];
 		hexes[3] = _HEX_DIGITS[lo & 0x0f];
-
-		return hexes;
 	}
 
 	private static final char[] _HEX_DIGITS = {
