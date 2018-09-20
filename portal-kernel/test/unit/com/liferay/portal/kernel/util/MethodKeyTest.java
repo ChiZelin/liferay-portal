@@ -25,10 +25,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import java.net.MalformedURLException;
 import java.net.URLClassLoader;
 
 import java.util.Map;
@@ -121,12 +119,11 @@ public class MethodKeyTest {
 	}
 
 	@Test
-	public void testGetMethodAndResetCache()
-		throws IllegalAccessException, InvocationTargetException,
-			   NoSuchMethodException {
-
+	public void testGetMethodAndResetCache() throws NoSuchMethodException {
 		Map<MethodKey, Method> methods = ReflectionTestUtil.getFieldValue(
 			MethodKey.class, "_methods");
+
+		// Test 1, MethodKey.getMethod returns and caches the method
 
 		Method expectedMethod = TestClass1.class.getMethod(
 			"testMethod", String.class);
@@ -134,20 +131,22 @@ public class MethodKeyTest {
 		Method actualMethod = _methodKey.getMethod();
 
 		Assert.assertEquals(expectedMethod, actualMethod);
-
 		Assert.assertTrue(actualMethod.isAccessible());
 
 		Assert.assertEquals(methods.toString(), 1, methods.size());
+
+		// Test 2, method is retrieved from cache and set accessible
 
 		actualMethod.setAccessible(false);
 
 		Method actualMethod1 = _methodKey.getMethod();
 
 		Assert.assertSame(actualMethod, actualMethod1);
-
 		Assert.assertTrue(actualMethod1.isAccessible());
 
 		Assert.assertEquals(methods.toString(), 1, methods.size());
+
+		// Test 3, resetCache() clears the method cache
 
 		MethodKey.resetCache();
 
@@ -193,13 +192,13 @@ public class MethodKeyTest {
 
 		constructor.setAccessible(true);
 
-		Object object = constructor.newInstance(
+		Object testClass1Instance = constructor.newInstance(
 			methodKeyTestClazz.newInstance());
 
 		Method method = _methodKey.getMethod();
 
 		try {
-			method.invoke(object, "test");
+			method.invoke(testClass1Instance, "test");
 
 			Assert.fail("No IllegalArgumentException thrown!");
 		}
@@ -213,7 +212,7 @@ public class MethodKeyTest {
 
 		method = methodKey.getMethod();
 
-		Assert.assertEquals("test", (String)method.invoke(object, "test"));
+		Assert.assertEquals("test", method.invoke(testClass1Instance, "test"));
 	}
 
 	@Test
