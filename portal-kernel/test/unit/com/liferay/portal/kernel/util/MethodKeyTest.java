@@ -178,11 +178,7 @@ public class MethodKeyTest {
 	}
 
 	@Test
-	public void testTransform()
-		throws ClassNotFoundException, IllegalAccessException,
-			   InstantiationException, InvocationTargetException,
-			   MalformedURLException, NoSuchMethodException {
-
+	public void testTransform() throws Exception {
 		ClassLoader newClassLoader = new URLClassLoader(
 			ClassPathUtil.getClassPathURLs(ClassPathUtil.getJVMClassPath(true)),
 			null);
