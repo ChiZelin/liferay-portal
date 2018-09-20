@@ -183,23 +183,22 @@ public class MethodKeyTest {
 			   InstantiationException, InvocationTargetException,
 			   MalformedURLException, NoSuchMethodException {
 
-		String classPath = ClassPathUtil.getJVMClassPath(true);
-
 		ClassLoader newClassLoader = new URLClassLoader(
-			ClassPathUtil.getClassPathURLs(classPath), null);
+			ClassPathUtil.getClassPathURLs(ClassPathUtil.getJVMClassPath(true)),
+			null);
 
-		Class<?> methodKeyTestclazz = newClassLoader.loadClass(
+		Class<?> methodKeyTestClazz = newClassLoader.loadClass(
 			"com.liferay.portal.kernel.util.MethodKeyTest");
-		Class<?> testClass1clazz = newClassLoader.loadClass(
+		Class<?> testClass1Clazz = newClassLoader.loadClass(
 			"com.liferay.portal.kernel.util.MethodKeyTest$TestClass1");
 
-		Constructor constructor = testClass1clazz.getDeclaredConstructor(
-			methodKeyTestclazz);
+		Constructor constructor = testClass1Clazz.getDeclaredConstructor(
+			methodKeyTestClazz);
 
 		constructor.setAccessible(true);
 
 		Object object = constructor.newInstance(
-			methodKeyTestclazz.newInstance());
+			methodKeyTestClazz.newInstance());
 
 		Method method = _methodKey.getMethod();
 
@@ -218,9 +217,7 @@ public class MethodKeyTest {
 
 		method = methodKey.getMethod();
 
-		String result = (String)method.invoke(object, "test");
-
-		Assert.assertEquals("test", result);
+		Assert.assertEquals("test", (String)method.invoke(object, "test"));
 	}
 
 	@Test
