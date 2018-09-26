@@ -82,7 +82,9 @@ public class MethodKeyTest {
 			Assert.fail("No RuntimeException thrown!");
 		}
 		catch (RuntimeException re) {
-			Assert.assertTrue(re.getCause() instanceof ClassNotFoundException);
+			Assert.assertTrue(
+				"The cause is not ClassNotFoundException",
+				re.getCause() instanceof ClassNotFoundException);
 		}
 	}
 
@@ -134,7 +136,9 @@ public class MethodKeyTest {
 		Method actualMethod1 = methodKey.getMethod();
 
 		Assert.assertEquals(expectedMethod, actualMethod1);
-		Assert.assertTrue(actualMethod1.isAccessible());
+		Assert.assertTrue(
+			"The method obtained from MethodKey is not accessible",
+			actualMethod1.isAccessible());
 
 		Assert.assertEquals(methods.toString(), 1, methods.size());
 
@@ -145,7 +149,9 @@ public class MethodKeyTest {
 		Method actualMethod2 = methodKey.getMethod();
 
 		Assert.assertSame(actualMethod2, actualMethod1);
-		Assert.assertTrue(actualMethod2.isAccessible());
+		Assert.assertTrue(
+			"The method obtained from MethodKey is not accessible",
+			actualMethod2.isAccessible());
 
 		Assert.assertEquals(methods.toString(), 1, methods.size());
 
