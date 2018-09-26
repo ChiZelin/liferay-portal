@@ -45,19 +45,16 @@ public class MethodKeyTest {
 	public static final CodeCoverageAssertor codeCoverageAssertor =
 		CodeCoverageAssertor.INSTANCE;
 
-	@Before
-	public void setUp() {
-		_methodKey = new MethodKey(
-			TestClass.class, "testMethod", String.class);
-	}
-
 	@Test
 	public void testConstructors() throws NoSuchMethodException {
-		Assert.assertEquals(TestClass.class, _methodKey.getDeclaringClass());
-		Assert.assertEquals("testMethod", _methodKey.getMethodName());
-		Assert.assertEquals(String.class, _methodKey.getParameterTypes()[0]);
+		MethodKey methodKey = new MethodKey(
+			TestClass.class, "testMethod", String.class);
 
-		MethodKey methodKey = new MethodKey();
+		Assert.assertEquals(TestClass.class, methodKey.getDeclaringClass());
+		Assert.assertEquals("testMethod", methodKey.getMethodName());
+		Assert.assertEquals(String.class, methodKey.getParameterTypes()[0]);
+
+		methodKey = new MethodKey();
 
 		Assert.assertNull(methodKey.getDeclaringClass());
 		Assert.assertNull(methodKey.getMethodName());
@@ -91,29 +88,34 @@ public class MethodKeyTest {
 
 	@Test
 	public void testEquals() {
-		Assert.assertTrue(_methodKey.equals(_methodKey));
-
-		Object object = new Object();
-
-		Assert.assertFalse(_methodKey.equals(object));
-
 		MethodKey methodKey = new MethodKey(
 			TestClass.class, "testMethod", String.class);
 
-		Assert.assertTrue(_methodKey.equals(methodKey));
+		Assert.assertTrue(methodKey.equals(methodKey));
 
-		methodKey = new MethodKey(TestClass.class, "testMethod", int.class);
+		Object object = new Object();
 
-		Assert.assertFalse(_methodKey.equals(methodKey));
+		Assert.assertFalse(methodKey.equals(object));
 
-		methodKey = new MethodKey(
+		MethodKey anotherMethodKey = new MethodKey(
+			TestClass.class, "testMethod", String.class);
+
+		Assert.assertTrue(methodKey.equals(anotherMethodKey));
+
+		anotherMethodKey = new MethodKey(
+			TestClass.class, "testMethod", int.class);
+
+		Assert.assertFalse(methodKey.equals(anotherMethodKey));
+
+		anotherMethodKey = new MethodKey(
 			TestClass.class, "anotherTestMethod", String.class);
 
-		Assert.assertFalse(_methodKey.equals(methodKey));
+		Assert.assertFalse(methodKey.equals(anotherMethodKey));
 
-		methodKey = new MethodKey(Object.class, "testMethod", String.class);
+		anotherMethodKey = new MethodKey(
+			Object.class, "testMethod", String.class);
 
-		Assert.assertFalse(_methodKey.equals(methodKey));
+		Assert.assertFalse(methodKey.equals(anotherMethodKey));
 	}
 
 	@Test
@@ -121,12 +123,15 @@ public class MethodKeyTest {
 		Map<MethodKey, Method> methods = ReflectionTestUtil.getFieldValue(
 			MethodKey.class, "_methods");
 
+		MethodKey methodKey = new MethodKey(
+			TestClass.class, "testMethod", String.class);
+
 		// Test 1, MethodKey.getMethod returns and caches the method
 
 		Method expectedMethod = TestClass.class.getMethod(
 			"testMethod", String.class);
 
-		Method actualMethod1 = _methodKey.getMethod();
+		Method actualMethod1 = methodKey.getMethod();
 
 		Assert.assertEquals(expectedMethod, actualMethod1);
 		Assert.assertTrue(actualMethod1.isAccessible());
@@ -137,7 +142,7 @@ public class MethodKeyTest {
 
 		actualMethod1.setAccessible(false);
 
-		Method actualMethod2 = _methodKey.getMethod();
+		Method actualMethod2 = methodKey.getMethod();
 
 		Assert.assertSame(actualMethod2, actualMethod1);
 		Assert.assertTrue(actualMethod2.isAccessible());
@@ -155,23 +160,29 @@ public class MethodKeyTest {
 	public void testHashCode() throws NoSuchMethodException {
 		Method method = TestClass.class.getMethod("testMethod", String.class);
 
-		Assert.assertEquals(method.hashCode(), _methodKey.hashCode());
+		MethodKey methodKey = new MethodKey(
+			TestClass.class, "testMethod", String.class);
+
+		Assert.assertEquals(method.hashCode(), methodKey.hashCode());
 	}
 
 	@Test
 	public void testToString() {
+		MethodKey methodKey = new MethodKey(
+			TestClass.class, "testMethod", String.class);
+
 		Assert.assertEquals(
 			"com.liferay.portal.kernel.util.MethodKeyTest$TestClass1." +
 				"testMethod(java.lang.String)",
-			_methodKey.toString());
+			methodKey.toString());
 		Assert.assertEquals(
 			"com.liferay.portal.kernel.util.MethodKeyTest$TestClass1." +
 				"testMethod(java.lang.String)",
-			ReflectionTestUtil.getFieldValue(_methodKey, "_toString"));
+			ReflectionTestUtil.getFieldValue(methodKey, "_toString"));
 
-		ReflectionTestUtil.setFieldValue(_methodKey, "_toString", "testString");
+		ReflectionTestUtil.setFieldValue(methodKey, "_toString", "testString");
 
-		Assert.assertEquals("testString", _methodKey.toString());
+		Assert.assertEquals("testString", methodKey.toString());
 	}
 
 	@Test
@@ -193,7 +204,10 @@ public class MethodKeyTest {
 		Object testClass1Instance = constructor.newInstance(
 			methodKeyTestClazz.newInstance());
 
-		Method method = _methodKey.getMethod();
+		MethodKey originalMethodKey = new MethodKey(
+			TestClass.class, "testMethod", String.class);
+
+		Method method = originalMethodKey.getMethod();
 
 		try {
 			method.invoke(testClass1Instance, "test");
@@ -206,9 +220,10 @@ public class MethodKeyTest {
 				iae.getMessage());
 		}
 
-		MethodKey methodKey = _methodKey.transform(newClassLoader);
+		MethodKey transformedMethodKey = originalMethodKey.transform(
+			newClassLoader);
 
-		method = methodKey.getMethod();
+		method = transformedMethodKey.getMethod();
 
 		Assert.assertEquals("test", method.invoke(testClass1Instance, "test"));
 	}
@@ -217,7 +232,10 @@ public class MethodKeyTest {
 	public void testWriteAndReadExternal()
 		throws ClassNotFoundException, IOException {
 
-		MethodKey methodKey = new MethodKey();
+		MethodKey originalMethodKey = new MethodKey(
+			TestClass.class, "testMethod", String.class);
+
+		MethodKey deserializedMethodKey = new MethodKey();
 
 		try (UnsyncByteArrayOutputStream unsyncByteArrayOutputStream =
 				new UnsyncByteArrayOutputStream()) {
@@ -225,7 +243,7 @@ public class MethodKeyTest {
 			try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(
 					unsyncByteArrayOutputStream)) {
 
-				_methodKey.writeExternal(objectOutputStream);
+				originalMethodKey.writeExternal(objectOutputStream);
 			}
 
 			try (UnsyncByteArrayInputStream unsyncByteArrayInputStream =
@@ -235,14 +253,12 @@ public class MethodKeyTest {
 				ObjectInputStream objectInputStream = new ObjectInputStream(
 					unsyncByteArrayInputStream)) {
 
-				methodKey.readExternal(objectInputStream);
+				deserializedMethodKey.readExternal(objectInputStream);
 			}
 		}
 
-		Assert.assertTrue(_methodKey.equals(methodKey));
+		Assert.assertTrue(originalMethodKey.equals(deserializedMethodKey));
 	}
-
-	private MethodKey _methodKey;
 
 	private class TestClass {
 
