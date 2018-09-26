@@ -32,7 +32,6 @@ import java.net.URLClassLoader;
 import java.util.Map;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 
