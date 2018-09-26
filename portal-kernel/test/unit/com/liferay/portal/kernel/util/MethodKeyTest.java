@@ -91,31 +91,31 @@ public class MethodKeyTest {
 		MethodKey methodKey = new MethodKey(
 			TestClass.class, "testMethod", String.class);
 
-		Assert.assertTrue(methodKey.equals(methodKey));
+		Assert.assertEquals(methodKey, methodKey);
 
 		Object object = new Object();
 
-		Assert.assertFalse(methodKey.equals(object));
+		Assert.assertNotEquals(methodKey, object);
 
 		MethodKey anotherMethodKey = new MethodKey(
 			TestClass.class, "testMethod", String.class);
 
-		Assert.assertTrue(methodKey.equals(anotherMethodKey));
+		Assert.assertEquals(methodKey, anotherMethodKey);
 
 		anotherMethodKey = new MethodKey(
 			TestClass.class, "testMethod", int.class);
 
-		Assert.assertFalse(methodKey.equals(anotherMethodKey));
+		Assert.assertNotEquals(methodKey, anotherMethodKey);
 
 		anotherMethodKey = new MethodKey(
 			TestClass.class, "anotherTestMethod", String.class);
 
-		Assert.assertFalse(methodKey.equals(anotherMethodKey));
+		Assert.assertNotEquals(methodKey, anotherMethodKey);
 
 		anotherMethodKey = new MethodKey(
 			Object.class, "testMethod", String.class);
 
-		Assert.assertFalse(methodKey.equals(anotherMethodKey));
+		Assert.assertNotEquals(methodKey, anotherMethodKey);
 	}
 
 	@Test
@@ -257,7 +257,7 @@ public class MethodKeyTest {
 			}
 		}
 
-		Assert.assertTrue(originalMethodKey.equals(deserializedMethodKey));
+		Assert.assertEquals(originalMethodKey, deserializedMethodKey);
 	}
 
 	private class TestClass {
