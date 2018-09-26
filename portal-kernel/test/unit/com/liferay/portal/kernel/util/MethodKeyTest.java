@@ -113,7 +113,7 @@ public class MethodKeyTest {
 
 		Assert.assertFalse(_methodKey.equals(methodKey));
 
-		methodKey = new MethodKey(TestClass2.class, "testMethod", String.class);
+		methodKey = new MethodKey(Object.class, "testMethod", String.class);
 
 		Assert.assertFalse(_methodKey.equals(methodKey));
 	}
@@ -256,13 +256,6 @@ public class MethodKeyTest {
 		}
 
 		public void testMethod1(String parameter) {
-		}
-
-	}
-
-	private class TestClass2 {
-
-		public void testMethod(String parameter) {
 		}
 
 	}
