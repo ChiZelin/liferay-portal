@@ -107,7 +107,7 @@ public class MethodKeyTest {
 		Assert.assertFalse(_methodKey.equals(methodKey));
 
 		methodKey = new MethodKey(
-			TestClass.class, "testMethod1", String.class);
+			TestClass.class, "anotherTestMethod", String.class);
 
 		Assert.assertFalse(_methodKey.equals(methodKey));
 
@@ -126,21 +126,21 @@ public class MethodKeyTest {
 		Method expectedMethod = TestClass.class.getMethod(
 			"testMethod", String.class);
 
-		Method actualMethod = _methodKey.getMethod();
+		Method actualMethod1 = _methodKey.getMethod();
 
-		Assert.assertEquals(expectedMethod, actualMethod);
-		Assert.assertTrue(actualMethod.isAccessible());
+		Assert.assertEquals(expectedMethod, actualMethod1);
+		Assert.assertTrue(actualMethod1.isAccessible());
 
 		Assert.assertEquals(methods.toString(), 1, methods.size());
 
 		// Test 2, method is retrieved from cache and set accessible
 
-		actualMethod.setAccessible(false);
+		actualMethod1.setAccessible(false);
 
-		Method actualMethod1 = _methodKey.getMethod();
+		Method actualMethod2 = _methodKey.getMethod();
 
-		Assert.assertSame(actualMethod, actualMethod1);
-		Assert.assertTrue(actualMethod1.isAccessible());
+		Assert.assertSame(actualMethod2, actualMethod1);
+		Assert.assertTrue(actualMethod2.isAccessible());
 
 		Assert.assertEquals(methods.toString(), 1, methods.size());
 
@@ -253,7 +253,7 @@ public class MethodKeyTest {
 			return parameter;
 		}
 
-		public void testMethod1(String parameter) {
+		public void anotherTestMethod(String parameter) {
 		}
 
 	}
