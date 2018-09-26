@@ -48,12 +48,12 @@ public class MethodKeyTest {
 	@Before
 	public void setUp() {
 		_methodKey = new MethodKey(
-			TestClass1.class, "testMethod", String.class);
+			TestClass.class, "testMethod", String.class);
 	}
 
 	@Test
 	public void testConstructors() throws NoSuchMethodException {
-		Assert.assertEquals(TestClass1.class, _methodKey.getDeclaringClass());
+		Assert.assertEquals(TestClass.class, _methodKey.getDeclaringClass());
 		Assert.assertEquals("testMethod", _methodKey.getMethodName());
 		Assert.assertEquals(String.class, _methodKey.getParameterTypes()[0]);
 
@@ -63,11 +63,11 @@ public class MethodKeyTest {
 		Assert.assertNull(methodKey.getMethodName());
 		Assert.assertNull(methodKey.getParameterTypes());
 
-		Method method = TestClass1.class.getMethod("testMethod", String.class);
+		Method method = TestClass.class.getMethod("testMethod", String.class);
 
 		methodKey = new MethodKey(method);
 
-		Assert.assertEquals(TestClass1.class, methodKey.getDeclaringClass());
+		Assert.assertEquals(TestClass.class, methodKey.getDeclaringClass());
 		Assert.assertEquals("testMethod", methodKey.getMethodName());
 		Assert.assertEquals(String.class, methodKey.getParameterTypes()[0]);
 
@@ -75,7 +75,7 @@ public class MethodKeyTest {
 			"com.liferay.portal.kernel.util.MethodKeyTest$TestClass1",
 			"testMethod", String.class);
 
-		Assert.assertEquals(TestClass1.class, methodKey.getDeclaringClass());
+		Assert.assertEquals(TestClass.class, methodKey.getDeclaringClass());
 		Assert.assertEquals("testMethod", methodKey.getMethodName());
 		Assert.assertEquals(String.class, methodKey.getParameterTypes()[0]);
 
@@ -100,16 +100,16 @@ public class MethodKeyTest {
 		Assert.assertFalse(_methodKey.equals(object));
 
 		MethodKey methodKey = new MethodKey(
-			TestClass1.class, "testMethod", String.class);
+			TestClass.class, "testMethod", String.class);
 
 		Assert.assertTrue(_methodKey.equals(methodKey));
 
-		methodKey = new MethodKey(TestClass1.class, "testMethod", int.class);
+		methodKey = new MethodKey(TestClass.class, "testMethod", int.class);
 
 		Assert.assertFalse(_methodKey.equals(methodKey));
 
 		methodKey = new MethodKey(
-			TestClass1.class, "testMethod1", String.class);
+			TestClass.class, "testMethod1", String.class);
 
 		Assert.assertFalse(_methodKey.equals(methodKey));
 
@@ -125,7 +125,7 @@ public class MethodKeyTest {
 
 		// Test 1, MethodKey.getMethod returns and caches the method
 
-		Method expectedMethod = TestClass1.class.getMethod(
+		Method expectedMethod = TestClass.class.getMethod(
 			"testMethod", String.class);
 
 		Method actualMethod = _methodKey.getMethod();
@@ -155,7 +155,7 @@ public class MethodKeyTest {
 
 	@Test
 	public void testHashCode() throws NoSuchMethodException {
-		Method method = TestClass1.class.getMethod("testMethod", String.class);
+		Method method = TestClass.class.getMethod("testMethod", String.class);
 
 		Assert.assertEquals(method.hashCode(), _methodKey.hashCode());
 	}
@@ -185,7 +185,7 @@ public class MethodKeyTest {
 		Class<?> methodKeyTestClazz = newClassLoader.loadClass(
 			"com.liferay.portal.kernel.util.MethodKeyTest");
 		Class<?> testClass1Clazz = newClassLoader.loadClass(
-			"com.liferay.portal.kernel.util.MethodKeyTest$TestClass1");
+			"com.liferay.portal.kernel.util.MethodKeyTest$TestClass");
 
 		Constructor constructor = testClass1Clazz.getDeclaredConstructor(
 			methodKeyTestClazz);
@@ -246,7 +246,7 @@ public class MethodKeyTest {
 
 	private MethodKey _methodKey;
 
-	private class TestClass1 {
+	private class TestClass {
 
 		public void testMethod(int parameter) {
 		}
