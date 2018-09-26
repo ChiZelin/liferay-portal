@@ -85,9 +85,7 @@ public class MethodKeyTest {
 			Assert.fail("No RuntimeException thrown!");
 		}
 		catch (RuntimeException re) {
-			Throwable throwable = re.getCause();
-
-			Assert.assertTrue(throwable instanceof ClassNotFoundException);
+			Assert.assertTrue(re.getCause() instanceof ClassNotFoundException);
 		}
 	}
 
