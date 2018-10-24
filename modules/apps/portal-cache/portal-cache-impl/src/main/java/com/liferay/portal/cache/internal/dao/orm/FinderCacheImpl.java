@@ -15,6 +15,7 @@
 package com.liferay.portal.cache.internal.dao.orm;
 
 import com.liferay.petra.lang.CentralizedThreadLocal;
+import com.liferay.petra.reflect.ReflectionUtil;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.cache.CacheRegistryItem;
 import com.liferay.portal.kernel.cache.CacheRegistryUtil;
@@ -266,7 +267,7 @@ public class FinderCacheImpl
 
 	@Activate
 	@Modified
-	protected void activate() {
+	protected void activate() throws Exception {
 		_valueObjectFinderCacheEnabled = GetterUtil.getBoolean(
 			_props.get(PropsKeys.VALUE_OBJECT_FINDER_CACHE_ENABLED));
 		_valueObjectFinderCacheListThreshold = GetterUtil.getInteger(
@@ -288,6 +289,11 @@ public class FinderCacheImpl
 		else {
 			_localCache = null;
 		}
+
+		Field field = ReflectionUtil.getDeclaredField(
+			BasePersistenceImpl.class, "nullModel");
+
+		_nullModel = field.get(null);
 
 		PortalCacheManager<? extends Serializable, ? extends Serializable>
 			portalCacheManager = _multiVMPool.getPortalCacheManager();
@@ -385,7 +391,7 @@ public class FinderCacheImpl
 				finderPath.isEntityCacheEnabled(), finderPath.getResultClass(),
 				primaryKey, basePersistenceImpl);
 
-			if (result == _NULL_MODEL) {
+			if (result == _nullModel) {
 				return null;
 			}
 
@@ -434,21 +440,7 @@ public class FinderCacheImpl
 	private static final String _GROUP_KEY_PREFIX =
 		FinderCache.class.getName() + StringPool.PERIOD;
 
-	private static final Object _NULL_MODEL;
-
-	static {
-		try {
-			Field field = BasePersistenceImpl.class.getDeclaredField(
-				"nullModel");
-
-			field.setAccessible(true);
-
-			_NULL_MODEL = field.get(null);
-		}
-		catch (ReflectiveOperationException roe) {
-			throw new ExceptionInInitializerError(roe);
-		}
-	}
+	private static Object _nullModel;
 
 	private EntityCache _entityCache;
 	private ThreadLocal<LRUMap> _localCache;
