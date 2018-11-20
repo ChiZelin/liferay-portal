@@ -67,8 +67,7 @@ public class RMIMultiVMEhcachePortalCacheManagerConfiguratorTest
 		super.testManageConfiguration();
 
 		_testManageConfiguration(
-			Collections.<FactoryConfiguration>emptyList(),
-			Collections.<FactoryConfiguration>emptyList(), false);
+			Collections.emptyList(), Collections.emptyList(), false);
 		_testManageConfiguration(
 			Collections.singletonList(
 				_getFactoryConfiguration(
