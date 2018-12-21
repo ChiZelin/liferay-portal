@@ -21,15 +21,9 @@ import com.liferay.portal.kernel.security.auth.AuthToken;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.osgi.service.component.annotations.Component;
-
 /**
  * @author Manuel de la Peña
  */
-@Component(
-	immediate = true, property = "service.ranking:Integer=" + Integer.MAX_VALUE,
-	service = AuthToken.class
-)
 public class TestAuthToken implements AuthToken {
 
 	@Override
