@@ -12,16 +12,17 @@
  * details.
  */
 
-package com.liferay.portal.jmx.bundle.jmxwhiteboard;
+package com.liferay.portal.jmx.jmxwhiteboard;
 
 /**
  * @author Raymond Augé
  */
-public class JMXWhiteboardByInterface implements JMXWhiteboardByInterfaceMBean {
+public interface JMXWhiteboardByInterfaceMBean {
 
-	@Override
-	public String returnValue(String value) {
-		return "{" + value + "}";
-	}
+	public static final String OBJECT_NAME =
+		"JMXWhiteboard:name=com.liferay.portal.jmx.bundle.jmxwhiteboard." +
+			"JMXWhiteboardByInterfaceMBean";
+
+	public String returnValue(String value);
 
 }
