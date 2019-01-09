@@ -14,13 +14,14 @@
 
 package com.liferay.portal.security.auth;
 
+import com.liferay.portal.kernel.model.Layout;
+import com.liferay.portal.kernel.model.Portlet;
 import com.liferay.portal.kernel.portlet.LiferayPortletURL;
 import com.liferay.portal.kernel.portlet.PortletURLFactoryUtil;
 import com.liferay.portal.kernel.security.auth.AuthToken;
 import com.liferay.portal.kernel.security.auth.AuthTokenUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.util.PortletKeys;
-import com.liferay.portal.security.auth.bundle.authtokenutil.TestAuthToken;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.registry.Registry;
 import com.liferay.registry.RegistryUtil;
@@ -29,6 +30,8 @@ import com.liferay.registry.ServiceRegistration;
 import java.util.HashMap;
 
 import javax.portlet.PortletRequest;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -130,5 +133,69 @@ public class AuthTokenUtilTest {
 	}
 
 	private static ServiceRegistration<AuthToken> _serviceRegistration;
+
+	private static class TestAuthToken implements AuthToken {
+
+		@Override
+		public void addCSRFToken(
+			HttpServletRequest request, LiferayPortletURL liferayPortletURL) {
+
+			liferayPortletURL.setParameter("p_auth", "TEST_TOKEN");
+		}
+
+		@Override
+		public void addPortletInvocationToken(
+			HttpServletRequest request, LiferayPortletURL liferayPortletURL) {
+
+			liferayPortletURL.setParameter(
+				"p_p_auth", "TEST_TOKEN_BY_PLID_AND_PORTLET_ID");
+		}
+
+		/**
+		 * @deprecated As of Wilberforce (7.0.x)
+		 */
+		@Deprecated
+		@Override
+		public void check(HttpServletRequest request) {
+		}
+
+		@Override
+		public void checkCSRFToken(HttpServletRequest request, String origin) {
+		}
+
+		@Override
+		public String getToken(HttpServletRequest request) {
+			return "TEST_TOKEN";
+		}
+
+		@Override
+		public String getToken(
+			HttpServletRequest request, long plid, String portletId) {
+
+			return "TEST_TOKEN_BY_PLID_AND_PORTLET_ID";
+		}
+
+		@Override
+		public boolean isValidPortletInvocationToken(
+			HttpServletRequest request, Layout layout, Portlet portlet) {
+
+			String tokenValue = request.getParameter("p_p_auth");
+
+			return "VALID_PORTLET_INVOCATION_TOKEN".equals(tokenValue);
+		}
+
+		/**
+		 * @deprecated As of Wilberforce (7.0.x)
+		 */
+		@Deprecated
+		@Override
+		public boolean isValidPortletInvocationToken(
+			HttpServletRequest request, long plid, String portletId,
+			String strutsAction, String tokenValue) {
+
+			return "VALID_PORTLET_INVOCATION_TOKEN".equals(tokenValue);
+		}
+
+	}
 
 }
