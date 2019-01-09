@@ -14,6 +14,7 @@
 
 package com.liferay.portal.kernel.display.context;
 
+import com.liferay.portal.kernel.util.ProxyFactory;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.registry.Registry;
 import com.liferay.registry.RegistryUtil;
@@ -46,8 +47,7 @@ public class BaseDisplayContextProviderTest {
 		Registry registry = RegistryUtil.getRegistry();
 
 		_serviceRegistration = registry.registerService(
-			TestDisplayContextFactory.class,
-			new TestBaseDisplayContextFactoryImpl());
+			TestDisplayContextFactory.class, _dummyTestDisplayContextFactory);
 	}
 
 	@AfterClass
@@ -69,13 +69,7 @@ public class BaseDisplayContextProviderTest {
 			TestDisplayContextFactory testDisplayContextFactory =
 				iterator.next();
 
-			Class<?> clazz = testDisplayContextFactory.getClass();
-
-			String className = clazz.getName();
-
-			if (className.equals(
-					TestBaseDisplayContextFactoryImpl.class.getName())) {
-
+			if (_dummyTestDisplayContextFactory == testDisplayContextFactory) {
 				testDisplayContextFactoryExtension = testDisplayContextFactory;
 			}
 		}
@@ -85,11 +79,10 @@ public class BaseDisplayContextProviderTest {
 
 	private static BaseDisplayContextProvider<TestDisplayContextFactory>
 		_baseDisplayContextProvider;
+	private static final TestDisplayContextFactory
+		_dummyTestDisplayContextFactory = ProxyFactory.newDummyInstance(
+			TestDisplayContextFactory.class);
 	private static ServiceRegistration<TestDisplayContextFactory>
 		_serviceRegistration;
-
-	private static class TestBaseDisplayContextFactoryImpl
-		implements TestDisplayContextFactory {
-	}
 
 }
