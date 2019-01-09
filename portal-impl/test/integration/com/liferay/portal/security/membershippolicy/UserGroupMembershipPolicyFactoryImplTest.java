@@ -52,13 +52,9 @@ public class UserGroupMembershipPolicyFactoryImplTest {
 	public static void setUpClass() {
 		Registry registry = RegistryUtil.getRegistry();
 
-		TestUserGroupMembershipPolicy testUserGroupMembershipPolicy =
-			new TestUserGroupMembershipPolicy();
-
-		testUserGroupMembershipPolicy.setAtomicBoolean(_atomicBoolean);
-
 		_serviceRegistration = registry.registerService(
-			UserGroupMembershipPolicy.class, testUserGroupMembershipPolicy,
+			UserGroupMembershipPolicy.class,
+			new TestUserGroupMembershipPolicy(),
 			new HashMap<String, Object>() {
 				{
 					put("service.ranking", Integer.MAX_VALUE);
@@ -196,10 +192,6 @@ public class UserGroupMembershipPolicyFactoryImplTest {
 			_atomicBoolean.set(Boolean.TRUE);
 		}
 
-		public void setAtomicBoolean(AtomicBoolean atomicBoolean) {
-			_atomicBoolean = atomicBoolean;
-		}
-
 		@Override
 		public void verifyPolicy() {
 			_atomicBoolean.set(Boolean.TRUE);
@@ -217,8 +209,6 @@ public class UserGroupMembershipPolicyFactoryImplTest {
 
 			_atomicBoolean.set(Boolean.TRUE);
 		}
-
-		private AtomicBoolean _atomicBoolean;
 
 	}
 
