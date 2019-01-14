@@ -56,7 +56,7 @@ public class IntegrationPointTest {
 	@Inject
 	private IntegrationPoint _expectedIntegrationPoint;
 
-	private ServiceTracker<?, IntegrationPoint> _serviceTracker;
+	private ServiceTracker<IntegrationPoint, IntegrationPoint> _serviceTracker;
 
 	private static class IntegrationPointTrackerCustomizer
 		implements ServiceTrackerCustomizer
