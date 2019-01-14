@@ -52,6 +52,8 @@ public class IntegrationPointTest {
 		Assert.assertSame(
 			_expectedIntegrationPoint, serviceTracker1.getService());
 
+		serviceTracker1.close();
+
 		ServiceTracker<IntegrationPoint, IntegrationPoint> serviceTracker2 =
 			registry.trackServices(
 				IntegrationPoint.class,
@@ -61,6 +63,8 @@ public class IntegrationPointTest {
 
 		Assert.assertSame(
 			_expectedIntegrationPoint, serviceTracker2.getService());
+
+		serviceTracker2.close();
 	}
 
 	@Inject
