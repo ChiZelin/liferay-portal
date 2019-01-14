@@ -44,19 +44,19 @@ public class IntegrationPointTest {
 	public void testIntegrationPoint() {
 		Registry registry = RegistryUtil.getRegistry();
 
-		_serviceTracker = registry.trackServices(
-			IntegrationPoint.class, new IntegrationPointTrackerCustomizer());
+		ServiceTracker<IntegrationPoint, IntegrationPoint> serviceTracker =
+			registry.trackServices(
+				IntegrationPoint.class,
+				new IntegrationPointTrackerCustomizer());
 
-		_serviceTracker.open();
+		serviceTracker.open();
 
 		Assert.assertSame(
-			_expectedIntegrationPoint, _serviceTracker.getService());
+			_expectedIntegrationPoint, serviceTracker.getService());
 	}
 
 	@Inject
 	private IntegrationPoint _expectedIntegrationPoint;
-
-	private ServiceTracker<IntegrationPoint, IntegrationPoint> _serviceTracker;
 
 	private static class IntegrationPointTrackerCustomizer
 		implements ServiceTrackerCustomizer
