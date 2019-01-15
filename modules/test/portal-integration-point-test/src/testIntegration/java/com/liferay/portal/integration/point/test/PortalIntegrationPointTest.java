@@ -42,29 +42,26 @@ public class PortalIntegrationPointTest {
 
 	@Test
 	public void testPortalIntegrationPoint() {
-		_testPortalIntegrationPoint(PortalIntegrationPoint.class, null);
-
-		_testPortalIntegrationPoint(
-			PortalIntegrationPoint.class,
-			new PortalIntegrationPointTrackerCustomizer());
+		_testPortalIntegrationPoint(true);
+		_testPortalIntegrationPoint(false);
 	}
 
 	private void _testPortalIntegrationPoint(
-		Class<PortalIntegrationPoint> clazz,
-		ServiceTrackerCustomizer<PortalIntegrationPoint, PortalIntegrationPoint>
-			serviceTrackerCustomizer) {
+		boolean useServiceTrackerCustomizer) {
 
 		Registry registry = RegistryUtil.getRegistry();
 
 		ServiceTracker<PortalIntegrationPoint, PortalIntegrationPoint>
 			serviceTracker;
 
-		if (serviceTrackerCustomizer == null) {
-			serviceTracker = registry.trackServices(clazz);
+		if (useServiceTrackerCustomizer) {
+			serviceTracker = registry.trackServices(
+				PortalIntegrationPoint.class,
+				new PortalIntegrationPointTrackerCustomizer());
 		}
 		else {
 			serviceTracker = registry.trackServices(
-				clazz, serviceTrackerCustomizer);
+				PortalIntegrationPoint.class);
 		}
 
 		serviceTracker.open();
