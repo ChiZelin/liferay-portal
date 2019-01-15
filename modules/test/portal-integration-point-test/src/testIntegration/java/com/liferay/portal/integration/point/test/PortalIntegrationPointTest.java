@@ -12,7 +12,7 @@
  * details.
  */
 
-package com.liferay.integration.point.test;
+package com.liferay.portal.integration.point.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.portal.test.rule.Inject;
@@ -33,7 +33,7 @@ import org.junit.runner.RunWith;
  * @author Leon Chi
  */
 @RunWith(Arquillian.class)
-public class IntegrationPointTest {
+public class PortalIntegrationPointTest {
 
 	@ClassRule
 	@Rule
@@ -41,21 +41,23 @@ public class IntegrationPointTest {
 		new LiferayIntegrationTestRule();
 
 	@Test
-	public void testIntegrationPoint() {
-		_testIntegrationPoint(IntegrationPoint.class, null);
+	public void testPortalIntegrationPoint() {
+		_testPortalIntegrationPoint(PortalIntegrationPoint.class, null);
 
-		_testIntegrationPoint(
-			IntegrationPoint.class, new IntegrationPointTrackerCustomizer());
+		_testPortalIntegrationPoint(
+			PortalIntegrationPoint.class,
+			new PortalIntegrationPointTrackerCustomizer());
 	}
 
-	private void _testIntegrationPoint(
-		Class<IntegrationPoint> clazz,
-		ServiceTrackerCustomizer<IntegrationPoint, IntegrationPoint>
+	private void _testPortalIntegrationPoint(
+		Class<PortalIntegrationPoint> clazz,
+		ServiceTrackerCustomizer<PortalIntegrationPoint, PortalIntegrationPoint>
 			serviceTrackerCustomizer) {
 
 		Registry registry = RegistryUtil.getRegistry();
 
-		ServiceTracker<IntegrationPoint, IntegrationPoint> serviceTracker;
+		ServiceTracker<PortalIntegrationPoint, PortalIntegrationPoint>
+			serviceTracker;
 
 		if (serviceTrackerCustomizer == null) {
 			serviceTracker = registry.trackServices(clazz);
@@ -69,7 +71,7 @@ public class IntegrationPointTest {
 
 		try {
 			Assert.assertSame(
-				_expectedIntegrationPoint, serviceTracker.getService());
+				_expectedPortalIntegrationPoint, serviceTracker.getService());
 		}
 		finally {
 			serviceTracker.close();
@@ -77,15 +79,15 @@ public class IntegrationPointTest {
 	}
 
 	@Inject
-	private IntegrationPoint _expectedIntegrationPoint;
+	private PortalIntegrationPoint _expectedPortalIntegrationPoint;
 
-	private static class IntegrationPointTrackerCustomizer
+	private static class PortalIntegrationPointTrackerCustomizer
 		implements ServiceTrackerCustomizer
-			<IntegrationPoint, IntegrationPoint> {
+			<PortalIntegrationPoint, PortalIntegrationPoint> {
 
 		@Override
-		public IntegrationPoint addingService(
-			ServiceReference<IntegrationPoint> serviceReference) {
+		public PortalIntegrationPoint addingService(
+			ServiceReference<PortalIntegrationPoint> serviceReference) {
 
 			Registry registry = RegistryUtil.getRegistry();
 
@@ -94,14 +96,14 @@ public class IntegrationPointTest {
 
 		@Override
 		public void modifiedService(
-			ServiceReference<IntegrationPoint> serviceReference,
-			IntegrationPoint integrationPoint) {
+			ServiceReference<PortalIntegrationPoint> serviceReference,
+			PortalIntegrationPoint portalIntegrationPoint) {
 		}
 
 		@Override
 		public void removedService(
-			ServiceReference<IntegrationPoint> serviceReference,
-			IntegrationPoint integrationPoint) {
+			ServiceReference<PortalIntegrationPoint> serviceReference,
+			PortalIntegrationPoint portalIntegrationPoint) {
 
 			Registry registry = RegistryUtil.getRegistry();
 

@@ -12,13 +12,13 @@
  * details.
  */
 
-package com.liferay.integration.point.test;
+package com.liferay.portal.integration.point.test;
 
 import org.osgi.service.component.annotations.Component;
 
 /**
  * @author Leon Chi
  */
-@Component(immediate = true, service = IntegrationPoint.class)
-public class IntegrationPointImpl implements IntegrationPoint {
+@Component(immediate = true, service = PortalIntegrationPoint.class)
+public class PortalIntegrationPointImpl implements PortalIntegrationPoint {
 }

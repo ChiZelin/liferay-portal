@@ -12,10 +12,10 @@
  * details.
  */
 
-package com.liferay.integration.point.test;
+package com.liferay.portal.integration.point.test;
 
 /**
  * @author Leon Chi
  */
-public interface IntegrationPoint {
+public interface PortalIntegrationPoint {
 }
