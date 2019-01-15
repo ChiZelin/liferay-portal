@@ -42,13 +42,13 @@ public class IntegrationPointTest {
 
 	@Test
 	public void testIntegrationPoint() {
-		_testIntegrationPointWithServiceTracker(IntegrationPoint.class, null);
+		_testIntegrationPoint(IntegrationPoint.class, null);
 
-		_testIntegrationPointWithServiceTracker(
+		_testIntegrationPoint(
 			IntegrationPoint.class, new IntegrationPointTrackerCustomizer());
 	}
 
-	private void _testIntegrationPointWithServiceTracker(
+	private void _testIntegrationPoint(
 		Class<IntegrationPoint> clazz,
 		ServiceTrackerCustomizer<IntegrationPoint, IntegrationPoint>
 			serviceTrackerCustomizer) {
