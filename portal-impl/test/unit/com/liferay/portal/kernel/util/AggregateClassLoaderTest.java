@@ -88,24 +88,6 @@ public class AggregateClassLoaderTest {
 			new ClassLoader[] {_testClassLoader2},
 			new ClassLoader[] {_testClassLoader1, _testClassLoader2},
 			_testClassLoader1);
-
-		_testAddClassLoader(
-			new ClassLoader[] {_testClassLoader2},
-			new ClassLoader[] {_testClassLoader2, _testClassLoader2},
-			_testClassLoader1);
-
-		_testAddClassLoader(
-			new ClassLoader[0],
-			new ClassLoader[] {new AggregateClassLoader(_testClassLoader1)},
-			_testClassLoader1);
-
-		_testAddClassLoader(
-			new ClassLoader[] {_testClassLoader2},
-			new ClassLoader[] {
-				AggregateClassLoader.getAggregateClassLoader(
-					_testClassLoader1, _testClassLoader2)
-			},
-			_testClassLoader1);
 	}
 
 	@Test
