@@ -14,7 +14,6 @@
 
 package com.liferay.portal.kernel.util;
 
-import com.liferay.petra.memory.EqualityWeakReference;
 import com.liferay.portal.kernel.exception.LoggedExceptionInInitializerError;
 import com.liferay.portal.kernel.test.CaptureHandler;
 import com.liferay.portal.kernel.test.GCUtil;
@@ -32,7 +31,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -472,28 +470,8 @@ public class AggregateClassLoaderTest {
 		Assert.assertSame(
 			expectedParentClassLoader, aggregateClassLoader.getParent());
 
-		_assertAggregatedClassLoaders(
-			expectedClassLoaders, aggregateClassLoader);
-	}
-
-	private void _assertAggregatedClassLoaders(
-		List<ClassLoader> expectedClassLoaders,
-		AggregateClassLoader aggregateClassLoader) {
-
-		List<EqualityWeakReference<ClassLoader>> classLoaderReferences =
-			ReflectionTestUtil.getFieldValue(
-				aggregateClassLoader, "_classLoaderReferences");
-
-		List<ClassLoader> classLoaders = new ArrayList<>(
-			classLoaderReferences.size());
-
-		for (EqualityWeakReference<ClassLoader> classLoaderReference :
-				classLoaderReferences) {
-
-			classLoaders.add(classLoaderReference.get());
-		}
-
-		Assert.assertEquals(expectedClassLoaders, classLoaders);
+		Assert.assertEquals(
+			expectedClassLoaders, aggregateClassLoader.getClassLoaders());
 	}
 
 	private void _testAddClassLoader(
@@ -505,16 +483,16 @@ public class AggregateClassLoaderTest {
 
 		aggregateClassLoader1.addClassLoader(classLoaders);
 
-		_assertAggregatedClassLoaders(
-			expectedClassLoaders, aggregateClassLoader1);
+		Assert.assertEquals(
+			expectedClassLoaders, aggregateClassLoader1.getClassLoaders());
 
 		AggregateClassLoader aggregateClassLoader2 = new AggregateClassLoader(
 			parentClassLoader);
 
 		aggregateClassLoader2.addClassLoader(Arrays.asList(classLoaders));
 
-		_assertAggregatedClassLoaders(
-			expectedClassLoaders, aggregateClassLoader2);
+		Assert.assertEquals(
+			expectedClassLoaders, aggregateClassLoader2.getClassLoaders());
 	}
 
 	private final TestClassLoader _testClassLoader1 = new TestClassLoader();
