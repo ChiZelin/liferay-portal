@@ -58,8 +58,10 @@ public class AggregateClassLoaderTest {
 
 	@Test
 	public void testAddClassLoader() {
-
-		// parent class loader is null
+		_testAddClassLoader(
+			new ClassLoader[] {_testClassLoader2},
+			new ClassLoader[] {_testClassLoader1, _testClassLoader2},
+			_testClassLoader1);
 
 		_testAddClassLoader(
 			new ClassLoader[] {_testClassLoader1, _testClassLoader2},
@@ -81,13 +83,6 @@ public class AggregateClassLoaderTest {
 					_testClassLoader1, _testClassLoader2)
 			},
 			null);
-
-		// parent class loader is not null
-
-		_testAddClassLoader(
-			new ClassLoader[] {_testClassLoader2},
-			new ClassLoader[] {_testClassLoader1, _testClassLoader2},
-			_testClassLoader1);
 	}
 
 	@Test
