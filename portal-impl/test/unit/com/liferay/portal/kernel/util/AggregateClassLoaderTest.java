@@ -388,10 +388,6 @@ public class AggregateClassLoaderTest {
 					LoggedExceptionInInitializerError.class.getName(),
 					Level.SEVERE)) {
 
-			List<LogRecord> logRecords = captureHandler.getLogRecords();
-
-			Assert.assertEquals(logRecords.toString(), 0, logRecords.size());
-
 			try {
 				Class.forName(AggregateClassLoader.class.getName());
 
@@ -399,6 +395,8 @@ public class AggregateClassLoaderTest {
 			}
 			catch (LoggedExceptionInInitializerError leiie) {
 				Assert.assertSame(exception, leiie.getCause());
+
+				List<LogRecord> logRecords = captureHandler.getLogRecords();
 
 				Assert.assertEquals(
 					logRecords.toString(), 1, logRecords.size());
