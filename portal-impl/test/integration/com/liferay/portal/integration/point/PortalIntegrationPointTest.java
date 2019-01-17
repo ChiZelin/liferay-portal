@@ -17,8 +17,7 @@ package com.liferay.portal.integration.point;
 import aQute.bnd.osgi.Builder;
 import aQute.bnd.osgi.Jar;
 
-import com.liferay.portal.integration.point.bundle.portalintegrationpoint.TestPortalIntegrationPoint;
-import com.liferay.portal.kernel.display.context.TestDisplayContextFactory;
+import com.liferay.portal.integration.point.bundle.portalintegrationpoint.TestDisplayContextFactory;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.io.unsync.UnsyncByteArrayInputStream;
 import com.liferay.portal.kernel.io.unsync.UnsyncByteArrayOutputStream;
@@ -133,16 +132,16 @@ public class PortalIntegrationPointTest {
 	}
 
 	private void _testPortalIntegrationPointWithServiceProxyFactory() {
-		_testDisplayContextFactory =
+		_portalInterface =
 			ServiceProxyFactory.newServiceTrackedInstance(
-				TestDisplayContextFactory.class,
-				PortalIntegrationPointTest.class, "_testDisplayContextFactory",
+				PortalInterface.class,
+				PortalIntegrationPointTest.class, "_portalInterface",
 				false);
 
-		Class<?> clazz = _testDisplayContextFactory.getClass();
+		Class<?> clazz = _portalInterface.getClass();
 
 		Assert.assertEquals(
-			TestPortalIntegrationPoint.class.getName(), clazz.getName());
+			TestDisplayContextFactory.class.getName(), clazz.getName());
 	}
 
 	private void _testPortalIntegrationPointWithServiceTracker(
@@ -150,29 +149,27 @@ public class PortalIntegrationPointTest {
 
 		Registry registry = RegistryUtil.getRegistry();
 
-		ServiceTracker<TestDisplayContextFactory, TestDisplayContextFactory>
-			serviceTracker;
+		ServiceTracker<PortalInterface, PortalInterface> serviceTracker;
 
 		if (useServiceTrackerCustomizer) {
 			serviceTracker = registry.trackServices(
-				TestDisplayContextFactory.class,
-				new TestDisplayContextFactoryServiceTrackerCustomizer());
+				PortalInterface.class,
+				new PortalInterfaceServiceTrackerCustomizer());
 		}
 		else {
 			serviceTracker = registry.trackServices(
-				TestDisplayContextFactory.class);
+				PortalInterface.class);
 		}
 
 		serviceTracker.open();
 
 		try {
-			TestDisplayContextFactory testDisplayContextFactory =
-				serviceTracker.getService();
+			PortalInterface portalInterface = serviceTracker.getService();
 
-			Class<?> clazz = testDisplayContextFactory.getClass();
+			Class<?> clazz = portalInterface.getClass();
 
 			Assert.assertSame(
-				TestPortalIntegrationPoint.class.getName(), clazz.getName());
+				TestDisplayContextFactory.class.getName(), clazz.getName());
 		}
 		finally {
 			serviceTracker.close();
@@ -181,15 +178,14 @@ public class PortalIntegrationPointTest {
 
 	private static Long _bundleId;
 
-	private TestDisplayContextFactory _testDisplayContextFactory;
+	private PortalInterface _portalInterface;
 
-	private static class TestDisplayContextFactoryServiceTrackerCustomizer
-		implements ServiceTrackerCustomizer
-			<TestDisplayContextFactory, TestDisplayContextFactory> {
+	private static class PortalInterfaceServiceTrackerCustomizer
+		implements ServiceTrackerCustomizer<PortalInterface, PortalInterface> {
 
 		@Override
-		public TestDisplayContextFactory addingService(
-			ServiceReference<TestDisplayContextFactory> serviceReference) {
+		public PortalInterface addingService(
+			ServiceReference<PortalInterface> serviceReference) {
 
 			Registry registry = RegistryUtil.getRegistry();
 
@@ -198,14 +194,14 @@ public class PortalIntegrationPointTest {
 
 		@Override
 		public void modifiedService(
-			ServiceReference<TestDisplayContextFactory> serviceReference,
-			TestDisplayContextFactory testDisplayContextFactory) {
+			ServiceReference<PortalInterface> serviceReference,
+			PortalInterface portalInterface) {
 		}
 
 		@Override
 		public void removedService(
-			ServiceReference<TestDisplayContextFactory> serviceReference,
-			TestDisplayContextFactory testDisplayContextFactory) {
+			ServiceReference<PortalInterface> serviceReference,
+			PortalInterface portalInterface) {
 
 			Registry registry = RegistryUtil.getRegistry();
 

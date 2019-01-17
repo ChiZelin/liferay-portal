@@ -12,15 +12,10 @@
  * details.
  */
 
-package com.liferay.portal.integration.point.bundle.portalintegrationpoint;
-
-import com.liferay.portal.kernel.display.context.TestDisplayContextFactory;
-
-import org.osgi.service.component.annotations.Component;
+package com.liferay.portal.integration.point;
 
 /**
- * @author Leon Chi
+ * @author Dante Wang
  */
-@Component(immediate = true, service = TestDisplayContextFactory.class)
-public class TestPortalIntegrationPoint implements TestDisplayContextFactory {
+public interface PortalInterface {
 }
