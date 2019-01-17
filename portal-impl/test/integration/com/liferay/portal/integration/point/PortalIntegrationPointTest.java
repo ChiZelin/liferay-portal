@@ -67,6 +67,10 @@ public class PortalIntegrationPointTest {
 
 	@AfterClass
 	public static void tearDownClass() throws PortalException {
+		if (_bundleId == null) {
+			return;
+		}
+
 		ModuleFrameworkUtilAdapter.stopBundle(_bundleId);
 
 		ModuleFrameworkUtilAdapter.uninstallBundle(_bundleId);
