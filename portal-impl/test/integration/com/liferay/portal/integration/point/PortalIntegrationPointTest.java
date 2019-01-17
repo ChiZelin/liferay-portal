@@ -80,9 +80,8 @@ public class PortalIntegrationPointTest {
 	public void testPortalIntegrationPointWithServiceProxyFactory() {
 		PortalInterface portalInterface =
 			ServiceProxyFactory.newServiceTrackedInstance(
-				PortalInterface.class,
-				PortalIntegrationPointTest.class, "_portalInterface",
-				false);
+				PortalInterface.class, PortalIntegrationPointTest.class,
+				"_portalInterface", false);
 
 		Class<?> clazz = portalInterface.getClass();
 
@@ -160,8 +159,7 @@ public class PortalIntegrationPointTest {
 				new PortalInterfaceServiceTrackerCustomizer());
 		}
 		else {
-			serviceTracker = registry.trackServices(
-				PortalInterface.class);
+			serviceTracker = registry.trackServices(PortalInterface.class);
 		}
 
 		serviceTracker.open();
