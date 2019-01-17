@@ -73,6 +73,20 @@ public class PortalIntegrationPointTest {
 	}
 
 	@Test
+	public void testPortalIntegrationPointWithServiceProxyFactory() {
+		PortalInterface portalInterface =
+			ServiceProxyFactory.newServiceTrackedInstance(
+				PortalInterface.class,
+				PortalIntegrationPointTest.class, "_portalInterface",
+				false);
+
+		Class<?> clazz = portalInterface.getClass();
+
+		Assert.assertEquals(
+			TestPortalInterface.class.getName(), clazz.getName());
+	}
+
+	@Test
 	public void testPortalIntegrationPointWithServiceTracker() {
 		_testPortalIntegrationPointWithServiceTracker(true);
 		_testPortalIntegrationPointWithServiceTracker(false);
@@ -127,20 +141,6 @@ public class PortalIntegrationPointTest {
 					outputStream.unsafeGetByteArray(), 0, outputStream.size());
 			}
 		}
-	}
-
-	@Test
-	public void testPortalIntegrationPointWithServiceProxyFactory() {
-		PortalInterface portalInterface =
-			ServiceProxyFactory.newServiceTrackedInstance(
-				PortalInterface.class,
-				PortalIntegrationPointTest.class, "_portalInterface",
-				false);
-
-		Class<?> clazz = portalInterface.getClass();
-
-		Assert.assertEquals(
-			TestPortalInterface.class.getName(), clazz.getName());
 	}
 
 	private void _testPortalIntegrationPointWithServiceTracker(
