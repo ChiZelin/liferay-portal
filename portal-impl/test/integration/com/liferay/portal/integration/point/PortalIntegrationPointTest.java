@@ -73,7 +73,7 @@ public class PortalIntegrationPointTest {
 	}
 
 	@Test
-	public void testPortalIntegrationPoint() {
+	public void testPortalIntegrationPointWithServiceTracker() {
 		_testPortalIntegrationPointWithServiceTracker(true);
 		_testPortalIntegrationPointWithServiceTracker(false);
 	}
