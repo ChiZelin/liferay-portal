@@ -17,7 +17,7 @@ package com.liferay.portal.integration.point;
 import aQute.bnd.osgi.Builder;
 import aQute.bnd.osgi.Jar;
 
-import com.liferay.portal.integration.point.bundle.portalintegrationpoint.TestDisplayContextFactory;
+import com.liferay.portal.integration.point.bundle.portalintegrationpoint.TestPortalInterface;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.io.unsync.UnsyncByteArrayInputStream;
 import com.liferay.portal.kernel.io.unsync.UnsyncByteArrayOutputStream;
@@ -141,7 +141,7 @@ public class PortalIntegrationPointTest {
 		Class<?> clazz = _portalInterface.getClass();
 
 		Assert.assertEquals(
-			TestDisplayContextFactory.class.getName(), clazz.getName());
+			TestPortalInterface.class.getName(), clazz.getName());
 	}
 
 	private void _testPortalIntegrationPointWithServiceTracker(
@@ -169,7 +169,7 @@ public class PortalIntegrationPointTest {
 			Class<?> clazz = portalInterface.getClass();
 
 			Assert.assertSame(
-				TestDisplayContextFactory.class.getName(), clazz.getName());
+				TestPortalInterface.class.getName(), clazz.getName());
 		}
 		finally {
 			serviceTracker.close();

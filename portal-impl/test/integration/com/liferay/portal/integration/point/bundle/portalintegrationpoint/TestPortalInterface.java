@@ -22,5 +22,5 @@ import org.osgi.service.component.annotations.Component;
  * @author Leon Chi
  */
 @Component(immediate = true, service = PortalInterface.class)
-public class TestDisplayContextFactory implements PortalInterface {
+public class TestPortalInterface implements PortalInterface {
 }
