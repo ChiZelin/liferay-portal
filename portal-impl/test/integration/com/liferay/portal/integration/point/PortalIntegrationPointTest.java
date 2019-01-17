@@ -74,8 +74,6 @@ public class PortalIntegrationPointTest {
 
 	@Test
 	public void testPortalIntegrationPoint() {
-		_testPortalIntegrationPointWithServiceProxyFactory();
-
 		_testPortalIntegrationPointWithServiceTracker(true);
 		_testPortalIntegrationPointWithServiceTracker(false);
 	}
@@ -131,7 +129,8 @@ public class PortalIntegrationPointTest {
 		}
 	}
 
-	private void _testPortalIntegrationPointWithServiceProxyFactory() {
+	@Test
+	public void testPortalIntegrationPointWithServiceProxyFactory() {
 		PortalInterface portalInterface =
 			ServiceProxyFactory.newServiceTrackedInstance(
 				PortalInterface.class,
