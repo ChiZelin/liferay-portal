@@ -132,13 +132,13 @@ public class PortalIntegrationPointTest {
 	}
 
 	private void _testPortalIntegrationPointWithServiceProxyFactory() {
-		_portalInterface =
+		PortalInterface portalInterface =
 			ServiceProxyFactory.newServiceTrackedInstance(
 				PortalInterface.class,
 				PortalIntegrationPointTest.class, "_portalInterface",
 				false);
 
-		Class<?> clazz = _portalInterface.getClass();
+		Class<?> clazz = portalInterface.getClass();
 
 		Assert.assertEquals(
 			TestPortalInterface.class.getName(), clazz.getName());
@@ -177,8 +177,6 @@ public class PortalIntegrationPointTest {
 	}
 
 	private static Long _bundleId;
-
-	private PortalInterface _portalInterface;
 
 	private static class PortalInterfaceServiceTrackerCustomizer
 		implements ServiceTrackerCustomizer<PortalInterface, PortalInterface> {
