@@ -104,9 +104,7 @@ public class PortalIntegrationPointTest {
 
 		int index = basePath.indexOf(packageName.replace('.', '/') + '/');
 
-		basePath = basePath.substring(0, index);
-
-		File baseDir = new File(basePath);
+		File baseDir = new File(basePath.substring(0, index));
 
 		try (Builder builder = new Builder();
 			InputStream inputStream = clazz.getResourceAsStream(
