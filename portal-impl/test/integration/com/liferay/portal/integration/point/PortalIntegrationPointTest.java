@@ -110,13 +110,14 @@ public class PortalIntegrationPointTest {
 
 		try (Builder builder = new Builder();
 			InputStream inputStream = clazz.getResourceAsStream(
-				_BUNDLE_PACKAGE_NAME.replace('.', '/') + "/bnd.bnd")) {
+				"bundle/portalintegrationpoint/bnd.bnd")) {
 
 			builder.setBundleSymbolicName(clazz.getName());
 			builder.setBase(baseDir);
 			builder.setClasspath(new File[] {baseDir});
 			builder.setProperty(
-				"bundle.package", packageName + "." + _BUNDLE_PACKAGE_NAME);
+				"bundle.package",
+				packageName.concat(".bundle.portalintegrationpoint"));
 
 			Properties properties = builder.getProperties();
 
@@ -162,9 +163,6 @@ public class PortalIntegrationPointTest {
 			serviceTracker.close();
 		}
 	}
-
-	private static final String _BUNDLE_PACKAGE_NAME =
-		"bundle.portalintegrationpoint";
 
 	private static volatile AuthToken _authToken;
 	private static Long _bundleId;
