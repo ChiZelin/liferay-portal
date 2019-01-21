@@ -155,7 +155,7 @@ public class PortalIntegrationPointTest {
 
 			Class<?> clazz = authToken.getClass();
 
-			Assert.assertSame(TestAuthToken.class.getName(), clazz.getName());
+			Assert.assertSame(TestAuthToken.class, authToken.getClass());
 		}
 		finally {
 			serviceTracker.close();
