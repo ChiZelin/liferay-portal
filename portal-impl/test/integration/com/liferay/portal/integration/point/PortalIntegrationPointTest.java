@@ -57,10 +57,8 @@ public class PortalIntegrationPointTest {
 
 	@BeforeClass
 	public static void setUpClass() throws Exception {
-		InputStream inputStream = _createBundle();
-
 		_bundleId = ModuleFrameworkUtilAdapter.addBundle(
-			PortalIntegrationPointTest.class.getName(), inputStream);
+			PortalIntegrationPointTest.class.getName(), _createBundle());
 
 		ModuleFrameworkUtilAdapter.startBundle(_bundleId);
 	}
