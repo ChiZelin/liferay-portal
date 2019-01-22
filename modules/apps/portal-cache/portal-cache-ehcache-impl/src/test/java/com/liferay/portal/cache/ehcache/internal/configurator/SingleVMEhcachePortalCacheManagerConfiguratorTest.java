@@ -26,6 +26,7 @@ import com.liferay.portal.test.rule.AspectJNewEnvTestRule;
 import java.io.IOException;
 
 import java.util.List;
+import java.util.Map;
 
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -63,7 +64,7 @@ public class SingleVMEhcachePortalCacheManagerConfiguratorTest
 		SingleVMEhcachePortalCacheManagerConfigurator
 			singleVMEhcachePortalCacheManagerConfigurator =
 				getBaseEhcachePortalCacheManagerConfigurator(
-					new PropsInvocationHandler(false));
+					null);
 
 		try {
 			singleVMEhcachePortalCacheManagerConfigurator.parseProperties(
@@ -82,7 +83,7 @@ public class SingleVMEhcachePortalCacheManagerConfiguratorTest
 		SingleVMEhcachePortalCacheManagerConfigurator
 			singleVMEhcachePortalCacheManagerConfigurator =
 				getBaseEhcachePortalCacheManagerConfigurator(
-					new PropsInvocationHandler(false));
+					null);
 
 		singleVMEhcachePortalCacheManagerConfigurator.setProps(props);
 
@@ -104,11 +105,11 @@ public class SingleVMEhcachePortalCacheManagerConfiguratorTest
 	}
 
 	@Override
-	protected SingleVMEhcachePortalCacheManagerConfigurator
+	protected <T extends BaseEhcachePortalCacheManagerConfigurator> T
 		getBaseEhcachePortalCacheManagerConfigurator(
-			PropsInvocationHandler propsInvocationHandler) {
+			Map<String, Object> propertie) {
 
-		return new SingleVMEhcachePortalCacheManagerConfigurator();
+		return (T) new SingleVMEhcachePortalCacheManagerConfigurator();
 	}
 
 	private static final IOException _IO_EXCEPTION = new IOException();

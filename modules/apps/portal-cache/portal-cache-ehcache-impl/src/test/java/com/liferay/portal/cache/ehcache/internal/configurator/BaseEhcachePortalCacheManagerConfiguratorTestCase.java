@@ -23,12 +23,14 @@ import com.liferay.portal.kernel.cache.PortalCacheListenerScope;
 import com.liferay.portal.kernel.util.ObjectValuePair;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import com.liferay.portal.kernel.util.PropsKeys;
 import net.sf.ehcache.config.CacheConfiguration;
 import net.sf.ehcache.config.CacheConfiguration.CacheEventListenerFactoryConfiguration;
 import net.sf.ehcache.config.Configuration;
@@ -50,8 +52,7 @@ public abstract class BaseEhcachePortalCacheManagerConfiguratorTestCase {
 
 		BaseEhcachePortalCacheManagerConfigurator
 			baseEhcachePortalCacheManagerConfigurator =
-				getBaseEhcachePortalCacheManagerConfigurator(
-					new PropsInvocationHandler(false));
+				getBaseEhcachePortalCacheManagerConfigurator(null);
 
 		baseEhcachePortalCacheManagerConfigurator.clearListenerConfigrations(
 			(CacheConfiguration)null);
@@ -162,8 +163,7 @@ public abstract class BaseEhcachePortalCacheManagerConfiguratorTestCase {
 
 		BaseEhcachePortalCacheManagerConfigurator
 			baseEhcachePortalCacheManagerConfigurator =
-				getBaseEhcachePortalCacheManagerConfigurator(
-					new PropsInvocationHandler(false));
+				getBaseEhcachePortalCacheManagerConfigurator(null);
 
 		baseEhcachePortalCacheManagerConfigurator.clearListenerConfigrations(
 			configuration);
@@ -197,8 +197,7 @@ public abstract class BaseEhcachePortalCacheManagerConfiguratorTestCase {
 	public void testGetConfigurationObjectValuePair() {
 		BaseEhcachePortalCacheManagerConfigurator
 			baseEhcachePortalCacheManagerConfigurator =
-				getBaseEhcachePortalCacheManagerConfigurator(
-					new PropsInvocationHandler(false));
+				getBaseEhcachePortalCacheManagerConfigurator(null);
 
 		try {
 			baseEhcachePortalCacheManagerConfigurator.
@@ -298,8 +297,7 @@ public abstract class BaseEhcachePortalCacheManagerConfiguratorTestCase {
 	public void testParseCacheEventListenerConfigurations() {
 		BaseEhcachePortalCacheManagerConfigurator
 			baseEhcachePortalCacheManagerConfigurator =
-				getBaseEhcachePortalCacheManagerConfigurator(
-					new PropsInvocationHandler(false));
+				getBaseEhcachePortalCacheManagerConfigurator(null);
 
 		Set<Properties> portalCacheListenerPropertiesSet =
 			baseEhcachePortalCacheManagerConfigurator.
@@ -345,8 +343,7 @@ public abstract class BaseEhcachePortalCacheManagerConfiguratorTestCase {
 	public void testParseCacheListenerConfigurations() {
 		BaseEhcachePortalCacheManagerConfigurator
 			baseEhcachePortalCacheManagerConfigurator =
-				getBaseEhcachePortalCacheManagerConfigurator(
-					new PropsInvocationHandler(false));
+				getBaseEhcachePortalCacheManagerConfigurator(null);
 
 		EhcachePortalCacheConfiguration ehcachePortalCacheConfiguration =
 			(EhcachePortalCacheConfiguration)
@@ -377,8 +374,7 @@ public abstract class BaseEhcachePortalCacheManagerConfiguratorTestCase {
 	public void testParseCacheManagerEventListenerConfigurations() {
 		BaseEhcachePortalCacheManagerConfigurator
 			baseEhcachePortalCacheManagerConfigurator =
-				getBaseEhcachePortalCacheManagerConfigurator(
-					new PropsInvocationHandler(false));
+				getBaseEhcachePortalCacheManagerConfigurator(null);
 
 		Assert.assertSame(
 			Collections.emptySet(),
@@ -419,8 +415,7 @@ public abstract class BaseEhcachePortalCacheManagerConfiguratorTestCase {
 
 		BaseEhcachePortalCacheManagerConfigurator
 			baseEhcachePortalCacheManagerConfigurator =
-				getBaseEhcachePortalCacheManagerConfigurator(
-					new PropsInvocationHandler(false));
+				getBaseEhcachePortalCacheManagerConfigurator(null);
 
 		PortalCacheManagerConfiguration portalCacheManagerConfiguration =
 			baseEhcachePortalCacheManagerConfigurator.
@@ -452,8 +447,7 @@ public abstract class BaseEhcachePortalCacheManagerConfiguratorTestCase {
 	public void testParseProperties() {
 		BaseEhcachePortalCacheManagerConfigurator
 			baseEhcachePortalCacheManagerConfigurator =
-				getBaseEhcachePortalCacheManagerConfigurator(
-					new PropsInvocationHandler(false));
+				getBaseEhcachePortalCacheManagerConfigurator(null);
 
 		Properties properties =
 			baseEhcachePortalCacheManagerConfigurator.parseProperties(
@@ -478,7 +472,7 @@ public abstract class BaseEhcachePortalCacheManagerConfiguratorTestCase {
 
 	protected abstract <T extends BaseEhcachePortalCacheManagerConfigurator> T
 		getBaseEhcachePortalCacheManagerConfigurator(
-			PropsInvocationHandler propsInvocationHandler);
+		Map<String, Object> propertie);
 
 	private void _testIsRequireSerializationByCacheConfiguration(
 		boolean expectedIsRequireSerialization,
@@ -492,8 +486,7 @@ public abstract class BaseEhcachePortalCacheManagerConfiguratorTestCase {
 
 		BaseEhcachePortalCacheManagerConfigurator
 			baseEhcachePortalCacheManagerConfigurator =
-				getBaseEhcachePortalCacheManagerConfigurator(
-					new PropsInvocationHandler(false));
+				getBaseEhcachePortalCacheManagerConfigurator(null);
 
 		Assert.assertEquals(
 			expectedIsRequireSerialization,
@@ -516,8 +509,7 @@ public abstract class BaseEhcachePortalCacheManagerConfiguratorTestCase {
 
 		BaseEhcachePortalCacheManagerConfigurator
 			baseEhcachePortalCacheManagerConfigurator =
-				getBaseEhcachePortalCacheManagerConfigurator(
-					new PropsInvocationHandler(false));
+				getBaseEhcachePortalCacheManagerConfigurator(null);
 
 		Assert.assertEquals(
 			expectedIsRequireSerialization,
