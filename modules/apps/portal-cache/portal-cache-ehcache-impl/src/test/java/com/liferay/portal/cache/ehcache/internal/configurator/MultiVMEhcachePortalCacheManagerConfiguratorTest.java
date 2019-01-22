@@ -534,7 +534,7 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest
 				parseCacheListenerConfigurations(
 					new CacheConfiguration(
 						"portalCacheNameOutsideProperties", 0),
-					true));
+					null, true));
 
 		// Test 3: clusterEnabled is true, _bootstrapLoaderEnabled is false,
 		// _bootstrapLoaderProperties and _replicatorProperties are empty
@@ -558,7 +558,7 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest
 				parseCacheListenerConfigurations(
 					new CacheConfiguration(
 						"portalCacheNameOutsideProperties", 0),
-					true));
+					null, true));
 
 		// Test 4: clusterEnabled and _bootstrapLoaderEnabled are true,
 		// _bootstrapLoaderProperties and _replicatorProperties are non-empty
@@ -571,7 +571,7 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest
 		PortalCacheConfiguration portalCacheConfiguration =
 			multiVMEhcachePortalCacheManagerConfigurator3.
 				parseCacheListenerConfigurations(
-					new CacheConfiguration("portalCacheName1", 0), true);
+					new CacheConfiguration("portalCacheName1", 0), null, true);
 
 		Properties bootstrapLoaderProperties = ReflectionTestUtil.getFieldValue(
 			multiVMEhcachePortalCacheManagerConfigurator3,

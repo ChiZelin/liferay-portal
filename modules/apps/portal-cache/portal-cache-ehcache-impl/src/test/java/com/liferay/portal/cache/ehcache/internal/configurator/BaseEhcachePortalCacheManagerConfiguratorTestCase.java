@@ -202,7 +202,7 @@ public abstract class BaseEhcachePortalCacheManagerConfiguratorTestCase {
 
 		try {
 			baseEhcachePortalCacheManagerConfigurator.
-				getConfigurationObjectValuePair("", null, true);
+				getConfigurationObjectValuePair("", null, null, true);
 
 			Assert.fail("NullPointerException was not thrown");
 		}
@@ -218,7 +218,7 @@ public abstract class BaseEhcachePortalCacheManagerConfiguratorTestCase {
 						"TestPortalCacheManagerName",
 						SingleVMEhcachePortalCacheManagerConfiguratorTest.
 							class.getResource("/ehcache/test.xml"),
-						true);
+						null, true);
 
 		Configuration configuration = objectValuePair.getKey();
 
@@ -303,7 +303,7 @@ public abstract class BaseEhcachePortalCacheManagerConfiguratorTestCase {
 
 		Set<Properties> portalCacheListenerPropertiesSet =
 			baseEhcachePortalCacheManagerConfigurator.
-				parseCacheEventListenerConfigurations(null, true);
+				parseCacheEventListenerConfigurations(null, null, true);
 
 		Assert.assertTrue(
 			"An empty portalCacheListenerPropertiesSet should be returned if " +
@@ -321,6 +321,9 @@ public abstract class BaseEhcachePortalCacheManagerConfiguratorTestCase {
 		Properties expectedProperties = new Properties();
 
 		expectedProperties.put(
+			EhcacheConstants.CACHE_LISTENER_PROPERTIES_KEY_FACTORY_CLASS_LOADER,
+			BaseEhcachePortalCacheManagerConfigurator.class.getClassLoader());
+		expectedProperties.put(
 			EhcacheConstants.CACHE_LISTENER_PROPERTIES_KEY_FACTORY_CLASS_NAME,
 			SingleVMEhcachePortalCacheManagerConfiguratorTest.class.getName());
 		expectedProperties.put(
@@ -333,6 +336,8 @@ public abstract class BaseEhcachePortalCacheManagerConfiguratorTestCase {
 				parseCacheEventListenerConfigurations(
 					Collections.singletonList(
 						cacheEventListenerFactoryConfiguration),
+					BaseEhcachePortalCacheManagerConfigurator.class.
+						getClassLoader(),
 					false));
 	}
 
@@ -347,7 +352,8 @@ public abstract class BaseEhcachePortalCacheManagerConfiguratorTestCase {
 			(EhcachePortalCacheConfiguration)
 				baseEhcachePortalCacheManagerConfigurator.
 					parseCacheListenerConfigurations(
-						new CacheConfiguration(_TEST_CACHE_NAME, 0), true);
+						new CacheConfiguration(_TEST_CACHE_NAME, 0), null,
+						true);
 
 		Assert.assertEquals(
 			ehcachePortalCacheConfiguration.getPortalCacheName(),
@@ -377,7 +383,7 @@ public abstract class BaseEhcachePortalCacheManagerConfiguratorTestCase {
 		Assert.assertSame(
 			Collections.emptySet(),
 			baseEhcachePortalCacheManagerConfigurator.
-				parseCacheManagerEventListenerConfigurations(null));
+				parseCacheManagerEventListenerConfigurations(null, null));
 
 		FactoryConfiguration<?> factoryConfiguration =
 			new FactoryConfiguration<>();
@@ -389,6 +395,10 @@ public abstract class BaseEhcachePortalCacheManagerConfiguratorTestCase {
 
 		expectedProperties.put(
 			EhcacheConstants.
+				CACHE_MANAGER_LISTENER_PROPERTIES_KEY_FACTORY_CLASS_LOADER,
+			BaseEhcachePortalCacheManagerConfigurator.class.getClassLoader());
+		expectedProperties.put(
+			EhcacheConstants.
 				CACHE_MANAGER_LISTENER_PROPERTIES_KEY_FACTORY_CLASS_NAME,
 			SingleVMEhcachePortalCacheManagerConfiguratorTest.class.getName());
 
@@ -396,7 +406,9 @@ public abstract class BaseEhcachePortalCacheManagerConfiguratorTestCase {
 			Collections.singleton(expectedProperties),
 			baseEhcachePortalCacheManagerConfigurator.
 				parseCacheManagerEventListenerConfigurations(
-					factoryConfiguration));
+					factoryConfiguration,
+					BaseEhcachePortalCacheManagerConfigurator.class.
+						getClassLoader()));
 	}
 
 	@Test
@@ -412,7 +424,7 @@ public abstract class BaseEhcachePortalCacheManagerConfiguratorTestCase {
 
 		PortalCacheManagerConfiguration portalCacheManagerConfiguration =
 			baseEhcachePortalCacheManagerConfigurator.
-				parseListenerConfigurations(configuration, true);
+				parseListenerConfigurations(configuration, null, true);
 
 		Assert.assertNotNull(
 			portalCacheManagerConfiguration.getPortalCacheConfiguration(
