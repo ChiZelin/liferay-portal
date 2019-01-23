@@ -65,21 +65,11 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest
 								PropsKeys.
 									EHCACHE_BOOTSTRAP_CACHE_LOADER_PROPERTIES +
 								StringPool.PERIOD,
-								new Properties() {
-									{
-										put("portalCacheName1", "key1=value1");
-										put("portalCacheName2", "key2=value2");
-									}
-								});
+								new Properties());
 							put(
 								PropsKeys.EHCACHE_REPLICATOR_PROPERTIES +
 									StringPool.PERIOD,
-								new Properties() {
-									{
-										put("portalCacheName1", "key1=value1");
-										put("portalCacheName3", "key3=value3");
-									}
-								});
+								new Properties());
 							put(
 								PropsKeys.
 									EHCACHE_BOOTSTRAP_CACHE_LOADER_PROPERTIES_DEFAULT,
@@ -124,99 +114,99 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest
 				"_replicatorProperties"));
 	}
 
-//	@Test
-//	public void testGetMergedPropertiesMap() {
-//
-//		// Test 1: _bootstrapLoaderEnabled is true, _bootstrapLoaderProperties
-//		// and _replicatorProperties are empty
-//
-//		Map<String, ObjectValuePair<Properties, Properties>>
-//			mergedPropertiesMap1 = ReflectionTestUtil.invoke(
-//				getBaseEhcachePortalCacheManagerConfigurator(
-//					new PropsInvocationHandler(true, true, false, false)),
-//				"_getMergedPropertiesMap", null, null);
-//
-//		Assert.assertTrue(
-//			"The mergedPropertiesMap should be empty if " +
-//				"bootstrapLoaderProperties and replicatorProperties are empty",
-//			mergedPropertiesMap1.isEmpty());
-//
-//		// Test 2: _bootstrapLoaderEnabled is true, _bootstrapLoaderProperties
-//		// and _replicatorProperties are non-empty
-//
-//		Map<String, ObjectValuePair<Properties, Properties>>
-//			mergedPropertiesMap2 = ReflectionTestUtil.invoke(
-//				getBaseEhcachePortalCacheManagerConfigurator(
-//					new PropsInvocationHandler(true, true, true, true)),
-//				"_getMergedPropertiesMap", null, null);
-//
-//		Assert.assertEquals(
-//			mergedPropertiesMap2.toString(), 3, mergedPropertiesMap2.size());
-//
-//		_assertMergedPropertiesMap(
-//			"portalCacheName1",
-//			new Properties() {
-//				{
-//					put("key1", "value1");
-//				}
-//			},
-//			new Properties() {
-//				{
-//					put("key1", "value1");
-//					put("replicator", true);
-//				}
-//			},
-//			mergedPropertiesMap2);
-//		_assertMergedPropertiesMap(
-//			"portalCacheName2",
-//			new Properties() {
-//				{
-//					put("key2", "value2");
-//				}
-//			},
-//			null, mergedPropertiesMap2);
-//		_assertMergedPropertiesMap(
-//			"portalCacheName3", null,
-//			new Properties() {
-//				{
-//					put("key3", "value3");
-//					put("replicator", true);
-//				}
-//			},
-//			mergedPropertiesMap2);
-//
-//		// Test 3: _bootstrapLoaderEnabled is false, _bootstrapLoaderProperties
-//		// and _replicatorProperties are non-empty
-//
-//		Map<String, ObjectValuePair<Properties, Properties>>
-//			mergedPropertiesMap3 = ReflectionTestUtil.invoke(
-//				getBaseEhcachePortalCacheManagerConfigurator(
-//					new PropsInvocationHandler(true, false, true, true)),
-//				"_getMergedPropertiesMap", null, null);
-//
-//		Assert.assertEquals(
-//			mergedPropertiesMap3.toString(), 2, mergedPropertiesMap3.size());
-//
-//		_assertMergedPropertiesMap(
-//			"portalCacheName1", null,
-//			new Properties() {
-//				{
-//					put("key1", "value1");
-//					put("replicator", true);
-//				}
-//			},
-//			mergedPropertiesMap3);
-//		_assertMergedPropertiesMap(
-//			"portalCacheName3", null,
-//			new Properties() {
-//				{
-//					put("key3", "value3");
-//					put("replicator", true);
-//				}
-//			},
-//			mergedPropertiesMap3);
-//	}
-//
+	@Test
+	public void testGetMergedPropertiesMap() {
+
+		// Test 1: _bootstrapLoaderEnabled is true, _bootstrapLoaderProperties
+		// and _replicatorProperties are empty
+
+		Map<String, ObjectValuePair<Properties, Properties>>
+			mergedPropertiesMap1 = ReflectionTestUtil.invoke(
+				getBaseEhcachePortalCacheManagerConfigurator(
+					new PropsInvocationHandler(true, true, false, false)),
+				"_getMergedPropertiesMap", null, null);
+
+		Assert.assertTrue(
+			"The mergedPropertiesMap should be empty if " +
+				"bootstrapLoaderProperties and replicatorProperties are empty",
+			mergedPropertiesMap1.isEmpty());
+
+		// Test 2: _bootstrapLoaderEnabled is true, _bootstrapLoaderProperties
+		// and _replicatorProperties are non-empty
+
+		Map<String, ObjectValuePair<Properties, Properties>>
+			mergedPropertiesMap2 = ReflectionTestUtil.invoke(
+				getBaseEhcachePortalCacheManagerConfigurator(
+					new PropsInvocationHandler(true, true, true, true)),
+				"_getMergedPropertiesMap", null, null);
+
+		Assert.assertEquals(
+			mergedPropertiesMap2.toString(), 3, mergedPropertiesMap2.size());
+
+		_assertMergedPropertiesMap(
+			"portalCacheName1",
+			new Properties() {
+				{
+					put("key1", "value1");
+				}
+			},
+			new Properties() {
+				{
+					put("key1", "value1");
+					put("replicator", true);
+				}
+			},
+			mergedPropertiesMap2);
+		_assertMergedPropertiesMap(
+			"portalCacheName2",
+			new Properties() {
+				{
+					put("key2", "value2");
+				}
+			},
+			null, mergedPropertiesMap2);
+		_assertMergedPropertiesMap(
+			"portalCacheName3", null,
+			new Properties() {
+				{
+					put("key3", "value3");
+					put("replicator", true);
+				}
+			},
+			mergedPropertiesMap2);
+
+		// Test 3: _bootstrapLoaderEnabled is false, _bootstrapLoaderProperties
+		// and _replicatorProperties are non-empty
+
+		Map<String, ObjectValuePair<Properties, Properties>>
+			mergedPropertiesMap3 = ReflectionTestUtil.invoke(
+				getBaseEhcachePortalCacheManagerConfigurator(
+					new PropsInvocationHandler(true, false, true, true)),
+				"_getMergedPropertiesMap", null, null);
+
+		Assert.assertEquals(
+			mergedPropertiesMap3.toString(), 2, mergedPropertiesMap3.size());
+
+		_assertMergedPropertiesMap(
+			"portalCacheName1", null,
+			new Properties() {
+				{
+					put("key1", "value1");
+					put("replicator", true);
+				}
+			},
+			mergedPropertiesMap3);
+		_assertMergedPropertiesMap(
+			"portalCacheName3", null,
+			new Properties() {
+				{
+					put("key3", "value3");
+					put("replicator", true);
+				}
+			},
+			mergedPropertiesMap3);
+	}
+
 //	@Test
 //	public void testGetPortalPropertiesString() {
 //		MultiVMEhcachePortalCacheManagerConfigurator
