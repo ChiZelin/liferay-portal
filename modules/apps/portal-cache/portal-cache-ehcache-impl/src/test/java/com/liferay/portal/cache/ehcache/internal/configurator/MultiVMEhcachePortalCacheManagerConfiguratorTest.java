@@ -23,6 +23,7 @@ import com.liferay.portal.kernel.test.util.PropsTestUtil;
 import com.liferay.portal.kernel.util.ObjectValuePair;
 import com.liferay.portal.kernel.util.Props;
 import com.liferay.portal.kernel.util.PropsKeys;
+import com.liferay.portal.kernel.util.ProxyFactory;
 import com.liferay.portal.kernel.util.ProxyUtil;
 
 import java.util.Collections;
@@ -123,7 +124,30 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest
 		Map<String, ObjectValuePair<Properties, Properties>>
 			mergedPropertiesMap1 = ReflectionTestUtil.invoke(
 				getBaseEhcachePortalCacheManagerConfigurator(
-					new PropsInvocationHandler(true, true, false, false)),
+					new HashMap<String, Object>(){
+						{
+							put(
+								PropsKeys.
+									EHCACHE_BOOTSTRAP_CACHE_LOADER_ENABLED,
+								"true");
+							put(
+								PropsKeys.
+									EHCACHE_BOOTSTRAP_CACHE_LOADER_PROPERTIES +
+									StringPool.PERIOD,
+								new Properties());
+							put(
+								PropsKeys.EHCACHE_REPLICATOR_PROPERTIES +
+									StringPool.PERIOD,
+								new Properties());
+							put(
+								PropsKeys.
+									EHCACHE_BOOTSTRAP_CACHE_LOADER_PROPERTIES_DEFAULT,
+								new String[] {"key1=value1", "key2=value2"});
+							put(
+								PropsKeys.EHCACHE_REPLICATOR_PROPERTIES_DEFAULT,
+								new String[] {"key1=value1", "key2=value2"});
+						}
+					}),
 				"_getMergedPropertiesMap", null, null);
 
 		Assert.assertTrue(
@@ -137,7 +161,40 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest
 		Map<String, ObjectValuePair<Properties, Properties>>
 			mergedPropertiesMap2 = ReflectionTestUtil.invoke(
 				getBaseEhcachePortalCacheManagerConfigurator(
-					new PropsInvocationHandler(true, true, true, true)),
+					new HashMap<String, Object>(){
+						{
+							put(
+								PropsKeys.
+									EHCACHE_BOOTSTRAP_CACHE_LOADER_ENABLED,
+								"true");
+							put(
+								PropsKeys.
+									EHCACHE_BOOTSTRAP_CACHE_LOADER_PROPERTIES +
+									StringPool.PERIOD,
+								new Properties() {
+									{
+										put("portalCacheName1", "key1=value1");
+										put("portalCacheName2", "key2=value2");
+									}
+								});
+							put(
+								PropsKeys.EHCACHE_REPLICATOR_PROPERTIES +
+									StringPool.PERIOD,
+								new Properties() {
+									{
+										put("portalCacheName1", "key1=value1");
+										put("portalCacheName3", "key3=value3");
+									}
+								});
+							put(
+								PropsKeys.
+									EHCACHE_BOOTSTRAP_CACHE_LOADER_PROPERTIES_DEFAULT,
+								new String[] {"key1=value1", "key2=value2"});
+							put(
+								PropsKeys.EHCACHE_REPLICATOR_PROPERTIES_DEFAULT,
+								new String[] {"key1=value1", "key2=value2"});
+						}
+					}),
 				"_getMergedPropertiesMap", null, null);
 
 		Assert.assertEquals(
@@ -181,7 +238,40 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest
 		Map<String, ObjectValuePair<Properties, Properties>>
 			mergedPropertiesMap3 = ReflectionTestUtil.invoke(
 				getBaseEhcachePortalCacheManagerConfigurator(
-					new PropsInvocationHandler(true, false, true, true)),
+					new HashMap<String, Object>(){
+						{
+							put(
+								PropsKeys.
+									EHCACHE_BOOTSTRAP_CACHE_LOADER_ENABLED,
+								"false");
+							put(
+								PropsKeys.
+									EHCACHE_BOOTSTRAP_CACHE_LOADER_PROPERTIES +
+									StringPool.PERIOD,
+								new Properties() {
+									{
+										put("portalCacheName1", "key1=value1");
+										put("portalCacheName2", "key2=value2");
+									}
+								});
+							put(
+								PropsKeys.EHCACHE_REPLICATOR_PROPERTIES +
+									StringPool.PERIOD,
+								new Properties() {
+									{
+										put("portalCacheName1", "key1=value1");
+										put("portalCacheName3", "key3=value3");
+									}
+								});
+							put(
+								PropsKeys.
+									EHCACHE_BOOTSTRAP_CACHE_LOADER_PROPERTIES_DEFAULT,
+								new String[] {"key1=value1", "key2=value2"});
+							put(
+								PropsKeys.EHCACHE_REPLICATOR_PROPERTIES_DEFAULT,
+								new String[] {"key1=value1", "key2=value2"});
+						}
+					}),
 				"_getMergedPropertiesMap", null, null);
 
 		Assert.assertEquals(
@@ -207,42 +297,66 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest
 			mergedPropertiesMap3);
 	}
 
-//	@Test
-//	public void testGetPortalPropertiesString() {
-//		MultiVMEhcachePortalCacheManagerConfigurator
-//			multiVMEhcachePortalCacheManagerConfigurator =
-//				getBaseEhcachePortalCacheManagerConfigurator(
-//					new PropsInvocationHandler(true, true, false, false));
-//
-//		Assert.assertNull(
-//			multiVMEhcachePortalCacheManagerConfigurator.
-//				getPortalPropertiesString("portal.property.Key1"));
-//		Assert.assertEquals(
-//			"key=value",
-//			multiVMEhcachePortalCacheManagerConfigurator.
-//				getPortalPropertiesString("portal.property.Key2"));
-//		Assert.assertEquals(
-//			"key1=value1,key2=value2",
-//			multiVMEhcachePortalCacheManagerConfigurator.
-//				getPortalPropertiesString("portal.property.Key3"));
-//	}
-//
-//	@Override
-//	@Test
-//	public void testIsRequireSerialization() {
-//		super.testIsRequireSerialization();
-//
-//		MultiVMEhcachePortalCacheManagerConfigurator
-//			multiVMEhcachePortalCacheManagerConfigurator =
-//				getBaseEhcachePortalCacheManagerConfigurator(
-//					new PropsInvocationHandler(true));
-//
-//		Assert.assertTrue(
-//			"The true value should be returned if clusterEnabled is true",
-//			multiVMEhcachePortalCacheManagerConfigurator.isRequireSerialization(
-//				new CacheConfiguration()));
-//	}
-//
+	@Test
+	public void testGetPortalPropertiesString() {
+		_testGetPortalPropertiesString(null, new String[0]);
+		_testGetPortalPropertiesString("key=value", new String[] {"key=value"});
+		_testGetPortalPropertiesString(
+			"key1=value1,key2=value2",
+			new String[] {"key1=value1", "key2=value2"});
+
+	}
+
+	private void _testGetPortalPropertiesString(
+		String expectedString, String[] array) {
+		MultiVMEhcachePortalCacheManagerConfigurator
+			multiVMEhcachePortalCacheManagerConfigurator =
+			getBaseEhcachePortalCacheManagerConfigurator(
+				new HashMap<String, Object>(){
+					{
+						put(
+							PropsKeys.
+								EHCACHE_BOOTSTRAP_CACHE_LOADER_PROPERTIES_DEFAULT,
+							new String[] {"key1=value1", "key2=value2"});
+						put(
+							PropsKeys.EHCACHE_REPLICATOR_PROPERTIES_DEFAULT,
+							array);
+					}
+				});
+		Assert.assertEquals(
+			expectedString,
+			multiVMEhcachePortalCacheManagerConfigurator.
+				getPortalPropertiesString(
+					PropsKeys.EHCACHE_REPLICATOR_PROPERTIES_DEFAULT));
+	}
+
+	@Override
+	@Test
+	public void testIsRequireSerialization() {
+		super.testIsRequireSerialization();
+
+		MultiVMEhcachePortalCacheManagerConfigurator
+			multiVMEhcachePortalCacheManagerConfigurator =
+				getBaseEhcachePortalCacheManagerConfigurator(
+					new HashMap<String, Object>(){
+						{
+							put(PropsKeys.CLUSTER_LINK_ENABLED,"true");
+							put(
+								PropsKeys.
+									EHCACHE_BOOTSTRAP_CACHE_LOADER_PROPERTIES_DEFAULT,
+								new String[0]);
+							put(
+								PropsKeys.EHCACHE_REPLICATOR_PROPERTIES_DEFAULT,
+								new String[0]);
+						}
+					});
+
+		Assert.assertTrue(
+			"The true value should be returned if clusterEnabled is true",
+			multiVMEhcachePortalCacheManagerConfigurator.isRequireSerialization(
+				new CacheConfiguration()));
+	}
+
 //	@Test
 //	public void testManageConfiguration() {
 //
@@ -627,29 +741,25 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest
 //				}),
 //			portalCacheConfiguration);
 //	}
-//
-//	@Test
-//	public void testSetProps() {
-//		Props props = (Props)ProxyUtil.newProxyInstance(
-//			MultiVMEhcachePortalCacheManagerConfiguratorTest.
-//				class.getClassLoader(),
-//			new Class<?>[] {Props.class},
-//			new PropsInvocationHandler(true, true, false, false));
-//
-//		MultiVMEhcachePortalCacheManagerConfigurator
-//			multiVMEhcachePortalCacheManagerConfigurator =
-//				new MultiVMEhcachePortalCacheManagerConfigurator();
-//
-//		multiVMEhcachePortalCacheManagerConfigurator.setProps(props);
-//
-//		Assert.assertSame(
-//			props,
-//			ReflectionTestUtil.getFieldValue(
-//				multiVMEhcachePortalCacheManagerConfigurator, "props"));
-//	}
+
+	@Test
+	public void testSetProps() {
+		MultiVMEhcachePortalCacheManagerConfigurator
+			multiVMEhcachePortalCacheManagerConfigurator =
+			new MultiVMEhcachePortalCacheManagerConfigurator();
+
+		Props dummyProps = ProxyFactory.newDummyInstance(Props.class);
+
+		multiVMEhcachePortalCacheManagerConfigurator.setProps(dummyProps);
+
+		Assert.assertSame(
+			dummyProps,
+			ReflectionTestUtil.getFieldValue(
+				multiVMEhcachePortalCacheManagerConfigurator, "props"));
+	}
 
 	@Override
-	protected <T extends BaseEhcachePortalCacheManagerConfigurator> T
+	protected MultiVMEhcachePortalCacheManagerConfigurator
 		getBaseEhcachePortalCacheManagerConfigurator(
 		Map<String, Object> propertie) {
 
@@ -664,7 +774,7 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest
 			multiVMEhcachePortalCacheManagerConfigurator.activate();
 		}
 
-		return (T) multiVMEhcachePortalCacheManagerConfigurator;
+		return multiVMEhcachePortalCacheManagerConfigurator;
 	}
 
 	private void _assertMergedPropertiesMap(

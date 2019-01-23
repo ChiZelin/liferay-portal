@@ -470,7 +470,7 @@ public abstract class BaseEhcachePortalCacheManagerConfiguratorTestCase {
 				StringPool.COMMA));
 	}
 
-	protected abstract <T extends BaseEhcachePortalCacheManagerConfigurator> T
+	protected abstract BaseEhcachePortalCacheManagerConfigurator
 		getBaseEhcachePortalCacheManagerConfigurator(
 		Map<String, Object> propertie);
 

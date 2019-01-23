@@ -105,11 +105,11 @@ public class SingleVMEhcachePortalCacheManagerConfiguratorTest
 	}
 
 	@Override
-	protected <T extends BaseEhcachePortalCacheManagerConfigurator> T
+	protected SingleVMEhcachePortalCacheManagerConfigurator
 		getBaseEhcachePortalCacheManagerConfigurator(
 			Map<String, Object> propertie) {
 
-		return (T) new SingleVMEhcachePortalCacheManagerConfigurator();
+		return new SingleVMEhcachePortalCacheManagerConfigurator();
 	}
 
 	private static final IOException _IO_EXCEPTION = new IOException();
