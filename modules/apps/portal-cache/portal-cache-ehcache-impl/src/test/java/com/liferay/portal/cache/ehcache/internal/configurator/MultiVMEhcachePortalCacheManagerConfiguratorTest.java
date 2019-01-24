@@ -357,288 +357,288 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest
 				new CacheConfiguration()));
 	}
 
-//	@Test
-//	public void testManageConfiguration() {
-//
-//		// Test 1: clusterEnabled is false
-//
-//		MultiVMEhcachePortalCacheManagerConfigurator
-//			multiVMEhcachePortalCacheManagerConfigurator1 =
-//				getBaseEhcachePortalCacheManagerConfigurator(
-//					new PropsInvocationHandler(false, true, false, false));
-//
-//		final boolean[] calledGetDefaultPortalCacheConfiguration = {false};
-//
-//		multiVMEhcachePortalCacheManagerConfigurator1.manageConfiguration(
-//			new Configuration(),
-//			new PortalCacheManagerConfiguration(null, null, null) {
-//
-//				@Override
-//				public PortalCacheConfiguration
-//					getDefaultPortalCacheConfiguration() {
-//
-//					calledGetDefaultPortalCacheConfiguration[0] = true;
-//
-//					return null;
-//				}
-//
-//			});
-//
-//		Assert.assertFalse(
-//			"The manageConfiguration method should be returned directly if " +
-//				"clusterEnabled is false",
-//			calledGetDefaultPortalCacheConfiguration[0]);
-//
-//		// Test 2: clusterEnabled is true, _bootstrapLoaderProperties and
-//		// _replicatorProperties are non-empty
-//
-//		MultiVMEhcachePortalCacheManagerConfigurator
-//			multiVMEhcachePortalCacheManagerConfigurator2 =
-//				getBaseEhcachePortalCacheManagerConfigurator(
-//					new PropsInvocationHandler(true, true, true, true));
-//
-//		Set<Properties> portalCacheListenerPropertiesSet = new HashSet<>();
-//
-//		portalCacheListenerPropertiesSet.add(
-//			new Properties() {
-//				{
-//					put("replicator", true);
-//				}
-//			});
-//
-//		portalCacheListenerPropertiesSet.add(
-//			new Properties() {
-//				{
-//					put("replicator", false);
-//				}
-//			});
-//
-//		PortalCacheManagerConfiguration portalCacheManagerConfiguration1 =
-//			new PortalCacheManagerConfiguration(
-//				null,
-//				new PortalCacheConfiguration(
-//					PortalCacheConfiguration.PORTAL_CACHE_NAME_DEFAULT,
-//					portalCacheListenerPropertiesSet, null),
-//				null);
-//
-//		multiVMEhcachePortalCacheManagerConfigurator2.manageConfiguration(
-//			new Configuration(), portalCacheManagerConfiguration1);
-//
-//		_assertPortalCacheManagerConfiguration(
-//			portalCacheManagerConfiguration1, "portalCacheName1",
-//			new Properties() {
-//				{
-//					put("key1", "value1");
-//				}
-//			},
-//			new Properties() {
-//				{
-//					put("key1", "value1");
-//					put("replicator", true);
-//				}
-//			},
-//			new Properties() {
-//				{
-//					put("replicator", false);
-//				}
-//			});
-//		_assertPortalCacheManagerConfiguration(
-//			portalCacheManagerConfiguration1, "portalCacheName2",
-//			new Properties() {
-//				{
-//					put("key2", "value2");
-//				}
-//			},
-//			new Properties() {
-//				{
-//					put("replicator", true);
-//				}
-//			},
-//			new Properties() {
-//				{
-//					put("replicator", false);
-//				}
-//			});
-//		_assertPortalCacheManagerConfiguration(
-//			portalCacheManagerConfiguration1, "portalCacheName3", null,
-//			new Properties() {
-//				{
-//					put("key3", "value3");
-//					put("replicator", true);
-//				}
-//			},
-//			new Properties() {
-//				{
-//					put("replicator", false);
-//				}
-//			});
-//
-//		// Test 3: clusterEnabled and _bootstrapLoaderEnabled are true,
-//		// _bootstrapLoaderProperties is empty, _replicatorProperties is
-//		// non-empty
-//
-//		MultiVMEhcachePortalCacheManagerConfigurator
-//			multiVMEhcachePortalCacheManagerConfigurator3 =
-//				getBaseEhcachePortalCacheManagerConfigurator(
-//					new PropsInvocationHandler(true, true, false, true));
-//
-//		PortalCacheManagerConfiguration portalCacheManagerConfiguration2 =
-//			new PortalCacheManagerConfiguration(
-//				null,
-//				new PortalCacheConfiguration(
-//					PortalCacheConfiguration.PORTAL_CACHE_NAME_DEFAULT, null,
-//					null),
-//				null);
-//
-//		multiVMEhcachePortalCacheManagerConfigurator3.manageConfiguration(
-//			new Configuration(), portalCacheManagerConfiguration2);
-//
-//		_assertPortalCacheManagerConfiguration(
-//			portalCacheManagerConfiguration2, "portalCacheName1", null,
-//			new Properties() {
-//				{
-//					put("key1", "value1");
-//					put("replicator", true);
-//				}
-//			});
-//		_assertPortalCacheManagerConfiguration(
-//			portalCacheManagerConfiguration2, "portalCacheName3", null,
-//			new Properties() {
-//				{
-//					put("key3", "value3");
-//					put("replicator", true);
-//				}
-//			});
-//
-//		// Test 4: clusterEnabled is true, _bootstrapLoaderEnabled is false,
-//		// _bootstrapLoaderProperties is empty, _replicatorProperties is
-//		// non-empty
-//
-//		MultiVMEhcachePortalCacheManagerConfigurator
-//			multiVMEhcachePortalCacheManagerConfigurator4 =
-//				getBaseEhcachePortalCacheManagerConfigurator(
-//					new PropsInvocationHandler(true, false, false, true));
-//
-//		PortalCacheManagerConfiguration portalCacheManagerConfiguration3 =
-//			new PortalCacheManagerConfiguration(
-//				null,
-//				new PortalCacheConfiguration(
-//					PortalCacheConfiguration.PORTAL_CACHE_NAME_DEFAULT, null,
-//					null),
-//				null);
-//
-//		multiVMEhcachePortalCacheManagerConfigurator4.manageConfiguration(
-//			new Configuration(), portalCacheManagerConfiguration3);
-//
-//		_assertPortalCacheManagerConfiguration(
-//			portalCacheManagerConfiguration3, "portalCacheName1", null,
-//			new Properties() {
-//				{
-//					put("key1", "value1");
-//					put("replicator", true);
-//				}
-//			});
-//		_assertPortalCacheManagerConfiguration(
-//			portalCacheManagerConfiguration3, "portalCacheName3", null,
-//			new Properties() {
-//				{
-//					put("key3", "value3");
-//					put("replicator", true);
-//				}
-//			});
-//
-//		// Test 5: clusterEnabled is true, _bootstrapLoaderEnabled is true,
-//		// _bootstrapLoaderProperties is non-empty, _replicatorProperties is
-//		// empty
-//
-//		MultiVMEhcachePortalCacheManagerConfigurator
-//			multiVMEhcachePortalCacheManagerConfigurator5 =
-//				getBaseEhcachePortalCacheManagerConfigurator(
-//					new PropsInvocationHandler(true, true, true, false));
-//
-//		PortalCacheManagerConfiguration portalCacheManagerConfiguration4 =
-//			new PortalCacheManagerConfiguration(
-//				null,
-//				new PortalCacheConfiguration(
-//					PortalCacheConfiguration.PORTAL_CACHE_NAME_DEFAULT, null,
-//					null),
-//				null);
-//
-//		multiVMEhcachePortalCacheManagerConfigurator5.manageConfiguration(
-//			new Configuration(), portalCacheManagerConfiguration4);
-//
-//		_assertPortalCacheManagerConfiguration(
-//			portalCacheManagerConfiguration4, "portalCacheName1",
-//			new Properties() {
-//				{
-//					put("key1", "value1");
-//				}
-//			},
-//			new Properties[0]);
-//		_assertPortalCacheManagerConfiguration(
-//			portalCacheManagerConfiguration4, "portalCacheName2",
-//			new Properties() {
-//				{
-//					put("key2", "value2");
-//				}
-//			},
-//			new Properties[0]);
-//
-//		// Test 6: clusterEnabled is true, _bootstrapLoaderEnabled is true,
-//		// _bootstrapLoaderProperties and _replicatorProperties are non-empty
-//
-//		MultiVMEhcachePortalCacheManagerConfigurator
-//			multiVMEhcachePortalCacheManagerConfigurator6 =
-//				getBaseEhcachePortalCacheManagerConfigurator(
-//					new PropsInvocationHandler(true, true, true, true));
-//
-//		final boolean[] calledNewPortalCacheConfiguration = {false};
-//
-//		PortalCacheConfiguration defaultPortalCacheConfiguration =
-//			new PortalCacheConfiguration(
-//				PortalCacheConfiguration.PORTAL_CACHE_NAME_DEFAULT,
-//				new HashSet<>(), null) {
-//
-//				@Override
-//				public PortalCacheConfiguration newPortalCacheConfiguration(
-//					String portalCacheName) {
-//
-//					calledNewPortalCacheConfiguration[0] = true;
-//
-//					return null;
-//				}
-//
-//			};
-//
-//		PortalCacheManagerConfiguration portalCacheManagerConfiguration5 =
-//			new PortalCacheManagerConfiguration(
-//				null, defaultPortalCacheConfiguration, null);
-//
-//		Map<String, ObjectValuePair<Properties, Properties>>
-//			mergedPropertiesMap = ReflectionTestUtil.invoke(
-//				multiVMEhcachePortalCacheManagerConfigurator6,
-//				"_getMergedPropertiesMap", null, null);
-//
-//		for (Map.Entry<String, ObjectValuePair<Properties, Properties>> entry :
-//				mergedPropertiesMap.entrySet()) {
-//
-//			String portalCacheName = entry.getKey();
-//
-//			portalCacheManagerConfiguration5.putPortalCacheConfiguration(
-//				portalCacheName,
-//				new PortalCacheConfiguration(
-//					portalCacheName, new HashSet<Properties>(), null));
-//		}
-//
-//		multiVMEhcachePortalCacheManagerConfigurator6.manageConfiguration(
-//			new Configuration(), portalCacheManagerConfiguration5);
-//
-//		Assert.assertFalse(
-//			"The portalCacheConfiguration should be get from " +
-//				"portalCacheManagerConfiguration if it exists",
-//			calledNewPortalCacheConfiguration[0]);
-//	}
-//
+	@Test
+	public void testManageConfiguration() {
+
+		// Test 1: clusterEnabled is false
+
+		MultiVMEhcachePortalCacheManagerConfigurator
+			multiVMEhcachePortalCacheManagerConfigurator1 =
+				getBaseEhcachePortalCacheManagerConfigurator(
+					new PropsInvocationHandler(false, true, false, false));
+
+		final boolean[] calledGetDefaultPortalCacheConfiguration = {false};
+
+		multiVMEhcachePortalCacheManagerConfigurator1.manageConfiguration(
+			new Configuration(),
+			new PortalCacheManagerConfiguration(null, null, null) {
+
+				@Override
+				public PortalCacheConfiguration
+					getDefaultPortalCacheConfiguration() {
+
+					calledGetDefaultPortalCacheConfiguration[0] = true;
+
+					return null;
+				}
+
+			});
+
+		Assert.assertFalse(
+			"The manageConfiguration method should be returned directly if " +
+				"clusterEnabled is false",
+			calledGetDefaultPortalCacheConfiguration[0]);
+
+		// Test 2: clusterEnabled is true, _bootstrapLoaderProperties and
+		// _replicatorProperties are non-empty
+
+		MultiVMEhcachePortalCacheManagerConfigurator
+			multiVMEhcachePortalCacheManagerConfigurator2 =
+				getBaseEhcachePortalCacheManagerConfigurator(
+					new PropsInvocationHandler(true, true, true, true));
+
+		Set<Properties> portalCacheListenerPropertiesSet = new HashSet<>();
+
+		portalCacheListenerPropertiesSet.add(
+			new Properties() {
+				{
+					put("replicator", true);
+				}
+			});
+
+		portalCacheListenerPropertiesSet.add(
+			new Properties() {
+				{
+					put("replicator", false);
+				}
+			});
+
+		PortalCacheManagerConfiguration portalCacheManagerConfiguration1 =
+			new PortalCacheManagerConfiguration(
+				null,
+				new PortalCacheConfiguration(
+					PortalCacheConfiguration.PORTAL_CACHE_NAME_DEFAULT,
+					portalCacheListenerPropertiesSet, null),
+				null);
+
+		multiVMEhcachePortalCacheManagerConfigurator2.manageConfiguration(
+			new Configuration(), portalCacheManagerConfiguration1);
+
+		_assertPortalCacheManagerConfiguration(
+			portalCacheManagerConfiguration1, "portalCacheName1",
+			new Properties() {
+				{
+					put("key1", "value1");
+				}
+			},
+			new Properties() {
+				{
+					put("key1", "value1");
+					put("replicator", true);
+				}
+			},
+			new Properties() {
+				{
+					put("replicator", false);
+				}
+			});
+		_assertPortalCacheManagerConfiguration(
+			portalCacheManagerConfiguration1, "portalCacheName2",
+			new Properties() {
+				{
+					put("key2", "value2");
+				}
+			},
+			new Properties() {
+				{
+					put("replicator", true);
+				}
+			},
+			new Properties() {
+				{
+					put("replicator", false);
+				}
+			});
+		_assertPortalCacheManagerConfiguration(
+			portalCacheManagerConfiguration1, "portalCacheName3", null,
+			new Properties() {
+				{
+					put("key3", "value3");
+					put("replicator", true);
+				}
+			},
+			new Properties() {
+				{
+					put("replicator", false);
+				}
+			});
+
+		// Test 3: clusterEnabled and _bootstrapLoaderEnabled are true,
+		// _bootstrapLoaderProperties is empty, _replicatorProperties is
+		// non-empty
+
+		MultiVMEhcachePortalCacheManagerConfigurator
+			multiVMEhcachePortalCacheManagerConfigurator3 =
+				getBaseEhcachePortalCacheManagerConfigurator(
+					new PropsInvocationHandler(true, true, false, true));
+
+		PortalCacheManagerConfiguration portalCacheManagerConfiguration2 =
+			new PortalCacheManagerConfiguration(
+				null,
+				new PortalCacheConfiguration(
+					PortalCacheConfiguration.PORTAL_CACHE_NAME_DEFAULT, null,
+					null),
+				null);
+
+		multiVMEhcachePortalCacheManagerConfigurator3.manageConfiguration(
+			new Configuration(), portalCacheManagerConfiguration2);
+
+		_assertPortalCacheManagerConfiguration(
+			portalCacheManagerConfiguration2, "portalCacheName1", null,
+			new Properties() {
+				{
+					put("key1", "value1");
+					put("replicator", true);
+				}
+			});
+		_assertPortalCacheManagerConfiguration(
+			portalCacheManagerConfiguration2, "portalCacheName3", null,
+			new Properties() {
+				{
+					put("key3", "value3");
+					put("replicator", true);
+				}
+			});
+
+		// Test 4: clusterEnabled is true, _bootstrapLoaderEnabled is false,
+		// _bootstrapLoaderProperties is empty, _replicatorProperties is
+		// non-empty
+
+		MultiVMEhcachePortalCacheManagerConfigurator
+			multiVMEhcachePortalCacheManagerConfigurator4 =
+				getBaseEhcachePortalCacheManagerConfigurator(
+					new PropsInvocationHandler(true, false, false, true));
+
+		PortalCacheManagerConfiguration portalCacheManagerConfiguration3 =
+			new PortalCacheManagerConfiguration(
+				null,
+				new PortalCacheConfiguration(
+					PortalCacheConfiguration.PORTAL_CACHE_NAME_DEFAULT, null,
+					null),
+				null);
+
+		multiVMEhcachePortalCacheManagerConfigurator4.manageConfiguration(
+			new Configuration(), portalCacheManagerConfiguration3);
+
+		_assertPortalCacheManagerConfiguration(
+			portalCacheManagerConfiguration3, "portalCacheName1", null,
+			new Properties() {
+				{
+					put("key1", "value1");
+					put("replicator", true);
+				}
+			});
+		_assertPortalCacheManagerConfiguration(
+			portalCacheManagerConfiguration3, "portalCacheName3", null,
+			new Properties() {
+				{
+					put("key3", "value3");
+					put("replicator", true);
+				}
+			});
+
+		// Test 5: clusterEnabled is true, _bootstrapLoaderEnabled is true,
+		// _bootstrapLoaderProperties is non-empty, _replicatorProperties is
+		// empty
+
+		MultiVMEhcachePortalCacheManagerConfigurator
+			multiVMEhcachePortalCacheManagerConfigurator5 =
+				getBaseEhcachePortalCacheManagerConfigurator(
+					new PropsInvocationHandler(true, true, true, false));
+
+		PortalCacheManagerConfiguration portalCacheManagerConfiguration4 =
+			new PortalCacheManagerConfiguration(
+				null,
+				new PortalCacheConfiguration(
+					PortalCacheConfiguration.PORTAL_CACHE_NAME_DEFAULT, null,
+					null),
+				null);
+
+		multiVMEhcachePortalCacheManagerConfigurator5.manageConfiguration(
+			new Configuration(), portalCacheManagerConfiguration4);
+
+		_assertPortalCacheManagerConfiguration(
+			portalCacheManagerConfiguration4, "portalCacheName1",
+			new Properties() {
+				{
+					put("key1", "value1");
+				}
+			},
+			new Properties[0]);
+		_assertPortalCacheManagerConfiguration(
+			portalCacheManagerConfiguration4, "portalCacheName2",
+			new Properties() {
+				{
+					put("key2", "value2");
+				}
+			},
+			new Properties[0]);
+
+		// Test 6: clusterEnabled is true, _bootstrapLoaderEnabled is true,
+		// _bootstrapLoaderProperties and _replicatorProperties are non-empty
+
+		MultiVMEhcachePortalCacheManagerConfigurator
+			multiVMEhcachePortalCacheManagerConfigurator6 =
+				getBaseEhcachePortalCacheManagerConfigurator(
+					new PropsInvocationHandler(true, true, true, true));
+
+		final boolean[] calledNewPortalCacheConfiguration = {false};
+
+		PortalCacheConfiguration defaultPortalCacheConfiguration =
+			new PortalCacheConfiguration(
+				PortalCacheConfiguration.PORTAL_CACHE_NAME_DEFAULT,
+				new HashSet<>(), null) {
+
+				@Override
+				public PortalCacheConfiguration newPortalCacheConfiguration(
+					String portalCacheName) {
+
+					calledNewPortalCacheConfiguration[0] = true;
+
+					return null;
+				}
+
+			};
+
+		PortalCacheManagerConfiguration portalCacheManagerConfiguration5 =
+			new PortalCacheManagerConfiguration(
+				null, defaultPortalCacheConfiguration, null);
+
+		Map<String, ObjectValuePair<Properties, Properties>>
+			mergedPropertiesMap = ReflectionTestUtil.invoke(
+				multiVMEhcachePortalCacheManagerConfigurator6,
+				"_getMergedPropertiesMap", null, null);
+
+		for (Map.Entry<String, ObjectValuePair<Properties, Properties>> entry :
+				mergedPropertiesMap.entrySet()) {
+
+			String portalCacheName = entry.getKey();
+
+			portalCacheManagerConfiguration5.putPortalCacheConfiguration(
+				portalCacheName,
+				new PortalCacheConfiguration(
+					portalCacheName, new HashSet<Properties>(), null));
+		}
+
+		multiVMEhcachePortalCacheManagerConfigurator6.manageConfiguration(
+			new Configuration(), portalCacheManagerConfiguration5);
+
+		Assert.assertFalse(
+			"The portalCacheConfiguration should be get from " +
+				"portalCacheManagerConfiguration if it exists",
+			calledNewPortalCacheConfiguration[0]);
+	}
+
 //	@Override
 //	@Test
 //	public void testParseCacheListenerConfigurations() {
