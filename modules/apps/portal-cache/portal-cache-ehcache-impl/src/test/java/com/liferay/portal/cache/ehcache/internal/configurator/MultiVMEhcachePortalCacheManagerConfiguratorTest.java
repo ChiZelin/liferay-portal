@@ -142,10 +142,10 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest
 							put(
 								PropsKeys.
 									EHCACHE_BOOTSTRAP_CACHE_LOADER_PROPERTIES_DEFAULT,
-								new String[] {"key1=value1", "key2=value2"});
+								new String[0]);
 							put(
 								PropsKeys.EHCACHE_REPLICATOR_PROPERTIES_DEFAULT,
-								new String[] {"key1=value1", "key2=value2"});
+								new String[0]);
 						}
 					}),
 				"_getMergedPropertiesMap", null, null);
@@ -189,10 +189,10 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest
 							put(
 								PropsKeys.
 									EHCACHE_BOOTSTRAP_CACHE_LOADER_PROPERTIES_DEFAULT,
-								new String[] {"key1=value1", "key2=value2"});
+								new String[0]);
 							put(
 								PropsKeys.EHCACHE_REPLICATOR_PROPERTIES_DEFAULT,
-								new String[] {"key1=value1", "key2=value2"});
+								new String[0]);
 						}
 					}),
 				"_getMergedPropertiesMap", null, null);
@@ -266,10 +266,10 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest
 							put(
 								PropsKeys.
 									EHCACHE_BOOTSTRAP_CACHE_LOADER_PROPERTIES_DEFAULT,
-								new String[] {"key1=value1", "key2=value2"});
+								new String[0]);
 							put(
 								PropsKeys.EHCACHE_REPLICATOR_PROPERTIES_DEFAULT,
-								new String[] {"key1=value1", "key2=value2"});
+								new String[0]);
 						}
 					}),
 				"_getMergedPropertiesMap", null, null);
@@ -384,10 +384,10 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest
 							put(
 								PropsKeys.
 									EHCACHE_BOOTSTRAP_CACHE_LOADER_PROPERTIES_DEFAULT,
-								new String[] {"key1=value1", "key2=value2"});
+								new String[0]);
 							put(
 								PropsKeys.EHCACHE_REPLICATOR_PROPERTIES_DEFAULT,
-								new String[] {"key1=value1", "key2=value2"});
+								new String[0]);
 						}
 					});
 
@@ -448,10 +448,10 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest
 							put(
 								PropsKeys.
 									EHCACHE_BOOTSTRAP_CACHE_LOADER_PROPERTIES_DEFAULT,
-								new String[] {"key1=value1", "key2=value2"});
+								new String[0]);
 							put(
 								PropsKeys.EHCACHE_REPLICATOR_PROPERTIES_DEFAULT,
-								new String[] {"key1=value1", "key2=value2"});
+								new String[0]);
 						}
 					});
 
@@ -562,10 +562,10 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest
 							put(
 								PropsKeys.
 									EHCACHE_BOOTSTRAP_CACHE_LOADER_PROPERTIES_DEFAULT,
-								new String[] {"key1=value1", "key2=value2"});
+								new String[0]);
 							put(
 								PropsKeys.EHCACHE_REPLICATOR_PROPERTIES_DEFAULT,
-								new String[] {"key1=value1", "key2=value2"});
+								new String[0]);
 						}
 					});
 
@@ -628,10 +628,10 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest
 							put(
 								PropsKeys.
 									EHCACHE_BOOTSTRAP_CACHE_LOADER_PROPERTIES_DEFAULT,
-								new String[] {"key1=value1", "key2=value2"});
+								new String[0]);
 							put(
 								PropsKeys.EHCACHE_REPLICATOR_PROPERTIES_DEFAULT,
-								new String[] {"key1=value1", "key2=value2"});
+								new String[0]);
 						}
 					});
 
@@ -694,10 +694,10 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest
 							put(
 								PropsKeys.
 									EHCACHE_BOOTSTRAP_CACHE_LOADER_PROPERTIES_DEFAULT,
-								new String[] {"key1=value1", "key2=value2"});
+								new String[0]);
 							put(
 								PropsKeys.EHCACHE_REPLICATOR_PROPERTIES_DEFAULT,
-								new String[] {"key1=value1", "key2=value2"});
+								new String[0]);
 						}
 					});
 
@@ -764,10 +764,10 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest
 							put(
 								PropsKeys.
 									EHCACHE_BOOTSTRAP_CACHE_LOADER_PROPERTIES_DEFAULT,
-								new String[] {"key1=value1", "key2=value2"});
+								new String[0]);
 							put(
 								PropsKeys.EHCACHE_REPLICATOR_PROPERTIES_DEFAULT,
-								new String[] {"key1=value1", "key2=value2"});
+								new String[0]);
 						}
 					});
 
