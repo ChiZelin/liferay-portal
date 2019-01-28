@@ -63,8 +63,7 @@ public class SingleVMEhcachePortalCacheManagerConfiguratorTest
 	public void testParsePropertiesException() {
 		SingleVMEhcachePortalCacheManagerConfigurator
 			singleVMEhcachePortalCacheManagerConfigurator =
-				getBaseEhcachePortalCacheManagerConfigurator(
-					null);
+				getBaseEhcachePortalCacheManagerConfigurator(null);
 
 		try {
 			singleVMEhcachePortalCacheManagerConfigurator.parseProperties(
@@ -82,8 +81,7 @@ public class SingleVMEhcachePortalCacheManagerConfiguratorTest
 		Props props = ProxyFactory.newDummyInstance(Props.class);
 		SingleVMEhcachePortalCacheManagerConfigurator
 			singleVMEhcachePortalCacheManagerConfigurator =
-				getBaseEhcachePortalCacheManagerConfigurator(
-					null);
+				getBaseEhcachePortalCacheManagerConfigurator(null);
 
 		singleVMEhcachePortalCacheManagerConfigurator.setProps(props);
 

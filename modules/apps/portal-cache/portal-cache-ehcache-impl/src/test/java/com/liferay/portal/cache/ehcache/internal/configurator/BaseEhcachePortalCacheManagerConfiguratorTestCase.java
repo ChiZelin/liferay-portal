@@ -23,14 +23,12 @@ import com.liferay.portal.kernel.cache.PortalCacheListenerScope;
 import com.liferay.portal.kernel.util.ObjectValuePair;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import com.liferay.portal.kernel.util.PropsKeys;
 import net.sf.ehcache.config.CacheConfiguration;
 import net.sf.ehcache.config.CacheConfiguration.CacheEventListenerFactoryConfiguration;
 import net.sf.ehcache.config.Configuration;
@@ -472,7 +470,7 @@ public abstract class BaseEhcachePortalCacheManagerConfiguratorTestCase {
 
 	protected abstract BaseEhcachePortalCacheManagerConfigurator
 		getBaseEhcachePortalCacheManagerConfigurator(
-		Map<String, Object> propertie);
+			Map<String, Object> propertie);
 
 	private void _testIsRequireSerializationByCacheConfiguration(
 		boolean expectedIsRequireSerialization,
