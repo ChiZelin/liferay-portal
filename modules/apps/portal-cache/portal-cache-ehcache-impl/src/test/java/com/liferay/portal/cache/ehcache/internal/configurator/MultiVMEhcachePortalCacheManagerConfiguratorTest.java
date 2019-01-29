@@ -104,18 +104,7 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest
 		_testGetMergedPropertiesMap(
 			new String[] {"portalCacheName"},
 			new ObjectValuePair[] {
-				new ObjectValuePair(
-					new Properties() {
-						{
-							put("key", "value");
-						}
-					},
-					new Properties() {
-						{
-							put("key", "value");
-							put("replicator", true);
-						}
-					})
+				new ObjectValuePair(_properties2.clone(), _properties3.clone())
 			},
 			new HashMap<String, Object>() {
 				{
@@ -123,24 +112,17 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest
 					put(
 						PropsKeys.EHCACHE_BOOTSTRAP_CACHE_LOADER_PROPERTIES +
 							StringPool.PERIOD,
-						_properties.clone());
+						_properties1.clone());
 					put(
 						PropsKeys.EHCACHE_REPLICATOR_PROPERTIES +
 							StringPool.PERIOD,
-						_properties.clone());
+						_properties1.clone());
 				}
 			});
 		_testGetMergedPropertiesMap(
 			new String[] {"portalCacheName"},
 			new ObjectValuePair[] {
-				new ObjectValuePair(
-					null,
-					new Properties() {
-						{
-							put("key", "value");
-							put("replicator", true);
-						}
-					})
+				new ObjectValuePair(null, _properties3.clone())
 			},
 			new HashMap<String, Object>() {
 				{
@@ -151,7 +133,7 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest
 					put(
 						PropsKeys.EHCACHE_REPLICATOR_PROPERTIES +
 							StringPool.PERIOD,
-						_properties.clone());
+						_properties1.clone());
 				}
 			});
 	}
@@ -235,11 +217,11 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest
 								PropsKeys.
 									EHCACHE_BOOTSTRAP_CACHE_LOADER_PROPERTIES +
 										StringPool.PERIOD,
-								_properties.clone());
+								_properties1.clone());
 							put(
 								PropsKeys.EHCACHE_REPLICATOR_PROPERTIES +
 									StringPool.PERIOD,
-								_properties.clone());
+								_properties1.clone());
 						}
 					});
 
@@ -272,17 +254,7 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest
 
 		_assertPortalCacheManagerConfiguration(
 			portalCacheManagerConfiguration1, "portalCacheName",
-			new Properties() {
-				{
-					put("key", "value");
-				}
-			},
-			new Properties() {
-				{
-					put("key", "value");
-					put("replicator", true);
-				}
-			},
+			(Properties)_properties2.clone(), (Properties)_properties3.clone(),
 			new Properties() {
 				{
 					put("replicator", false);
@@ -302,7 +274,7 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest
 							put(
 								PropsKeys.EHCACHE_REPLICATOR_PROPERTIES +
 									StringPool.PERIOD,
-								_properties.clone());
+								_properties1.clone());
 						}
 					});
 
@@ -319,12 +291,7 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest
 
 		_assertPortalCacheManagerConfiguration(
 			portalCacheManagerConfiguration2, "portalCacheName", null,
-			new Properties() {
-				{
-					put("key", "value");
-					put("replicator", true);
-				}
-			});
+			(Properties)_properties3.clone());
 
 		// Test 4: clusterEnabled is true, _bootstrapLoaderEnabled is false,
 		// _bootstrapLoaderProperties is empty, _replicatorProperties is
@@ -343,7 +310,7 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest
 							put(
 								PropsKeys.EHCACHE_REPLICATOR_PROPERTIES +
 									StringPool.PERIOD,
-								_properties.clone());
+								_properties1.clone());
 						}
 					});
 
@@ -360,12 +327,7 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest
 
 		_assertPortalCacheManagerConfiguration(
 			portalCacheManagerConfiguration3, "portalCacheName", null,
-			new Properties() {
-				{
-					put("key", "value");
-					put("replicator", true);
-				}
-			});
+			(Properties)_properties3.clone());
 
 		// Test 5: clusterEnabled is true, _bootstrapLoaderEnabled is true,
 		// _bootstrapLoaderProperties is non-empty, _replicatorProperties is
@@ -381,7 +343,7 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest
 								PropsKeys.
 									EHCACHE_BOOTSTRAP_CACHE_LOADER_PROPERTIES +
 										StringPool.PERIOD,
-								_properties.clone());
+								_properties1.clone());
 						}
 					});
 
@@ -398,12 +360,7 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest
 
 		_assertPortalCacheManagerConfiguration(
 			portalCacheManagerConfiguration4, "portalCacheName",
-			new Properties() {
-				{
-					put("key", "value");
-				}
-			},
-			new Properties[0]);
+			(Properties)_properties2.clone(), new Properties[0]);
 
 		// Test 6: clusterEnabled is true, _bootstrapLoaderEnabled is true,
 		// _bootstrapLoaderProperties and _replicatorProperties are non-empty
@@ -418,11 +375,11 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest
 								PropsKeys.
 									EHCACHE_BOOTSTRAP_CACHE_LOADER_PROPERTIES +
 										StringPool.PERIOD,
-								_properties.clone());
+								_properties1.clone());
 							put(
 								PropsKeys.EHCACHE_REPLICATOR_PROPERTIES +
 									StringPool.PERIOD,
-								_properties.clone());
+								_properties1.clone());
 						}
 					});
 
@@ -474,112 +431,60 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest
 		// Test 2: clusterEnabled and _bootstrapLoaderEnabled are true,
 		// _bootstrapLoaderProperties and _replicatorProperties are empty
 
-		MultiVMEhcachePortalCacheManagerConfigurator
-			multiVMEhcachePortalCacheManagerConfigurator1 =
-				getBaseEhcachePortalCacheManagerConfigurator(
-					new HashMap<String, Object>() {
-						{
-							putAll(_propertiesMap);
-						}
-					});
-
-		_assertPortalCacheConfiguration(
-			"portalCacheNameOutsideProperties", new Properties(),
+		_testParseCacheListenerConfigurations(
+			new Properties(),
 			Collections.singleton(
 				new Properties() {
 					{
 						put("replicator", true);
 					}
 				}),
-			multiVMEhcachePortalCacheManagerConfigurator1.
-				parseCacheListenerConfigurations(
-					new CacheConfiguration(
-						"portalCacheNameOutsideProperties", 0),
-					null, true));
+			new HashMap<String, Object>() {
+				{
+					putAll(_propertiesMap);
+				}
+			});
 
 		// Test 3: clusterEnabled is true, _bootstrapLoaderEnabled is false,
 		// _bootstrapLoaderProperties and _replicatorProperties are empty
 
-		MultiVMEhcachePortalCacheManagerConfigurator
-			multiVMEhcachePortalCacheManagerConfigurator2 =
-				getBaseEhcachePortalCacheManagerConfigurator(
-					new HashMap<String, Object>() {
-						{
-							putAll(_propertiesMap);
-							put(
-								PropsKeys.
-									EHCACHE_BOOTSTRAP_CACHE_LOADER_ENABLED,
-								"false");
-						}
-					});
-
-		_assertPortalCacheConfiguration(
-			"portalCacheNameOutsideProperties", null,
+		_testParseCacheListenerConfigurations(
+			null,
 			Collections.singleton(
 				new Properties() {
 					{
 						put("replicator", true);
 					}
 				}),
-			multiVMEhcachePortalCacheManagerConfigurator2.
-				parseCacheListenerConfigurations(
-					new CacheConfiguration(
-						"portalCacheNameOutsideProperties", 0),
-					null, true));
+			new HashMap<String, Object>() {
+				{
+					putAll(_propertiesMap);
+					put(
+						PropsKeys.EHCACHE_BOOTSTRAP_CACHE_LOADER_ENABLED,
+						"false");
+				}
+			});
 
 		// Test 4: clusterEnabled and _bootstrapLoaderEnabled are true,
 		// _bootstrapLoaderProperties and _replicatorProperties are non-empty
 
-		MultiVMEhcachePortalCacheManagerConfigurator
-			multiVMEhcachePortalCacheManagerConfigurator3 =
-				getBaseEhcachePortalCacheManagerConfigurator(
-					new HashMap<String, Object>() {
-						{
-							putAll(_propertiesMap);
-
-							put(
-								PropsKeys.
-									EHCACHE_BOOTSTRAP_CACHE_LOADER_PROPERTIES +
-										StringPool.PERIOD,
-								_properties.clone());
-							put(
-								PropsKeys.EHCACHE_REPLICATOR_PROPERTIES +
-									StringPool.PERIOD,
-								_properties.clone());
-						}
-					});
-
-		PortalCacheConfiguration portalCacheConfiguration =
-			multiVMEhcachePortalCacheManagerConfigurator3.
-				parseCacheListenerConfigurations(
-					new CacheConfiguration("portalCacheName", 0), null, true);
-
-		Properties bootstrapLoaderProperties = ReflectionTestUtil.getFieldValue(
-			multiVMEhcachePortalCacheManagerConfigurator3,
-			"_bootstrapLoaderProperties");
-		Properties replicatorProperties = ReflectionTestUtil.getFieldValue(
-			multiVMEhcachePortalCacheManagerConfigurator3,
-			"_replicatorProperties");
-
-		Assert.assertNull(bootstrapLoaderProperties.get("portalCacheName"));
-		Assert.assertNull(replicatorProperties.get("portalCacheName"));
-
-		_assertPortalCacheConfiguration(
-			"portalCacheName",
-			new Properties() {
+		_testParseCacheListenerConfigurations(
+			(Properties)_properties2.clone(),
+			Collections.singleton((Properties)_properties3.clone()),
+			new HashMap<String, Object>() {
 				{
-					put("key", "value");
-				}
+					putAll(_propertiesMap);
 
-			},
-			Collections.singleton(
-				new Properties() {
-					{
-						put("key", "value");
-						put("replicator", true);
-					}
-				}),
-			portalCacheConfiguration);
+					put(
+						PropsKeys.EHCACHE_BOOTSTRAP_CACHE_LOADER_PROPERTIES +
+							StringPool.PERIOD,
+						_properties1.clone());
+					put(
+						PropsKeys.EHCACHE_REPLICATOR_PROPERTIES +
+							StringPool.PERIOD,
+						_properties1.clone());
+				}
+			});
 	}
 
 	@Test
@@ -617,21 +522,6 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest
 		return multiVMEhcachePortalCacheManagerConfigurator;
 	}
 
-	private void _assertPortalCacheConfiguration(
-		String expectedName, Properties expectedBootstrapLoaderProperties,
-		Set<Properties> expectedPortalCacheListenerPropertiesSet,
-		PortalCacheConfiguration portalCacheConfiguration) {
-
-		Assert.assertEquals(
-			expectedName, portalCacheConfiguration.getPortalCacheName());
-		Assert.assertEquals(
-			expectedBootstrapLoaderProperties,
-			portalCacheConfiguration.getPortalCacheBootstrapLoaderProperties());
-		Assert.assertEquals(
-			expectedPortalCacheListenerPropertiesSet,
-			portalCacheConfiguration.getPortalCacheListenerPropertiesSet());
-	}
-
 	private void _assertPortalCacheManagerConfiguration(
 		PortalCacheManagerConfiguration portalCacheManagerConfiguration,
 		String expectedPortalCacheName,
@@ -652,10 +542,15 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest
 				expectedPortalCacheListenerProperties);
 		}
 
-		_assertPortalCacheConfiguration(
+		Assert.assertEquals(
 			expectedPortalCacheName,
+			portalCacheConfiguration.getPortalCacheName());
+		Assert.assertEquals(
 			expectedPortalCacheBootstrapLoaderProperties,
-			expectedPortalCacheListenerPropertiesSet, portalCacheConfiguration);
+			portalCacheConfiguration.getPortalCacheBootstrapLoaderProperties());
+		Assert.assertEquals(
+			expectedPortalCacheListenerPropertiesSet,
+			portalCacheConfiguration.getPortalCacheListenerPropertiesSet());
 	}
 
 	private void _testGetMergedPropertiesMap(
@@ -701,9 +596,54 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest
 					PropsKeys.EHCACHE_REPLICATOR_PROPERTIES_DEFAULT));
 	}
 
-	private final Properties _properties = new Properties() {
+	private void _testParseCacheListenerConfigurations(
+		Properties expectedBootstrapLoaderProperties,
+		Set<Properties> expectedPortalCacheListenerPropertiesSet,
+		Map<String, Object> properties) {
+
+		MultiVMEhcachePortalCacheManagerConfigurator
+			multiVMEhcachePortalCacheManagerConfigurator =
+				getBaseEhcachePortalCacheManagerConfigurator(properties);
+
+		PortalCacheConfiguration portalCacheConfiguration =
+			multiVMEhcachePortalCacheManagerConfigurator.
+				parseCacheListenerConfigurations(
+					new CacheConfiguration("portalCacheName", 0), null, true);
+
+		Properties bootstrapLoaderProperties = ReflectionTestUtil.getFieldValue(
+			multiVMEhcachePortalCacheManagerConfigurator,
+			"_bootstrapLoaderProperties");
+		Properties replicatorProperties = ReflectionTestUtil.getFieldValue(
+			multiVMEhcachePortalCacheManagerConfigurator,
+			"_replicatorProperties");
+
+		Assert.assertNull(bootstrapLoaderProperties.get("portalCacheName"));
+		Assert.assertNull(replicatorProperties.get("portalCacheName"));
+		Assert.assertEquals(
+			"portalCacheName", portalCacheConfiguration.getPortalCacheName());
+		Assert.assertEquals(
+			expectedBootstrapLoaderProperties,
+			portalCacheConfiguration.getPortalCacheBootstrapLoaderProperties());
+		Assert.assertEquals(
+			expectedPortalCacheListenerPropertiesSet,
+			portalCacheConfiguration.getPortalCacheListenerPropertiesSet());
+	}
+
+	private static final Properties _properties1 = new Properties() {
 		{
 			put("portalCacheName", "key=value");
+		}
+	};
+
+	private final Properties _properties2 = new Properties() {
+		{
+			put("key", "value");
+		}
+	};
+	private final Properties _properties3 = new Properties() {
+		{
+			put("key", "value");
+			put("replicator", true);
 		}
 	};
 	private final Map<String, Object> _propertiesMap = new HashMap() {
