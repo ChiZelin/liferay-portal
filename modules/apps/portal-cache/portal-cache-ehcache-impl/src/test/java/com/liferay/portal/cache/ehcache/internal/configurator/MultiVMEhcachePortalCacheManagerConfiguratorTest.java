@@ -422,14 +422,7 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest
 	@Override
 	@Test
 	public void testParseCacheListenerConfigurations() {
-
-		// Test 1: clusterEnabled is false, _bootstrapLoaderEnabled is false,
-		// _bootstrapLoaderProperties and _replicatorProperties are empty
-
 		super.testParseCacheListenerConfigurations();
-
-		// Test 2: clusterEnabled and _bootstrapLoaderEnabled are true,
-		// _bootstrapLoaderProperties and _replicatorProperties are empty
 
 		_testParseCacheListenerConfigurations(
 			new Properties(),
@@ -444,10 +437,6 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest
 					putAll(_propertiesMap);
 				}
 			});
-
-		// Test 3: clusterEnabled is true, _bootstrapLoaderEnabled is false,
-		// _bootstrapLoaderProperties and _replicatorProperties are empty
-
 		_testParseCacheListenerConfigurations(
 			null,
 			Collections.singleton(
@@ -464,10 +453,6 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest
 						"false");
 				}
 			});
-
-		// Test 4: clusterEnabled and _bootstrapLoaderEnabled are true,
-		// _bootstrapLoaderProperties and _replicatorProperties are non-empty
-
 		_testParseCacheListenerConfigurations(
 			(Properties)_properties2.clone(),
 			Collections.singleton((Properties)_properties3.clone()),
