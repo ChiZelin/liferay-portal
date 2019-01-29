@@ -94,101 +94,66 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest
 
 	@Test
 	public void testGetMergedPropertiesMap() {
-
-		// Test 1: _bootstrapLoaderEnabled is true, _bootstrapLoaderProperties
-		// and _replicatorProperties are empty
-
-		Map<String, ObjectValuePair<Properties, Properties>>
-			mergedPropertiesMap1 = ReflectionTestUtil.invoke(
-				getBaseEhcachePortalCacheManagerConfigurator(
-					new HashMap<String, Object>() {
-						{
-							putAll(_propertiesMap);
-						}
-
-					}),
-				"_getMergedPropertiesMap", null, null);
-
-		Assert.assertTrue(
-			"The mergedPropertiesMap should be empty if " +
-				"bootstrapLoaderProperties and replicatorProperties are empty",
-			mergedPropertiesMap1.isEmpty());
-
-		// Test 2: _bootstrapLoaderEnabled is true, _bootstrapLoaderProperties
-		// and _replicatorProperties are non-empty
-
-		Map<String, ObjectValuePair<Properties, Properties>>
-			mergedPropertiesMap2 = ReflectionTestUtil.invoke(
-				getBaseEhcachePortalCacheManagerConfigurator(
-					new HashMap<String, Object>() {
-						{
-							putAll(_propertiesMap);
-							put(
-								PropsKeys.
-									EHCACHE_BOOTSTRAP_CACHE_LOADER_PROPERTIES +
-										StringPool.PERIOD,
-								_properties.clone());
-							put(
-								PropsKeys.EHCACHE_REPLICATOR_PROPERTIES +
-									StringPool.PERIOD,
-								_properties.clone());
-						}
-
-					}),
-				"_getMergedPropertiesMap", null, null);
-
-		Assert.assertEquals(
-			mergedPropertiesMap2.toString(), 1, mergedPropertiesMap2.size());
-
-		_assertMergedPropertiesMap(
-			"portalCacheName",
-			new Properties() {
+		_testGetMergedPropertiesMap(
+			new String[0], new ObjectValuePair[0],
+			new HashMap<String, Object>() {
 				{
-					put("key", "value");
+					putAll(_propertiesMap);
 				}
-			},
-			new Properties() {
-				{
-					put("key", "value");
-					put("replicator", true);
-				}
-			},
-			mergedPropertiesMap2);
-
-		// Test 3: _bootstrapLoaderEnabled is false, _bootstrapLoaderProperties
-		// and _replicatorProperties are non-empty
-
-		Map<String, ObjectValuePair<Properties, Properties>>
-			mergedPropertiesMap3 = ReflectionTestUtil.invoke(
-				getBaseEhcachePortalCacheManagerConfigurator(
-					new HashMap<String, Object>() {
+			});
+		_testGetMergedPropertiesMap(
+			new String[] {"portalCacheName"},
+			new ObjectValuePair[] {
+				new ObjectValuePair(
+					new Properties() {
 						{
-							putAll(_propertiesMap);
-							put(
-								PropsKeys.
-									EHCACHE_BOOTSTRAP_CACHE_LOADER_ENABLED,
-								"false");
-							put(
-								PropsKeys.EHCACHE_REPLICATOR_PROPERTIES +
-									StringPool.PERIOD,
-								_properties.clone());
+							put("key", "value");
 						}
-
-					}),
-				"_getMergedPropertiesMap", null, null);
-
-		Assert.assertEquals(
-			mergedPropertiesMap3.toString(), 1, mergedPropertiesMap3.size());
-
-		_assertMergedPropertiesMap(
-			"portalCacheName", null,
-			new Properties() {
-				{
-					put("key", "value");
-					put("replicator", true);
-				}
+					},
+					new Properties() {
+						{
+							put("key", "value");
+							put("replicator", true);
+						}
+					})
 			},
-			mergedPropertiesMap3);
+			new HashMap<String, Object>() {
+				{
+					putAll(_propertiesMap);
+					put(
+						PropsKeys.EHCACHE_BOOTSTRAP_CACHE_LOADER_PROPERTIES +
+							StringPool.PERIOD,
+						_properties.clone());
+					put(
+						PropsKeys.EHCACHE_REPLICATOR_PROPERTIES +
+							StringPool.PERIOD,
+						_properties.clone());
+				}
+			});
+		_testGetMergedPropertiesMap(
+			new String[] {"portalCacheName"},
+			new ObjectValuePair[] {
+				new ObjectValuePair(
+					null,
+					new Properties() {
+						{
+							put("key", "value");
+							put("replicator", true);
+						}
+					})
+			},
+			new HashMap<String, Object>() {
+				{
+					putAll(_propertiesMap);
+					put(
+						PropsKeys.EHCACHE_BOOTSTRAP_CACHE_LOADER_ENABLED,
+						"false");
+					put(
+						PropsKeys.EHCACHE_REPLICATOR_PROPERTIES +
+							StringPool.PERIOD,
+						_properties.clone());
+				}
+			});
 	}
 
 	@Test
@@ -652,22 +617,6 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest
 		return multiVMEhcachePortalCacheManagerConfigurator;
 	}
 
-	private void _assertMergedPropertiesMap(
-		String expectedPortalCacheName,
-		Properties expectedBootstrapLoaderProperties,
-		Properties expectedReplicatorProperties,
-		Map<String, ObjectValuePair<Properties, Properties>>
-			mergedPropertiesMap) {
-
-		ObjectValuePair objectValuePair = mergedPropertiesMap.get(
-			expectedPortalCacheName);
-
-		Assert.assertEquals(
-			expectedBootstrapLoaderProperties, objectValuePair.getKey());
-		Assert.assertEquals(
-			expectedReplicatorProperties, objectValuePair.getValue());
-	}
-
 	private void _assertPortalCacheConfiguration(
 		String expectedName, Properties expectedBootstrapLoaderProperties,
 		Set<Properties> expectedPortalCacheListenerPropertiesSet,
@@ -707,6 +656,27 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest
 			expectedPortalCacheName,
 			expectedPortalCacheBootstrapLoaderProperties,
 			expectedPortalCacheListenerPropertiesSet, portalCacheConfiguration);
+	}
+
+	private void _testGetMergedPropertiesMap(
+		String[] expectedPortalCacheNames,
+		ObjectValuePair[] expectedObjectValuePairs,
+		Map<String, Object> properties) {
+
+		Map<String, ObjectValuePair<Properties, Properties>>
+			mergedPropertiesMap = ReflectionTestUtil.invoke(
+				getBaseEhcachePortalCacheManagerConfigurator(properties),
+				"_getMergedPropertiesMap", null, null);
+
+		Assert.assertEquals(
+			mergedPropertiesMap.toString(), expectedObjectValuePairs.length,
+			mergedPropertiesMap.size());
+
+		for (int i = 0; i < mergedPropertiesMap.size(); i++) {
+			Assert.assertEquals(
+				expectedObjectValuePairs[i],
+				mergedPropertiesMap.get(expectedPortalCacheNames[i]));
+		}
 	}
 
 	private void _testGetPortalPropertiesString(
