@@ -254,7 +254,6 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest
 			new HashMap<String, Object>() {
 				{
 					putAll(_propsMap);
-
 					put(
 						PropsKeys.EHCACHE_BOOTSTRAP_CACHE_LOADER_PROPERTIES +
 							StringPool.PERIOD,
