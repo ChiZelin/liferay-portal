@@ -464,7 +464,6 @@ public abstract class BaseEhcachePortalCacheManagerConfiguratorTestCase {
 					put("key1", "value1");
 					put("key2", "value2");
 				}
-
 			},
 			baseEhcachePortalCacheManagerConfigurator.parseProperties(
 				"key1=value1,key2=value2".concat(StringPool.SPACE),
