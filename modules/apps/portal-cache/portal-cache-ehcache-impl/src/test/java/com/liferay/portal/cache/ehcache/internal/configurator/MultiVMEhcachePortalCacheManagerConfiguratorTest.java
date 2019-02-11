@@ -24,6 +24,7 @@ import com.liferay.portal.kernel.util.ObjectValuePair;
 import com.liferay.portal.kernel.util.Props;
 import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.ProxyFactory;
+import com.liferay.portal.kernel.util.StringUtil;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -32,7 +33,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import com.liferay.portal.kernel.util.StringUtil;
 import net.sf.ehcache.config.CacheConfiguration;
 import net.sf.ehcache.config.Configuration;
 
@@ -257,8 +257,9 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest
 					{
 						putAll(_propsMap);
 						put(
-							PropsKeys.EHCACHE_BOOTSTRAP_CACHE_LOADER_PROPERTIES +
-								StringPool.PERIOD,
+							PropsKeys.
+								EHCACHE_BOOTSTRAP_CACHE_LOADER_PROPERTIES +
+									StringPool.PERIOD,
 							_properties1.clone());
 						put(
 							PropsKeys.EHCACHE_REPLICATOR_PROPERTIES +
@@ -299,6 +300,39 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest
 		}
 
 		return multiVMEhcachePortalCacheManagerConfigurator;
+	}
+
+	private void _assertParseCacheListenerConfigurations(
+		Properties expectedBootstrapLoaderProperties,
+		Set<Properties> expectedPortalCacheListenerPropertiesSet,
+		MultiVMEhcachePortalCacheManagerConfigurator
+			multiVMEhcachePortalCacheManagerConfigurator) {
+
+		PortalCacheConfiguration portalCacheConfiguration =
+			multiVMEhcachePortalCacheManagerConfigurator.
+				parseCacheListenerConfigurations(
+					new CacheConfiguration(_TEST_PORTAL_CACHE_NAME, 0), null,
+					true);
+
+		Properties bootstrapLoaderProperties = ReflectionTestUtil.getFieldValue(
+			multiVMEhcachePortalCacheManagerConfigurator,
+			"_bootstrapLoaderProperties");
+		Properties replicatorProperties = ReflectionTestUtil.getFieldValue(
+			multiVMEhcachePortalCacheManagerConfigurator,
+			"_replicatorProperties");
+
+		Assert.assertNull(
+			bootstrapLoaderProperties.get(_TEST_PORTAL_CACHE_NAME));
+		Assert.assertNull(replicatorProperties.get(_TEST_PORTAL_CACHE_NAME));
+		Assert.assertEquals(
+			_TEST_PORTAL_CACHE_NAME,
+			portalCacheConfiguration.getPortalCacheName());
+		Assert.assertEquals(
+			expectedBootstrapLoaderProperties,
+			portalCacheConfiguration.getPortalCacheBootstrapLoaderProperties());
+		Assert.assertEquals(
+			expectedPortalCacheListenerPropertiesSet,
+			portalCacheConfiguration.getPortalCacheListenerPropertiesSet());
 	}
 
 	private void _testGetMergedPropertiesMap(
@@ -412,39 +446,6 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest
 			portalCacheConfiguration,
 			portalCacheManagerConfiguration.getPortalCacheConfiguration(
 				_TEST_PORTAL_CACHE_NAME));
-	}
-
-	private void _assertParseCacheListenerConfigurations(
-		Properties expectedBootstrapLoaderProperties,
-		Set<Properties> expectedPortalCacheListenerPropertiesSet,
-		MultiVMEhcachePortalCacheManagerConfigurator
-			multiVMEhcachePortalCacheManagerConfigurator) {
-
-		PortalCacheConfiguration portalCacheConfiguration =
-			multiVMEhcachePortalCacheManagerConfigurator.
-				parseCacheListenerConfigurations(
-					new CacheConfiguration(_TEST_PORTAL_CACHE_NAME, 0), null,
-					true);
-
-		Properties bootstrapLoaderProperties = ReflectionTestUtil.getFieldValue(
-			multiVMEhcachePortalCacheManagerConfigurator,
-			"_bootstrapLoaderProperties");
-		Properties replicatorProperties = ReflectionTestUtil.getFieldValue(
-			multiVMEhcachePortalCacheManagerConfigurator,
-			"_replicatorProperties");
-
-		Assert.assertNull(
-			bootstrapLoaderProperties.get(_TEST_PORTAL_CACHE_NAME));
-		Assert.assertNull(replicatorProperties.get(_TEST_PORTAL_CACHE_NAME));
-		Assert.assertEquals(
-			_TEST_PORTAL_CACHE_NAME,
-			portalCacheConfiguration.getPortalCacheName());
-		Assert.assertEquals(
-			expectedBootstrapLoaderProperties,
-			portalCacheConfiguration.getPortalCacheBootstrapLoaderProperties());
-		Assert.assertEquals(
-			expectedPortalCacheListenerPropertiesSet,
-			portalCacheConfiguration.getPortalCacheListenerPropertiesSet());
 	}
 
 	private static final String _TEST_PORTAL_CACHE_NAME = "testPortalCacheName";
