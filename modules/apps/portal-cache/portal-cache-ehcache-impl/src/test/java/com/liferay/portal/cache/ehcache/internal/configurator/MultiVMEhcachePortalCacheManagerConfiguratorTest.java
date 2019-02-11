@@ -234,36 +234,38 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest
 	public void testParseCacheListenerConfigurations() {
 		super.testParseCacheListenerConfigurations();
 
-		_testParseCacheListenerConfigurations(
+		_assertParseCacheListenerConfigurations(
 			new Properties(),
 			Collections.singleton((Properties)_properties4.clone()),
-			_propsMap);
-		_testParseCacheListenerConfigurations(
+			getBaseEhcachePortalCacheManagerConfigurator(_propsMap));
+		_assertParseCacheListenerConfigurations(
 			null, Collections.singleton((Properties)_properties4.clone()),
-			new HashMap<String, Object>() {
-				{
-					putAll(_propsMap);
-					put(
-						PropsKeys.EHCACHE_BOOTSTRAP_CACHE_LOADER_ENABLED,
-						"false");
-				}
-			});
-		_testParseCacheListenerConfigurations(
+			getBaseEhcachePortalCacheManagerConfigurator(
+				new HashMap<String, Object>() {
+					{
+						putAll(_propsMap);
+						put(
+							PropsKeys.EHCACHE_BOOTSTRAP_CACHE_LOADER_ENABLED,
+							"false");
+					}
+				}));
+		_assertParseCacheListenerConfigurations(
 			(Properties)_properties2.clone(),
 			Collections.singleton((Properties)_properties3.clone()),
-			new HashMap<String, Object>() {
-				{
-					putAll(_propsMap);
-					put(
-						PropsKeys.EHCACHE_BOOTSTRAP_CACHE_LOADER_PROPERTIES +
-							StringPool.PERIOD,
-						_properties1.clone());
-					put(
-						PropsKeys.EHCACHE_REPLICATOR_PROPERTIES +
-							StringPool.PERIOD,
-						_properties1.clone());
-				}
-			});
+			getBaseEhcachePortalCacheManagerConfigurator(
+				new HashMap<String, Object>() {
+					{
+						putAll(_propsMap);
+						put(
+							PropsKeys.EHCACHE_BOOTSTRAP_CACHE_LOADER_PROPERTIES +
+								StringPool.PERIOD,
+							_properties1.clone());
+						put(
+							PropsKeys.EHCACHE_REPLICATOR_PROPERTIES +
+								StringPool.PERIOD,
+							_properties1.clone());
+					}
+				}));
 	}
 
 	@Test
@@ -408,14 +410,11 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest
 				_TEST_PORTAL_CACHE_NAME));
 	}
 
-	private void _testParseCacheListenerConfigurations(
+	private void _assertParseCacheListenerConfigurations(
 		Properties expectedBootstrapLoaderProperties,
 		Set<Properties> expectedPortalCacheListenerPropertiesSet,
-		Map<String, Object> properties) {
-
 		MultiVMEhcachePortalCacheManagerConfigurator
-			multiVMEhcachePortalCacheManagerConfigurator =
-				getBaseEhcachePortalCacheManagerConfigurator(properties);
+			multiVMEhcachePortalCacheManagerConfigurator) {
 
 		PortalCacheConfiguration portalCacheConfiguration =
 			multiVMEhcachePortalCacheManagerConfigurator.
