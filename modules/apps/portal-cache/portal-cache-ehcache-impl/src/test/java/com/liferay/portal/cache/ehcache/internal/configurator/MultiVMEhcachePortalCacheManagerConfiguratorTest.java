@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import com.liferay.portal.kernel.util.StringUtil;
 import net.sf.ehcache.config.CacheConfiguration;
 import net.sf.ehcache.config.Configuration;
 
@@ -130,10 +131,9 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest
 
 	@Test
 	public void testGetPortalPropertiesString() {
-		_testGetPortalPropertiesString(null, new String[0]);
-		_testGetPortalPropertiesString("key=value", new String[] {"key=value"});
+		_testGetPortalPropertiesString(new String[0]);
+		_testGetPortalPropertiesString(new String[] {"key=value"});
 		_testGetPortalPropertiesString(
-			"key1=value1,key2=value2",
 			new String[] {"key1=value1", "key2=value2"});
 	}
 
@@ -322,9 +322,7 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest
 		}
 	}
 
-	private void _testGetPortalPropertiesString(
-		String expectedString, String[] array) {
-
+	private void _testGetPortalPropertiesString(String[] propertiesArray) {
 		MultiVMEhcachePortalCacheManagerConfigurator
 			multiVMEhcachePortalCacheManagerConfigurator =
 				getBaseEhcachePortalCacheManagerConfigurator(
@@ -333,9 +331,15 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest
 							putAll(_propsMap);
 							put(
 								PropsKeys.EHCACHE_REPLICATOR_PROPERTIES_DEFAULT,
-								array);
+								propertiesArray);
 						}
 					});
+
+		String expectedString = null;
+
+		if (propertiesArray.length > 0) {
+			expectedString = StringUtil.merge(propertiesArray);
+		}
 
 		Assert.assertEquals(
 			expectedString,
