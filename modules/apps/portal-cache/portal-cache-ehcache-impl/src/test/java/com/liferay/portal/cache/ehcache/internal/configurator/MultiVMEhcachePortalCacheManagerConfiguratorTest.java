@@ -53,12 +53,7 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest
 	public void testActivate() {
 		MultiVMEhcachePortalCacheManagerConfigurator
 			multiVMEhcachePortalCacheManagerConfigurator =
-				getBaseEhcachePortalCacheManagerConfigurator(
-					new HashMap<String, Object>() {
-						{
-							putAll(_propertiesMap);
-						}
-					});
+				getBaseEhcachePortalCacheManagerConfigurator(_propertiesMap);
 
 		Assert.assertTrue(
 			"The _bootstrapLoaderEnabled should be true if props.get(" +
@@ -95,12 +90,7 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest
 	@Test
 	public void testGetMergedPropertiesMap() {
 		_testGetMergedPropertiesMap(
-			new String[0], new ObjectValuePair[0],
-			new HashMap<String, Object>() {
-				{
-					putAll(_propertiesMap);
-				}
-			});
+			new String[0], new ObjectValuePair[0], _propertiesMap);
 		_testGetMergedPropertiesMap(
 			new String[] {_TEST_PORTAL_CACHE_NAME},
 			new ObjectValuePair[] {
@@ -154,12 +144,7 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest
 
 		MultiVMEhcachePortalCacheManagerConfigurator
 			multiVMEhcachePortalCacheManagerConfigurator =
-				getBaseEhcachePortalCacheManagerConfigurator(
-					new HashMap<String, Object>() {
-						{
-							putAll(_propertiesMap);
-						}
-					});
+				getBaseEhcachePortalCacheManagerConfigurator(_propertiesMap);
 
 		Assert.assertTrue(
 			"The true value should be returned if clusterEnabled is true",
@@ -252,11 +237,7 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest
 		_testParseCacheListenerConfigurations(
 			new Properties(),
 			Collections.singleton((Properties)_properties4.clone()),
-			new HashMap<String, Object>() {
-				{
-					putAll(_propertiesMap);
-				}
-			});
+			_propertiesMap);
 		_testParseCacheListenerConfigurations(
 			null, Collections.singleton((Properties)_properties4.clone()),
 			new HashMap<String, Object>() {
