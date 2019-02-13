@@ -18,10 +18,13 @@ import com.liferay.portal.kernel.messaging.DestinationNames;
 import com.liferay.portal.kernel.messaging.Message;
 import com.liferay.portal.kernel.messaging.MessageBus;
 import com.liferay.portal.kernel.messaging.MessageListener;
+import com.liferay.portal.kernel.messaging.MessageListenerException;
+import com.liferay.portal.kernel.scheduler.JobState;
 import com.liferay.portal.kernel.scheduler.SchedulerEngine;
 import com.liferay.portal.kernel.scheduler.SchedulerEntry;
 import com.liferay.portal.kernel.scheduler.SchedulerEntryImpl;
 import com.liferay.portal.kernel.scheduler.Trigger;
+import com.liferay.portal.kernel.scheduler.TriggerState;
 import com.liferay.portal.kernel.test.CaptureHandler;
 import com.liferay.portal.kernel.test.JDKLoggerTestUtil;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
@@ -272,6 +275,63 @@ public class SchedulerEventMessageListenerWrapperTest {
 		}
 		catch (Exception e) {
 			Assert.fail("Should not throw exception");
+		}
+	}
+
+	@Test
+	public void testReceiveWithMessageListenerReceiveMethodThrowException() {
+		PropsTestUtil.setProps(
+			PropsKeys.SCHEDULER_EVENT_MESSAGE_LISTENER_LOCK_TIMEOUT, "0");
+
+		JobState jobState = new JobState(TriggerState.NORMAL);
+
+		_testMessage1.put(SchedulerEngine.JOB_STATE, jobState);
+
+		SchedulerEventMessageListenerWrapper
+			schedulerEventMessageListenerWrapper =
+				new SchedulerEventMessageListenerWrapper();
+
+		schedulerEventMessageListenerWrapper.setMessageListener(
+			new MessageListener() {
+
+				@Override
+				public void receive(Message message)
+					throws MessageListenerException {
+
+					throw new MessageListenerException();
+				}
+
+			});
+
+		try {
+			schedulerEventMessageListenerWrapper.receive(_testMessage1);
+
+			Assert.fail("Should throw MessageListenerException");
+		}
+		catch (Exception e) {
+			Assert.assertTrue(e instanceof MessageListenerException);
+		}
+
+		schedulerEventMessageListenerWrapper.setMessageListener(
+			new MessageListener() {
+
+				@Override
+				public void receive(Message message)
+					throws MessageListenerException {
+
+					throw new NullPointerException();
+				}
+
+			});
+
+		try {
+			schedulerEventMessageListenerWrapper.receive(_testMessage2);
+
+			Assert.fail("Should throw MessageListenerException");
+		}
+		catch (Exception e) {
+			Assert.assertTrue(e instanceof MessageListenerException);
+			Assert.assertTrue(e.getCause() instanceof NullPointerException);
 		}
 	}
 
