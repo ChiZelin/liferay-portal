@@ -17,6 +17,7 @@ package com.liferay.portal.kernel.scheduler.messaging;
 import com.liferay.portal.kernel.messaging.Message;
 import com.liferay.portal.kernel.messaging.MessageBus;
 import com.liferay.portal.kernel.messaging.MessageListener;
+import com.liferay.portal.kernel.scheduler.SchedulerEntry;
 import com.liferay.portal.kernel.test.CaptureHandler;
 import com.liferay.portal.kernel.test.JDKLoggerTestUtil;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
@@ -49,6 +50,8 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
+
+import org.mockito.Mockito;
 
 /**
  * @author Tina Tian
@@ -186,6 +189,24 @@ public class SchedulerEventMessageListenerWrapperTest {
 			true, schedulerEventMessageListenerWrapper);
 		testConcurrentReceiveWithTimeoutAndInterrupted(
 			false, schedulerEventMessageListenerWrapper);
+	}
+
+	@Test
+	public void testGetSchedulerEntry() {
+		PropsTestUtil.setProps(
+			PropsKeys.SCHEDULER_EVENT_MESSAGE_LISTENER_LOCK_TIMEOUT, "0");
+
+		SchedulerEventMessageListenerWrapper
+			schedulerEventMessageListenerWrapper =
+				new SchedulerEventMessageListenerWrapper();
+
+		SchedulerEntry schedulerEntry = Mockito.mock(SchedulerEntry.class);
+
+		schedulerEventMessageListenerWrapper.setSchedulerEntry(schedulerEntry);
+
+		Assert.assertEquals(
+			schedulerEntry,
+			schedulerEventMessageListenerWrapper.getSchedulerEntry());
 	}
 
 	protected void testConcurrentReceiveWithTimeoutAndInterrupted(
