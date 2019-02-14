@@ -227,6 +227,19 @@ public class SchedulerEventMessageListenerWrapperTest {
 	}
 
 	@Test
+	public void testMisc() {
+		PropsTestUtil.setProps(
+			PropsKeys.SCHEDULER_EVENT_MESSAGE_LISTENER_LOCK_TIMEOUT, "0");
+
+		SchedulerEventMessageListenerWrapper
+			schedulerEventMessageListenerWrapper =
+				new SchedulerEventMessageListenerWrapper();
+
+		schedulerEventMessageListenerWrapper.setGroupName("groupName");
+		schedulerEventMessageListenerWrapper.setJobName("jobName");
+	}
+
+	@Test
 	public void testReceiveWithDisableScheduler() {
 		PropsTestUtil.setProps(
 			PropsKeys.SCHEDULER_EVENT_MESSAGE_LISTENER_LOCK_TIMEOUT, "0");
