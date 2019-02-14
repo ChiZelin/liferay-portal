@@ -90,43 +90,47 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest
 
 	@Test
 	public void testGetMergedPropertiesMap() {
-		_testGetMergedPropertiesMap(
-			new String[0], new ObjectValuePair[0], _propsMap);
-		_testGetMergedPropertiesMap(
+		_assertGetMergedPropertiesMap(
+			new String[0], new ObjectValuePair[0],
+			getBaseEhcachePortalCacheManagerConfigurator(_propsMap));
+		_assertGetMergedPropertiesMap(
 			new String[] {_TEST_PORTAL_CACHE_NAME},
 			new ObjectValuePair[] {
 				new ObjectValuePair(_properties2.clone(), _properties3.clone())
 			},
-			new HashMap<String, Object>() {
-				{
-					putAll(_propsMap);
-					put(
-						PropsKeys.EHCACHE_BOOTSTRAP_CACHE_LOADER_PROPERTIES +
-							StringPool.PERIOD,
-						_properties1.clone());
-					put(
-						PropsKeys.EHCACHE_REPLICATOR_PROPERTIES +
-							StringPool.PERIOD,
-						_properties1.clone());
-				}
-			});
-		_testGetMergedPropertiesMap(
+			getBaseEhcachePortalCacheManagerConfigurator(
+				new HashMap<String, Object>() {
+					{
+						putAll(_propsMap);
+						put(
+							PropsKeys.
+								EHCACHE_BOOTSTRAP_CACHE_LOADER_PROPERTIES +
+									StringPool.PERIOD,
+							_properties1.clone());
+						put(
+							PropsKeys.EHCACHE_REPLICATOR_PROPERTIES +
+								StringPool.PERIOD,
+							_properties1.clone());
+					}
+				}));
+		_assertGetMergedPropertiesMap(
 			new String[] {_TEST_PORTAL_CACHE_NAME},
 			new ObjectValuePair[] {
 				new ObjectValuePair(null, _properties3.clone())
 			},
-			new HashMap<String, Object>() {
-				{
-					putAll(_propsMap);
-					put(
-						PropsKeys.EHCACHE_BOOTSTRAP_CACHE_LOADER_ENABLED,
-						"false");
-					put(
-						PropsKeys.EHCACHE_REPLICATOR_PROPERTIES +
-							StringPool.PERIOD,
-						_properties1.clone());
-				}
-			});
+			getBaseEhcachePortalCacheManagerConfigurator(
+				new HashMap<String, Object>() {
+					{
+						putAll(_propsMap);
+						put(
+							PropsKeys.EHCACHE_BOOTSTRAP_CACHE_LOADER_ENABLED,
+							"false");
+						put(
+							PropsKeys.EHCACHE_REPLICATOR_PROPERTIES +
+								StringPool.PERIOD,
+							_properties1.clone());
+					}
+				}));
 	}
 
 	@Test
@@ -374,6 +378,28 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest
 		return multiVMEhcachePortalCacheManagerConfigurator;
 	}
 
+	private void _assertGetMergedPropertiesMap(
+		String[] expectedPortalCacheNames,
+		ObjectValuePair[] expectedObjectValuePairs,
+		MultiVMEhcachePortalCacheManagerConfigurator
+			multiVMEhcachePortalCacheManagerConfigurator) {
+
+		Map<String, ObjectValuePair<Properties, Properties>>
+			mergedPropertiesMap = ReflectionTestUtil.invoke(
+				multiVMEhcachePortalCacheManagerConfigurator,
+				"_getMergedPropertiesMap", null, null);
+
+		Assert.assertEquals(
+			mergedPropertiesMap.toString(), expectedObjectValuePairs.length,
+			mergedPropertiesMap.size());
+
+		for (int i = 0; i < mergedPropertiesMap.size(); i++) {
+			Assert.assertEquals(
+				expectedObjectValuePairs[i],
+				mergedPropertiesMap.get(expectedPortalCacheNames[i]));
+		}
+	}
+
 	private void _assertManageConfiguration(
 		boolean expectedPortalCacheConfigurationIsNull,
 		Properties expectedPortalCacheBootstrapLoaderProperties,
@@ -447,27 +473,6 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest
 		Assert.assertEquals(
 			expectedPortalCacheListenerPropertiesSet,
 			portalCacheConfiguration.getPortalCacheListenerPropertiesSet());
-	}
-
-	private void _testGetMergedPropertiesMap(
-		String[] expectedPortalCacheNames,
-		ObjectValuePair[] expectedObjectValuePairs,
-		Map<String, Object> properties) {
-
-		Map<String, ObjectValuePair<Properties, Properties>>
-			mergedPropertiesMap = ReflectionTestUtil.invoke(
-				getBaseEhcachePortalCacheManagerConfigurator(properties),
-				"_getMergedPropertiesMap", null, null);
-
-		Assert.assertEquals(
-			mergedPropertiesMap.toString(), expectedObjectValuePairs.length,
-			mergedPropertiesMap.size());
-
-		for (int i = 0; i < mergedPropertiesMap.size(); i++) {
-			Assert.assertEquals(
-				expectedObjectValuePairs[i],
-				mergedPropertiesMap.get(expectedPortalCacheNames[i]));
-		}
 	}
 
 	private static final String _TEST_PORTAL_CACHE_NAME = "testPortalCacheName";
