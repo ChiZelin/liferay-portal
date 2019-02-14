@@ -21,8 +21,10 @@ import com.liferay.portal.kernel.messaging.MessageListener;
 import com.liferay.portal.kernel.messaging.MessageListenerException;
 import com.liferay.portal.kernel.scheduler.JobState;
 import com.liferay.portal.kernel.scheduler.SchedulerEngine;
+import com.liferay.portal.kernel.scheduler.SchedulerEngineHelper;
 import com.liferay.portal.kernel.scheduler.SchedulerEntry;
 import com.liferay.portal.kernel.scheduler.SchedulerEntryImpl;
+import com.liferay.portal.kernel.scheduler.SchedulerException;
 import com.liferay.portal.kernel.scheduler.Trigger;
 import com.liferay.portal.kernel.scheduler.TriggerState;
 import com.liferay.portal.kernel.test.CaptureHandler;
@@ -41,6 +43,9 @@ import com.liferay.registry.Registry;
 import com.liferay.registry.RegistryUtil;
 
 import java.io.Serializable;
+
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -416,6 +421,87 @@ public class SchedulerEventMessageListenerWrapperTest {
 			Assert.assertTrue(e instanceof MessageListenerException);
 			Assert.assertTrue(e.getCause() instanceof NullPointerException);
 		}
+	}
+
+	@Test
+	public void testReceiveWithSchedulerEngineHelperUtilThrowException() {
+		PropsTestUtil.setProps(
+			PropsKeys.SCHEDULER_EVENT_MESSAGE_LISTENER_LOCK_TIMEOUT, "0");
+
+		_testMessage1.put(SchedulerEngine.DISABLE, true);
+		_testMessage1.put(SchedulerEngine.JOB_NAME, "job1");
+		_testMessage1.put(SchedulerEngine.GROUP_NAME, "group1");
+
+		SchedulerEventMessageListenerWrapper
+			schedulerEventMessageListenerWrapper =
+				new SchedulerEventMessageListenerWrapper();
+
+		schedulerEventMessageListenerWrapper.setMessageListener(
+			new MessageListener() {
+
+				@Override
+				public void receive(Message message) {
+					message.setResponse(message.getPayload());
+				}
+
+			});
+
+		SchedulerEngineHelper schedulerEngineHelper =
+			(SchedulerEngineHelper)ProxyUtil.newProxyInstance(
+				SchedulerEventMessageListenerWrapperTest.class.getClassLoader(),
+				new Class<?>[] {SchedulerEngineHelper.class},
+				new InvocationHandler() {
+
+					@Override
+					public Object invoke(
+							Object proxy, Method method, Object[] args)
+						throws SchedulerException {
+
+						throw new SchedulerException();
+					}
+
+				});
+
+		Registry registry = RegistryUtil.getRegistry();
+
+		registry.registerService(
+			SchedulerEngineHelper.class, schedulerEngineHelper);
+
+		String name = SchedulerEventMessageListenerWrapper.class.getName();
+
+		try (CaptureHandler captureHandler =
+				JDKLoggerTestUtil.configureJDKLogger(name, Level.INFO)) {
+
+			schedulerEventMessageListenerWrapper.receive(_testMessage1);
+
+			List<LogRecord> logRecords = captureHandler.getLogRecords();
+
+			Assert.assertEquals(logRecords.toString(), 2, logRecords.size());
+
+			LogRecord logRecord1 = logRecords.get(0);
+			LogRecord logRecord2 = logRecords.get(1);
+
+			Assert.assertEquals(
+				"Unable to delete job job1 in group group1",
+				logRecord1.getMessage());
+			Assert.assertEquals(
+				"Unable to send audit message", logRecord2.getMessage());
+
+			captureHandler.resetLogLevel(Level.WARNING);
+
+			schedulerEventMessageListenerWrapper.receive(_testMessage1);
+
+			logRecords = captureHandler.getLogRecords();
+
+			Assert.assertEquals(logRecords.toString(), 0, logRecords.size());
+		}
+		catch (Exception e) {
+			Assert.fail("Should not throw Exception");
+		}
+
+		Assert.assertSame(
+			"Message is not processed", _testMessage1.getPayload(),
+			_testMessage1.getResponse());
 	}
 
 	protected void testConcurrentReceiveWithTimeoutAndInterrupted(
