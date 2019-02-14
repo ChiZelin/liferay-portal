@@ -178,79 +178,126 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest
 
 	@Test
 	public void testManageConfiguration() {
-		_testManageConfiguration(
-			true, null, new Properties[0],
-			new HashMap<String, Object>() {
-				{
-					putAll(_propsMap);
-					put(PropsKeys.CLUSTER_LINK_ENABLED, "false");
-				}
-			},
-			null);
-		_testManageConfiguration(
+		_assertManageConfiguration(
+			true, null, new HashSet<>(),
+			getBaseEhcachePortalCacheManagerConfigurator(
+				new HashMap<String, Object>() {
+					{
+						putAll(_propsMap);
+						put(PropsKeys.CLUSTER_LINK_ENABLED, "false");
+					}
+				}),
+			new PortalCacheManagerConfiguration(
+				null,
+				new PortalCacheConfiguration(
+					PortalCacheConfiguration.PORTAL_CACHE_NAME_DEFAULT, null,
+					null),
+				null));
+		_assertManageConfiguration(
 			false, (Properties)_properties2.clone(),
-			new Properties[] {
-				(Properties)_properties3.clone(),
-				(Properties)_properties5.clone()
-			},
-			new HashMap<String, Object>() {
-				{
-					putAll(_propsMap);
-					put(
-						PropsKeys.EHCACHE_BOOTSTRAP_CACHE_LOADER_PROPERTIES +
-							StringPool.PERIOD,
-						_properties1.clone());
-					put(
-						PropsKeys.EHCACHE_REPLICATOR_PROPERTIES +
-							StringPool.PERIOD,
-						_properties1.clone());
-				}
-			},
 			new HashSet<Properties>() {
 				{
-					add((Properties)_properties4.clone());
+					add((Properties)_properties3.clone());
 					add((Properties)_properties5.clone());
 				}
-			});
-		_testManageConfiguration(
-			false, null, new Properties[] {(Properties)_properties3.clone()},
-			new HashMap<String, Object>() {
-				{
-					putAll(_propsMap);
-					put(
-						PropsKeys.EHCACHE_REPLICATOR_PROPERTIES +
-							StringPool.PERIOD,
-						_properties1.clone());
-				}
 			},
-			null);
-		_testManageConfiguration(
-			false, null, new Properties[] {(Properties)_properties3.clone()},
-			new HashMap<String, Object>() {
+			getBaseEhcachePortalCacheManagerConfigurator(
+				new HashMap<String, Object>() {
+					{
+						putAll(_propsMap);
+						put(
+							PropsKeys.
+								EHCACHE_BOOTSTRAP_CACHE_LOADER_PROPERTIES +
+									StringPool.PERIOD,
+							_properties1.clone());
+						put(
+							PropsKeys.EHCACHE_REPLICATOR_PROPERTIES +
+								StringPool.PERIOD,
+							_properties1.clone());
+					}
+				}),
+			new PortalCacheManagerConfiguration(
+				null,
+				new PortalCacheConfiguration(
+					PortalCacheConfiguration.PORTAL_CACHE_NAME_DEFAULT,
+					new HashSet<Properties>() {
+						{
+							add((Properties)_properties4.clone());
+							add((Properties)_properties5.clone());
+						}
+					},
+					null),
+				null));
+		_assertManageConfiguration(
+			false, null,
+			new HashSet<Properties>() {
 				{
-					putAll(_propsMap);
-					put(
-						PropsKeys.EHCACHE_BOOTSTRAP_CACHE_LOADER_ENABLED,
-						"false");
-					put(
-						PropsKeys.EHCACHE_REPLICATOR_PROPERTIES +
-							StringPool.PERIOD,
-						_properties1.clone());
+					add((Properties)_properties3.clone());
 				}
+
 			},
-			null);
-		_testManageConfiguration(
-			false, (Properties)_properties2.clone(), new Properties[0],
-			new HashMap<String, Object>() {
+			getBaseEhcachePortalCacheManagerConfigurator(
+				new HashMap<String, Object>() {
+					{
+						putAll(_propsMap);
+						put(
+							PropsKeys.EHCACHE_REPLICATOR_PROPERTIES +
+								StringPool.PERIOD,
+							_properties1.clone());
+					}
+				}),
+			new PortalCacheManagerConfiguration(
+				null,
+				new PortalCacheConfiguration(
+					PortalCacheConfiguration.PORTAL_CACHE_NAME_DEFAULT, null,
+					null),
+				null));
+		_assertManageConfiguration(
+			false, null,
+			new HashSet<Properties>() {
 				{
-					putAll(_propsMap);
-					put(
-						PropsKeys.EHCACHE_BOOTSTRAP_CACHE_LOADER_PROPERTIES +
-							StringPool.PERIOD,
-						_properties1.clone());
+					add((Properties)_properties3.clone());
 				}
+
 			},
-			null);
+			getBaseEhcachePortalCacheManagerConfigurator(
+				new HashMap<String, Object>() {
+					{
+						putAll(_propsMap);
+						put(
+							PropsKeys.EHCACHE_BOOTSTRAP_CACHE_LOADER_ENABLED,
+							"false");
+						put(
+							PropsKeys.EHCACHE_REPLICATOR_PROPERTIES +
+								StringPool.PERIOD,
+							_properties1.clone());
+					}
+				}),
+			new PortalCacheManagerConfiguration(
+				null,
+				new PortalCacheConfiguration(
+					PortalCacheConfiguration.PORTAL_CACHE_NAME_DEFAULT, null,
+					null),
+				null));
+		_assertManageConfiguration(
+			false, (Properties)_properties2.clone(), new HashSet<>(),
+			getBaseEhcachePortalCacheManagerConfigurator(
+				new HashMap<String, Object>() {
+					{
+						putAll(_propsMap);
+						put(
+							PropsKeys.
+								EHCACHE_BOOTSTRAP_CACHE_LOADER_PROPERTIES +
+									StringPool.PERIOD,
+							_properties1.clone());
+					}
+				}),
+			new PortalCacheManagerConfiguration(
+				null,
+				new PortalCacheConfiguration(
+					PortalCacheConfiguration.PORTAL_CACHE_NAME_DEFAULT, null,
+					null),
+				null));
 	}
 
 	@Override
@@ -326,6 +373,48 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest
 		return multiVMEhcachePortalCacheManagerConfigurator;
 	}
 
+	private void _assertManageConfiguration(
+		boolean expectedPortalCacheConfigurationIsNull,
+		Properties expectedPortalCacheBootstrapLoaderProperties,
+		Set<Properties> expectedPortalCacheListenerPropertiesSet,
+		MultiVMEhcachePortalCacheManagerConfigurator
+			multiVMEhcachePortalCacheManagerConfigurator,
+		PortalCacheManagerConfiguration portalCacheManagerConfiguration) {
+
+		multiVMEhcachePortalCacheManagerConfigurator.manageConfiguration(
+			new Configuration(), portalCacheManagerConfiguration);
+
+		PortalCacheConfiguration portalCacheConfiguration =
+			portalCacheManagerConfiguration.getPortalCacheConfiguration(
+				_TEST_PORTAL_CACHE_NAME);
+
+		Assert.assertEquals(
+			expectedPortalCacheConfigurationIsNull,
+			portalCacheConfiguration == null);
+
+		if (expectedPortalCacheConfigurationIsNull) {
+			return;
+		}
+
+		Assert.assertEquals(
+			_TEST_PORTAL_CACHE_NAME,
+			portalCacheConfiguration.getPortalCacheName());
+		Assert.assertEquals(
+			expectedPortalCacheBootstrapLoaderProperties,
+			portalCacheConfiguration.getPortalCacheBootstrapLoaderProperties());
+		Assert.assertEquals(
+			expectedPortalCacheListenerPropertiesSet,
+			portalCacheConfiguration.getPortalCacheListenerPropertiesSet());
+
+		multiVMEhcachePortalCacheManagerConfigurator.manageConfiguration(
+			new Configuration(), portalCacheManagerConfiguration);
+
+		Assert.assertSame(
+			portalCacheConfiguration,
+			portalCacheManagerConfiguration.getPortalCacheConfiguration(
+				_TEST_PORTAL_CACHE_NAME));
+	}
+
 	private void _assertParseCacheListenerConfigurations(
 		Properties expectedBootstrapLoaderProperties,
 		Set<Properties> expectedPortalCacheListenerPropertiesSet,
@@ -378,72 +467,6 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest
 				expectedObjectValuePairs[i],
 				mergedPropertiesMap.get(expectedPortalCacheNames[i]));
 		}
-	}
-
-	private void _testManageConfiguration(
-		boolean portalCacheConfigurationIsNull,
-		Properties expectedPortalCacheBootstrapLoaderProperties,
-		Properties[] expectedPortalCacheListenerPropertiesArray,
-		Map<String, Object> properties,
-		Set<Properties> portalCacheListenerPropertiesSet) {
-
-		Set<Properties> expectedPortalCacheListenerPropertiesSet =
-			new HashSet<>();
-
-		for (Properties expectedPortalCacheListenerProperties :
-				expectedPortalCacheListenerPropertiesArray) {
-
-			expectedPortalCacheListenerPropertiesSet.add(
-				expectedPortalCacheListenerProperties);
-		}
-
-		MultiVMEhcachePortalCacheManagerConfigurator
-			multiVMEhcachePortalCacheManagerConfigurator =
-				getBaseEhcachePortalCacheManagerConfigurator(properties);
-
-		PortalCacheManagerConfiguration portalCacheManagerConfiguration =
-			new PortalCacheManagerConfiguration(
-				null,
-				new PortalCacheConfiguration(
-					PortalCacheConfiguration.PORTAL_CACHE_NAME_DEFAULT,
-					portalCacheListenerPropertiesSet, null),
-				null);
-
-		Assert.assertNull(
-			portalCacheManagerConfiguration.getPortalCacheConfiguration(
-				_TEST_PORTAL_CACHE_NAME));
-
-		multiVMEhcachePortalCacheManagerConfigurator.manageConfiguration(
-			new Configuration(), portalCacheManagerConfiguration);
-
-		PortalCacheConfiguration portalCacheConfiguration =
-			portalCacheManagerConfiguration.getPortalCacheConfiguration(
-				_TEST_PORTAL_CACHE_NAME);
-
-		Assert.assertEquals(
-			portalCacheConfigurationIsNull, portalCacheConfiguration == null);
-
-		if (portalCacheConfigurationIsNull) {
-			return;
-		}
-
-		Assert.assertEquals(
-			_TEST_PORTAL_CACHE_NAME,
-			portalCacheConfiguration.getPortalCacheName());
-		Assert.assertEquals(
-			expectedPortalCacheBootstrapLoaderProperties,
-			portalCacheConfiguration.getPortalCacheBootstrapLoaderProperties());
-		Assert.assertEquals(
-			expectedPortalCacheListenerPropertiesSet,
-			portalCacheConfiguration.getPortalCacheListenerPropertiesSet());
-
-		multiVMEhcachePortalCacheManagerConfigurator.manageConfiguration(
-			new Configuration(), portalCacheManagerConfiguration);
-
-		Assert.assertSame(
-			portalCacheConfiguration,
-			portalCacheManagerConfiguration.getPortalCacheConfiguration(
-				_TEST_PORTAL_CACHE_NAME));
 	}
 
 	private static final String _TEST_PORTAL_CACHE_NAME = "testPortalCacheName";
