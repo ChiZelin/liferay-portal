@@ -43,7 +43,9 @@ import com.liferay.registry.RegistryUtil;
 import java.io.Serializable;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
@@ -217,6 +219,87 @@ public class SchedulerEventMessageListenerWrapperTest {
 		Assert.assertEquals(
 			schedulerEntry,
 			schedulerEventMessageListenerWrapper.getSchedulerEntry());
+	}
+
+	@Test
+	public void testReceiveWithDisableScheduler() {
+		PropsTestUtil.setProps(
+			PropsKeys.SCHEDULER_EVENT_MESSAGE_LISTENER_LOCK_TIMEOUT, "0");
+
+		_testMessage1.put(
+			SchedulerEngine.DESTINATION_NAME,
+			DestinationNames.SCHEDULER_DISPATCH);
+		_testMessage1.put(SchedulerEngine.DISABLE, true);
+		_testMessage1.put(SchedulerEngine.JOB_NAME, "job1");
+		_testMessage1.put(SchedulerEngine.GROUP_NAME, "group1");
+
+		Trigger trigger = new MockTrigger("job1", "group1");
+
+		SchedulerEntry schedulerEntry = new SchedulerEntryImpl(
+			"anonyMessageListener", trigger);
+
+		SchedulerEventMessageListenerWrapper
+			schedulerEventMessageListenerWrapper =
+				new SchedulerEventMessageListenerWrapper();
+
+		schedulerEventMessageListenerWrapper.setSchedulerEntry(schedulerEntry);
+
+		schedulerEventMessageListenerWrapper.setMessageListener(
+			new MessageListener() {
+
+				@Override
+				public void receive(Message message) {
+					message.setResponse(message.getPayload());
+				}
+
+			});
+
+		Map<String, SchedulerEventMessageListenerWrapper> messageListenerMap =
+			new HashMap<>();
+
+		String destinationName = SchedulerEngine.DESTINATION_NAME;
+
+		messageListenerMap.put(
+			destinationName, schedulerEventMessageListenerWrapper);
+
+		Registry registry = RegistryUtil.getRegistry();
+
+		registry.registerService(
+			MessageBus.class,
+			(MessageBus)ProxyUtil.newProxyInstance(
+				MessageBus.class.getClassLoader(),
+				new Class<?>[] {MessageBus.class},
+				(proxy, method, args) -> {
+					messageListenerMap.remove(destinationName);
+
+					return true;
+				}));
+
+		try {
+			schedulerEventMessageListenerWrapper.receive(_testMessage1);
+		}
+		catch (Exception e) {
+			Assert.fail("Should not throw Exception");
+		}
+
+		Assert.assertSame(
+			"Message is not processed", _testMessage1.getPayload(),
+			_testMessage1.getResponse());
+		Assert.assertEquals(
+			messageListenerMap.toString(), 0, messageListenerMap.size());
+
+		_testMessage2.put(SchedulerEngine.DISABLE, true);
+
+		try {
+			schedulerEventMessageListenerWrapper.receive(_testMessage2);
+		}
+		catch (Exception e) {
+			Assert.fail("Should not throw Exception");
+		}
+
+		Assert.assertSame(
+			"Message is not processed", _testMessage2.getPayload(),
+			_testMessage2.getResponse());
 	}
 
 	@Test
