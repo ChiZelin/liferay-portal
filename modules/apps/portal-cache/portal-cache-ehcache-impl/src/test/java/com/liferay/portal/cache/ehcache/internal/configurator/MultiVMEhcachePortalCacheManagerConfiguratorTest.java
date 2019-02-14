@@ -56,14 +56,15 @@ public class MultiVMEhcachePortalCacheManagerConfiguratorTest
 				getBaseEhcachePortalCacheManagerConfigurator(_propsMap);
 
 		Assert.assertTrue(
-			"The _bootstrapLoaderEnabled should be true if props.get(" +
-				"PropsKeys.EHCACHE_BOOTSTRAP_CACHE_LOADER_ENABLED) return true",
+			"The _bootstrapLoaderEnabled should be true if the value of " +
+				"PropsKeys.EHCACHE_BOOTSTRAP_CACHE_LOADER_ENABLED is true in " +
+					"_propsMap",
 			ReflectionTestUtil.getFieldValue(
 				multiVMEhcachePortalCacheManagerConfigurator,
 				"_bootstrapLoaderEnabled"));
 		Assert.assertTrue(
-			"The clusterEnabled should be true if props.get(PropsKeys." +
-				"CLUSTER_LINK_ENABLED) return true",
+			"The clusterEnabled should be true if the value of " +
+				"PropsKeys.CLUSTER_LINK_ENABLED is true in _propsMap",
 			ReflectionTestUtil.getFieldValue(
 				multiVMEhcachePortalCacheManagerConfigurator,
 				"clusterEnabled"));
