@@ -14,6 +14,7 @@
 
 package com.liferay.portal.kernel.dao.orm.test;
 
+import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.portal.kernel.dao.db.DB;
 import com.liferay.portal.kernel.dao.db.DBManagerUtil;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
@@ -37,10 +38,12 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 /**
  * @author Sampsa Sohlman
  */
+@RunWith(Arquillian.class)
 public class QueryUtilTest {
 
 	@ClassRule
