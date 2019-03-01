@@ -163,18 +163,16 @@ public class SanitizerLogWrapperTest {
 			for (LoggingEvent loggingEvent : loggingEvents) {
 				String message = loggingEvent.getRenderedMessage();
 
-				Assert.assertTrue(
-					message.startsWith(SanitizerLogWrapper.CRLF_WARNING));
+				Assert.assertTrue(message.startsWith(_CRLF_WARNING));
 
 				int messageWithCRLFCharsLength =
-					message.length() -
-						SanitizerLogWrapper.CRLF_WARNING.length();
+					message.length() - _CRLF_WARNING.length();
 
 				char[] messageWithCRLFChars =
 					new char[messageWithCRLFCharsLength];
 
 				message.getChars(
-					SanitizerLogWrapper.CRLF_WARNING.length(), message.length(),
+					_CRLF_WARNING.length(), message.length(),
 					messageWithCRLFChars, 0);
 
 				Assert.assertArrayEquals(
@@ -302,6 +300,10 @@ public class SanitizerLogWrapperTest {
 			_captureAppender.close();
 		}
 	}
+
+	private static final String _CRLF_WARNING =
+		ReflectionTestUtil.getFieldValue(
+			SanitizerLogWrapper.class, "CRLF_WARNING");
 
 	private static Log _log;
 
