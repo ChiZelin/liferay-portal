@@ -14,6 +14,7 @@
 
 package com.liferay.portal.kernel.log.test;
 
+import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.petra.string.CharPool;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactory;
@@ -40,10 +41,12 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 /**
  * @author Tomas Polesovsky
  */
+@RunWith(Arquillian.class)
 public class SanitizerLogWrapperTest {
 
 	@ClassRule
