@@ -12,9 +12,13 @@
  * details.
  */
 
-package com.liferay.portal.kernel.log;
+package com.liferay.portal.kernel.log.test;
 
 import com.liferay.petra.string.CharPool;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactory;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.log.SanitizerLogWrapper;
 import com.liferay.portal.kernel.test.ReflectionTestUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.test.log.CaptureAppender;
