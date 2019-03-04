@@ -14,6 +14,7 @@
 
 package com.liferay.portal.kernel.upgrade.test;
 
+import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.cache.CacheRegistryUtil;
 import com.liferay.portal.kernel.dao.jdbc.DataAccess;
@@ -61,10 +62,12 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 /**
  * @author Raymond Augé
  */
+@RunWith(Arquillian.class)
 public class BaseUpgradePortletIdTest extends BaseUpgradePortletId {
 
 	@ClassRule
