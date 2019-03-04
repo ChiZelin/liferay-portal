@@ -12,12 +12,15 @@
  * details.
  */
 
-package com.liferay.portal.kernel.transaction;
+package com.liferay.portal.kernel.transaction.test;
 
 import com.liferay.counter.kernel.service.CounterLocalServiceUtil;
 import com.liferay.portal.kernel.model.ClassName;
 import com.liferay.portal.kernel.service.ClassNameLocalServiceUtil;
 import com.liferay.portal.kernel.service.persistence.ClassNameUtil;
+import com.liferay.portal.kernel.transaction.Propagation;
+import com.liferay.portal.kernel.transaction.TransactionConfig;
+import com.liferay.portal.kernel.transaction.TransactionInvokerUtil;
 import com.liferay.portal.kernel.util.PwdGenerator;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
