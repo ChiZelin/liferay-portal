@@ -17,14 +17,18 @@ package com.liferay.portal.kernel.template;
 import com.liferay.portal.kernel.template.bundle.templatemanagerutil.TestTemplate;
 import com.liferay.portal.kernel.template.bundle.templatemanagerutil.TestTemplateManager;
 import com.liferay.portal.kernel.template.bundle.templatemanagerutil.TestTemplateResource;
-import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
-import com.liferay.portal.test.rule.SyntheticBundleRule;
+import com.liferay.registry.Registry;
+import com.liferay.registry.RegistryUtil;
+import com.liferay.registry.ServiceRegistration;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -36,10 +40,27 @@ public class TemplateMangerUtilTest {
 
 	@ClassRule
 	@Rule
-	public static final AggregateTestRule aggregateTestRule =
-		new AggregateTestRule(
-			new LiferayIntegrationTestRule(),
-			new SyntheticBundleRule("bundle.templatemanagerutil"));
+	public static final LiferayIntegrationTestRule liferayIntegrationTestRule =
+		new LiferayIntegrationTestRule();
+
+	@BeforeClass
+	public static void setUpClass() {
+		Registry registry = RegistryUtil.getRegistry();
+
+		_serviceRegistration = registry.registerService(
+			TemplateManager.class, new TestTemplateManager(),
+			new HashMap<String, Object>() {
+				{
+					put("language.type", "English");
+					put("service.ranking", Integer.MAX_VALUE);
+				}
+			});
+	}
+
+	@AfterClass
+	public static void tearDownClass() {
+		_serviceRegistration.unregister();
+	}
 
 	@Test
 	public void testGetTemplate1() throws TemplateException {
@@ -110,5 +131,7 @@ public class TemplateMangerUtilTest {
 			TemplateManagerUtil.hasTemplateManager(
 				TestTemplateManager.TEST_TEMPLATE_MANAGER_NAME));
 	}
+
+	private static ServiceRegistration<TemplateManager> _serviceRegistration;
 
 }

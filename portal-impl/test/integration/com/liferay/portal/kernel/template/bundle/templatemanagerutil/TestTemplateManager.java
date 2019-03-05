@@ -25,18 +25,9 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.osgi.service.component.annotations.Component;
-
 /**
  * @author Philip Jones
  */
-@Component(
-	immediate = true,
-	property = {
-		"language.type=English", "service.ranking:Integer=" + Integer.MAX_VALUE
-	},
-	service = TemplateManager.class
-)
 public class TestTemplateManager implements TemplateManager {
 
 	public static final String TEST_TEMPLATE_MANAGER_NAME =
