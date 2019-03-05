@@ -23,19 +23,9 @@ import com.liferay.portal.kernel.webdav.methods.MethodFactory;
 
 import java.util.List;
 
-import org.osgi.service.component.annotations.Component;
-
 /**
  * @author Philip Jones
  */
-@Component(
-	immediate = true,
-	property = {
-		"service.ranking:Integer=" + Integer.MAX_VALUE,
-		"webdav.storage.token=" + TestWebDAVStorage.TOKEN
-	},
-	service = WebDAVStorage.class
-)
 public class TestWebDAVStorage implements WebDAVStorage {
 
 	public static final String TOKEN = "TOKEN";
