@@ -14,7 +14,6 @@
 
 package com.liferay.portal.struts;
 
-import com.liferay.portal.struts.bundle.authpublicpathregistry.TestAuthPublicPath;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.registry.Registry;
 import com.liferay.registry.RegistryUtil;
@@ -67,5 +66,8 @@ public class AuthPublicPathRegistryTest {
 	}
 
 	private static ServiceRegistration<Object> _serviceRegistration;
+
+	private static class TestAuthPublicPath {
+	}
 
 }
