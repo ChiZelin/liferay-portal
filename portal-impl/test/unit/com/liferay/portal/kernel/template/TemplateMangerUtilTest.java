@@ -18,28 +18,25 @@ import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.registry.Registry;
 import com.liferay.registry.RegistryUtil;
 import com.liferay.registry.ServiceRegistration;
-
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
-import java.io.Reader;
-import java.io.Writer;
-
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
+
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+import java.io.Reader;
+import java.io.Writer;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Philip Jones
@@ -272,7 +269,7 @@ public class TemplateMangerUtilTest {
 		}
 
 		@Override
-		public Set<Map.Entry<String, Object>> entrySet() {
+		public Set<Entry<String, Object>> entrySet() {
 			return null;
 		}
 
