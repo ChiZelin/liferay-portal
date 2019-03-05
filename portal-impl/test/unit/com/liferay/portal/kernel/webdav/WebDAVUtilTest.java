@@ -15,11 +15,18 @@
 package com.liferay.portal.kernel.webdav;
 
 import com.liferay.portal.kernel.lock.Lock;
+import com.liferay.portal.kernel.util.PropsUtil;
+import com.liferay.portal.kernel.util.ProxyFactory;
 import com.liferay.portal.kernel.webdav.methods.MethodFactory;
+import com.liferay.portal.kernel.xml.SAXReaderUtil;
+import com.liferay.portal.util.PropsImpl;
+import com.liferay.portal.xml.SAXReaderImpl;
 import com.liferay.registry.BasicRegistryImpl;
 import com.liferay.registry.Registry;
 import com.liferay.registry.RegistryUtil;
 import com.liferay.registry.ServiceRegistration;
+import com.liferay.registry.collections.ServiceTrackerMapFactory;
+import com.liferay.registry.collections.ServiceTrackerMapFactoryUtil;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -37,6 +44,15 @@ public class WebDAVUtilTest {
 
 	@BeforeClass
 	public static void setUpClass() {
+		PropsUtil.setProps(new PropsImpl());
+
+		SAXReaderUtil saxReaderUtil = new SAXReaderUtil();
+
+		saxReaderUtil.setSAXReader(new SAXReaderImpl());
+
+		ServiceTrackerMapFactoryUtil.setServiceTrackerMapFactory(
+			ProxyFactory.newDummyInstance(ServiceTrackerMapFactory.class));
+
 		RegistryUtil.setRegistry(new BasicRegistryImpl());
 
 		Registry registry = RegistryUtil.getRegistry();
