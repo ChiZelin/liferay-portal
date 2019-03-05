@@ -14,18 +14,8 @@
 
 package com.liferay.portal.struts.bundle.authpublicpathregistry;
 
-import org.osgi.service.component.annotations.Component;
-
 /**
  * @author Peter Fellwock
  */
-@Component(
-	immediate = true,
-	property = {
-		"auth.public.path=testAuthPublicPath",
-		"service.ranking:Integer=" + Integer.MAX_VALUE
-	},
-	service = Object.class
-)
 public class TestAuthPublicPath {
 }
