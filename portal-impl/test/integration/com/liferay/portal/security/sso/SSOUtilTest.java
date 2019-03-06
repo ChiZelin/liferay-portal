@@ -144,4 +144,45 @@ public class SSOUtilTest {
 
 	private final Map<Long, String> _oldLoginDialogDisableds = new HashMap<>();
 
+	private static class TestSSOImpl implements SSO {
+
+		@Override
+		public String getSessionExpirationRedirectUrl(long companyId) {
+			return "getSessionExpirationRedirectUrl:" + companyId;
+		}
+
+		@Override
+		public String getSignInURL(long companyId, String defaultSignInURL) {
+			return defaultSignInURL + ":" + companyId;
+		}
+
+		@Override
+		public boolean isLoginRedirectRequired(long companyId) {
+			if (companyId == 1) {
+				return true;
+			}
+
+			return false;
+		}
+
+		@Override
+		public boolean isRedirectRequired(long companyId) {
+			if (companyId == 1) {
+				return true;
+			}
+
+			return false;
+		}
+
+		@Override
+		public boolean isSessionRedirectOnExpire(long companyId) {
+			if (companyId == 1) {
+				return true;
+			}
+
+			return false;
+		}
+
+	}
+
 }
