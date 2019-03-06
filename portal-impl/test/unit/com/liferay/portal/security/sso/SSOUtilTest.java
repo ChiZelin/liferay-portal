@@ -21,12 +21,6 @@ import com.liferay.portal.util.PrefsPropsUtil;
 import com.liferay.registry.Registry;
 import com.liferay.registry.RegistryUtil;
 import com.liferay.registry.ServiceRegistration;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.portlet.PortletPreferences;
-
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -35,6 +29,10 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
+
+import javax.portlet.PortletPreferences;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Peter Fellwock
