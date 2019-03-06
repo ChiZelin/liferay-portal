@@ -14,18 +14,22 @@
 
 package com.liferay.portlet.social.service.impl;
 
-import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
-import com.liferay.portal.test.rule.SyntheticBundleRule;
 import com.liferay.portlet.social.service.impl.bundle.socialactivityinterpreterlocalserviceimpl.TestSocialActivityInterpreter;
+import com.liferay.registry.Registry;
+import com.liferay.registry.RegistryUtil;
+import com.liferay.registry.ServiceRegistration;
 import com.liferay.social.kernel.model.SocialActivityInterpreter;
 import com.liferay.social.kernel.service.SocialActivityInterpreterLocalServiceUtil;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -37,11 +41,30 @@ public class SocialActivityInterpreterLocalServiceImplTest {
 
 	@ClassRule
 	@Rule
-	public static final AggregateTestRule aggregateTestRule =
-		new AggregateTestRule(
-			new LiferayIntegrationTestRule(),
-			new SyntheticBundleRule(
-				"bundle.socialactivityinterpreterlocalserviceimpl"));
+	public static final LiferayIntegrationTestRule liferayIntegrationTestRule =
+		new LiferayIntegrationTestRule();
+
+	@BeforeClass
+	public static void setUpClass() {
+		Registry registry = RegistryUtil.getRegistry();
+
+		_serviceRegistration = registry.registerService(
+			SocialActivityInterpreter.class,
+			new TestSocialActivityInterpreter(),
+			new HashMap<String, Object>() {
+				{
+					put(
+						"javax.portlet.name",
+						"SocialActivityInterpreterLocalServiceImplTest");
+					put("service.ranking", Integer.MAX_VALUE);
+				}
+			});
+	}
+
+	@AfterClass
+	public static void tearDownClass() {
+		_serviceRegistration.unregister();
+	}
 
 	@Test
 	public void testGetActivityInterpreters1() {
@@ -91,5 +114,8 @@ public class SocialActivityInterpreterLocalServiceImplTest {
 		Assert.assertEquals(
 			TestSocialActivityInterpreter.class.getName(), classNames[0]);
 	}
+
+	private static ServiceRegistration<SocialActivityInterpreter>
+		_serviceRegistration;
 
 }

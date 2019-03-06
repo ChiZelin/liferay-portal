@@ -21,19 +21,9 @@ import com.liferay.social.kernel.model.SocialActivityFeedEntry;
 import com.liferay.social.kernel.model.SocialActivityInterpreter;
 import com.liferay.social.kernel.model.SocialActivitySet;
 
-import org.osgi.service.component.annotations.Component;
-
 /**
  * @author Philip Jones
  */
-@Component(
-	immediate = true,
-	property = {
-		"javax.portlet.name=SocialActivityInterpreterLocalServiceImplTest",
-		"service.ranking:Integer=" + Integer.MAX_VALUE
-	},
-	service = SocialActivityInterpreter.class
-)
 public class TestSocialActivityInterpreter
 	implements SocialActivityInterpreter {
 
