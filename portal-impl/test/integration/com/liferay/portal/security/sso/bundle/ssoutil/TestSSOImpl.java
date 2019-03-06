@@ -16,15 +16,9 @@ package com.liferay.portal.security.sso.bundle.ssoutil;
 
 import com.liferay.portal.kernel.security.sso.SSO;
 
-import org.osgi.service.component.annotations.Component;
-
 /**
  * @author Peter Fellwock
  */
-@Component(
-	immediate = true, property = "service.ranking:Integer=" + Integer.MAX_VALUE,
-	service = SSO.class
-)
 public class TestSSOImpl implements SSO {
 
 	@Override
