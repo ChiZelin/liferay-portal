@@ -15,7 +15,8 @@
 package com.liferay.portal.poller;
 
 import com.liferay.portal.kernel.poller.PollerProcessor;
-import com.liferay.portal.poller.bundle.pollerprocessorutil.TestPollerProcessor;
+import com.liferay.portal.kernel.poller.PollerRequest;
+import com.liferay.portal.kernel.poller.PollerResponse;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.registry.Registry;
 import com.liferay.registry.RegistryUtil;
@@ -73,5 +74,18 @@ public class PollerProcessorUtilTest {
 	}
 
 	private static ServiceRegistration<PollerProcessor> _serviceRegistration;
+
+	private static class TestPollerProcessor implements PollerProcessor {
+
+		@Override
+		public PollerResponse receive(PollerRequest pollerRequest) {
+			return null;
+		}
+
+		@Override
+		public void send(PollerRequest pollerRequest) {
+		}
+
+	}
 
 }
