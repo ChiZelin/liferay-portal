@@ -18,19 +18,9 @@ import com.liferay.portal.kernel.poller.PollerProcessor;
 import com.liferay.portal.kernel.poller.PollerRequest;
 import com.liferay.portal.kernel.poller.PollerResponse;
 
-import org.osgi.service.component.annotations.Component;
-
 /**
  * @author Philip Jones
  */
-@Component(
-	immediate = true,
-	property = {
-		"javax.portlet.name=PollerProcessorUtilTest",
-		"service.ranking:Integer=" + Integer.MAX_VALUE
-	},
-	service = PollerProcessor.class
-)
 public class TestPollerProcessor implements PollerProcessor {
 
 	@Override
