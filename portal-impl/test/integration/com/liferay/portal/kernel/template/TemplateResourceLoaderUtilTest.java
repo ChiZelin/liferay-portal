@@ -21,6 +21,10 @@ import com.liferay.registry.Registry;
 import com.liferay.registry.RegistryUtil;
 import com.liferay.registry.ServiceRegistration;
 
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+import java.io.Reader;
+
 import java.util.HashMap;
 import java.util.Set;
 
@@ -112,5 +116,82 @@ public class TemplateResourceLoaderUtilTest {
 
 	private static ServiceRegistration<TemplateResourceLoader>
 		_serviceRegistration;
+
+	private static class TestTemplateResource implements TemplateResource {
+
+		public static final String TEST_TEMPLATE_RESOURCE_TEMPLATE_ID =
+			"TEST_TEMPLATE_RESOURCE_TEMPLATE_ID";
+
+		@Override
+		public long getLastModified() {
+			return 0;
+		}
+
+		@Override
+		public Reader getReader() {
+			return null;
+		}
+
+		@Override
+		public String getTemplateId() {
+			return TEST_TEMPLATE_RESOURCE_TEMPLATE_ID;
+		}
+
+		@Override
+		public void readExternal(ObjectInput objectInput) {
+		}
+
+		@Override
+		public void writeExternal(ObjectOutput objectOutput) {
+		}
+
+	}
+
+	private static class TestTemplateResourceLoader
+		implements TemplateResourceLoader {
+
+		public static final String TEST_TEMPLATE_RESOURCE_LOADER_NAME =
+			"TEST_TEMPLATE_RESOURCE_LOADER_NAME";
+
+		@Override
+		public void clearCache() {
+		}
+
+		@Override
+		public void clearCache(String templateId) {
+		}
+
+		@Override
+		public void destroy() {
+		}
+
+		@Override
+		public String getName() {
+			return TEST_TEMPLATE_RESOURCE_LOADER_NAME;
+		}
+
+		@Override
+		public TemplateResource getTemplateResource(String templateId) {
+			if (templateId.equals(
+					TestTemplateResource.TEST_TEMPLATE_RESOURCE_TEMPLATE_ID)) {
+
+				return new TestTemplateResource();
+			}
+
+			return null;
+		}
+
+		@Override
+		public boolean hasTemplateResource(String templateId) {
+			if (templateId.equals(
+					TestTemplateResource.TEST_TEMPLATE_RESOURCE_TEMPLATE_ID)) {
+
+				return true;
+			}
+
+			return false;
+		}
+
+	}
 
 }
