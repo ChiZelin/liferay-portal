@@ -14,13 +14,14 @@
 
 package com.liferay.portal.kernel.search;
 
-import com.liferay.portal.kernel.search.bundle.opensearchregistryutil.TestOpenSearch;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.registry.Registry;
 import com.liferay.registry.RegistryUtil;
 import com.liferay.registry.ServiceRegistration;
 
 import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -82,5 +83,40 @@ public class OpenSearchRegistryUtilTest {
 	}
 
 	private static ServiceRegistration<OpenSearch> _serviceRegistration;
+
+	private static class TestOpenSearch implements OpenSearch {
+
+		@Override
+		public String getClassName() {
+			return TestOpenSearch.class.getName();
+		}
+
+		@Override
+		public boolean isEnabled() {
+			return false;
+		}
+
+		@Override
+		public String search(
+			HttpServletRequest request, long groupId, long userId,
+			String keywords, int startPage, int itemsPerPage, String format) {
+
+			return groupId + ":" + userId;
+		}
+
+		@Override
+		public String search(
+			HttpServletRequest request, long userId, String keywords,
+			int startPage, int itemsPerPage, String format) {
+
+			return userId + ":" + startPage;
+		}
+
+		@Override
+		public String search(HttpServletRequest request, String url) {
+			return url;
+		}
+
+	}
 
 }
