@@ -14,8 +14,6 @@
 
 package com.liferay.portal.kernel.template;
 
-import com.liferay.portal.kernel.template.bundle.templateresourceloaderutil.TestTemplateResource;
-import com.liferay.portal.kernel.template.bundle.templateresourceloaderutil.TestTemplateResourceLoader;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.registry.Registry;
 import com.liferay.registry.RegistryUtil;
