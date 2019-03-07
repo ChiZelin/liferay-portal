@@ -22,15 +22,9 @@ import java.util.List;
 
 import javax.portlet.PortletRequest;
 
-import org.osgi.service.component.annotations.Component;
-
 /**
  * @author Philip Jones
  */
-@Component(
-	immediate = true, property = "service.ranking:Integer=" + Integer.MAX_VALUE,
-	service = PortletToolbarContributorLocator.class
-)
 public class TestPortletToolbarContributorLocator
 	implements PortletToolbarContributorLocator {
 
