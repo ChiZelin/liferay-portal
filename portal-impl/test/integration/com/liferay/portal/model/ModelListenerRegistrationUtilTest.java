@@ -14,6 +14,7 @@
 
 package com.liferay.portal.model;
 
+import com.liferay.portal.kernel.model.BaseModelListener;
 import com.liferay.portal.kernel.model.Contact;
 import com.liferay.portal.kernel.model.ModelListener;
 import com.liferay.portal.kernel.model.ModelListenerRegistrationUtil;
@@ -82,5 +83,8 @@ public class ModelListenerRegistrationUtilTest {
 	}
 
 	private static ServiceRegistration<ModelListener> _serviceRegistration;
+
+	private static class TestModelListener extends BaseModelListener<Contact> {
+	}
 
 }
