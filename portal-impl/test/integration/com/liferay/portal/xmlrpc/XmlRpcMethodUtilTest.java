@@ -15,8 +15,8 @@
 package com.liferay.portal.xmlrpc;
 
 import com.liferay.portal.kernel.xmlrpc.Method;
+import com.liferay.portal.kernel.xmlrpc.Response;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
-import com.liferay.portal.xmlrpc.bundle.xmlrpcmethodutil.TestMethod;
 import com.liferay.registry.Registry;
 import com.liferay.registry.RegistryUtil;
 import com.liferay.registry.ServiceRegistration;
@@ -69,5 +69,33 @@ public class XmlRpcMethodUtilTest {
 	}
 
 	private static ServiceRegistration<Method> _serviceRegistration;
+
+	private static class TestMethod implements Method {
+
+		public static final String METHOD_NAME = "METHOD_NAME";
+
+		public static final String TOKEN = "TOKEN";
+
+		@Override
+		public Response execute(long companyId) {
+			return null;
+		}
+
+		@Override
+		public String getMethodName() {
+			return METHOD_NAME;
+		}
+
+		@Override
+		public String getToken() {
+			return TOKEN;
+		}
+
+		@Override
+		public boolean setArguments(Object[] arguments) {
+			return false;
+		}
+
+	}
 
 }
