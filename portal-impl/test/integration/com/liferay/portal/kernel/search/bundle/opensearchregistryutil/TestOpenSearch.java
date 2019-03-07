@@ -18,15 +18,9 @@ import com.liferay.portal.kernel.search.OpenSearch;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.osgi.service.component.annotations.Component;
-
 /**
  * @author Peter Fellwock
  */
-@Component(
-	immediate = true, property = "service.ranking:Integer=" + Integer.MAX_VALUE,
-	service = OpenSearch.class
-)
 public class TestOpenSearch implements OpenSearch {
 
 	@Override
