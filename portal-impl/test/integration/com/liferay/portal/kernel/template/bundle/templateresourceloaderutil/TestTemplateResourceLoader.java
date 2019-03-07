@@ -17,15 +17,9 @@ package com.liferay.portal.kernel.template.bundle.templateresourceloaderutil;
 import com.liferay.portal.kernel.template.TemplateResource;
 import com.liferay.portal.kernel.template.TemplateResourceLoader;
 
-import org.osgi.service.component.annotations.Component;
-
 /**
  * @author Philip Jones
  */
-@Component(
-	immediate = true, property = "service.ranking:Integer=" + Integer.MAX_VALUE,
-	service = TemplateResourceLoader.class
-)
 public class TestTemplateResourceLoader implements TemplateResourceLoader {
 
 	public static final String TEST_TEMPLATE_RESOURCE_LOADER_NAME =
