@@ -17,15 +17,9 @@ package com.liferay.portal.xmlrpc.bundle.xmlrpcmethodutil;
 import com.liferay.portal.kernel.xmlrpc.Method;
 import com.liferay.portal.kernel.xmlrpc.Response;
 
-import org.osgi.service.component.annotations.Component;
-
 /**
  * @author Peter Fellwock
  */
-@Component(
-	immediate = true, property = "service.ranking:Integer=" + Integer.MAX_VALUE,
-	service = Method.class
-)
 public class TestMethod implements Method {
 
 	public static String METHOD_NAME = "METHOD_NAME";
