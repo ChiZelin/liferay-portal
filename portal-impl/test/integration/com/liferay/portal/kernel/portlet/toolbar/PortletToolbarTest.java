@@ -14,8 +14,7 @@
 
 package com.liferay.portal.kernel.portlet.toolbar;
 
-import com.liferay.portal.kernel.portlet.toolbar.bundle.portlettoolbar.TestPortletToolbarContributor;
-import com.liferay.portal.kernel.portlet.toolbar.bundle.portlettoolbar.TestPortletToolbarContributorLocator;
+import com.liferay.portal.kernel.portlet.toolbar.contributor.PortletToolbarContributor;
 import com.liferay.portal.kernel.portlet.toolbar.contributor.locator.PortletToolbarContributorLocator;
 import com.liferay.portal.kernel.servlet.PortletServlet;
 import com.liferay.portal.kernel.servlet.taglib.ui.Menu;
@@ -27,6 +26,7 @@ import com.liferay.registry.RegistryUtil;
 import com.liferay.registry.ServiceRegistration;
 import com.liferay.registry.dependency.ServiceDependencyManager;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -104,5 +104,47 @@ public class PortletToolbarTest {
 
 	private static ServiceRegistration<PortletToolbarContributorLocator>
 		_serviceRegistration;
+
+	private static class TestPortletToolbarContributor
+		implements PortletToolbarContributor {
+
+		public static final String LABEL = "LABEL";
+
+		@Override
+		public List<Menu> getPortletTitleMenus(
+			PortletRequest portletRequest, PortletResponse portletResponse) {
+
+			List<Menu> portletTitleMenus = new ArrayList<>();
+
+			Menu menu = new Menu();
+
+			menu.setLabel(LABEL);
+
+			portletTitleMenus.add(menu);
+
+			return portletTitleMenus;
+		}
+
+	}
+
+	private static class TestPortletToolbarContributorLocator
+		implements PortletToolbarContributorLocator {
+
+		@Override
+		public List<PortletToolbarContributor> getPortletToolbarContributors(
+			String portletId, PortletRequest portletRequest) {
+
+			List<PortletToolbarContributor> portletToolbarContributors =
+				new ArrayList<>();
+
+			TestPortletToolbarContributor testPortletToolbarContributor =
+				new TestPortletToolbarContributor();
+
+			portletToolbarContributors.add(testPortletToolbarContributor);
+
+			return portletToolbarContributors;
+		}
+
+	}
 
 }
