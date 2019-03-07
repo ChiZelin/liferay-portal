@@ -16,16 +16,9 @@ package com.liferay.portal.model.bundle.modellistenerregistrationutil;
 
 import com.liferay.portal.kernel.model.BaseModelListener;
 import com.liferay.portal.kernel.model.Contact;
-import com.liferay.portal.kernel.model.ModelListener;
-
-import org.osgi.service.component.annotations.Component;
 
 /**
  * @author Peter Fellwock
  */
-@Component(
-	immediate = true, property = "service.ranking:Integer=" + Integer.MAX_VALUE,
-	service = ModelListener.class
-)
 public class TestModelListener extends BaseModelListener<Contact> {
 }
