@@ -19,15 +19,9 @@ import com.liferay.portal.kernel.notifications.UserNotificationFeedEntry;
 import com.liferay.portal.kernel.notifications.UserNotificationHandler;
 import com.liferay.portal.kernel.service.ServiceContext;
 
-import org.osgi.service.component.annotations.Component;
-
 /**
  * @author Peter Fellwock
  */
-@Component(
-	immediate = true, property = "service.ranking:Integer=" + Integer.MAX_VALUE,
-	service = UserNotificationHandler.class
-)
 public class TestUserNotificationHandler implements UserNotificationHandler {
 
 	public static final String LINK = "http://www.liferay.com";
