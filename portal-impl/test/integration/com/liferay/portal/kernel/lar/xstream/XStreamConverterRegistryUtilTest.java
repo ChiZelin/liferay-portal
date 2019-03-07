@@ -16,7 +16,10 @@ package com.liferay.portal.kernel.lar.xstream;
 
 import com.liferay.exportimport.kernel.xstream.XStreamConverter;
 import com.liferay.exportimport.kernel.xstream.XStreamConverterRegistryUtil;
-import com.liferay.portal.kernel.lar.xstream.bundle.xstreamconverterregistryutil.TestXStreamConverter;
+import com.liferay.exportimport.kernel.xstream.XStreamHierarchicalStreamReader;
+import com.liferay.exportimport.kernel.xstream.XStreamHierarchicalStreamWriter;
+import com.liferay.exportimport.kernel.xstream.XStreamMarshallingContext;
+import com.liferay.exportimport.kernel.xstream.XStreamUnmarshallingContext;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.registry.Registry;
 import com.liferay.registry.RegistryUtil;
@@ -78,5 +81,29 @@ public class XStreamConverterRegistryUtilTest {
 	}
 
 	private static ServiceRegistration<XStreamConverter> _serviceRegistration;
+
+	private static class TestXStreamConverter implements XStreamConverter {
+
+		@Override
+		public boolean canConvert(Class<?> clazz) {
+			return false;
+		}
+
+		@Override
+		public void marshal(
+			Object object,
+			XStreamHierarchicalStreamWriter xStreamHierarchicalStreamWriter,
+			XStreamMarshallingContext xStreamMarshallingContext) {
+		}
+
+		@Override
+		public Object unmarshal(
+			XStreamHierarchicalStreamReader xStreamHierarchicalStreamReader,
+			XStreamUnmarshallingContext xStreamUnmarshallingContext) {
+
+			return null;
+		}
+
+	}
 
 }
