@@ -27,8 +27,8 @@ import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.PortletKeys;
 import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.WebKeys;
-import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.util.PropsValues;
+import com.liferay.registry.BasicRegistryImpl;
 import com.liferay.registry.Registry;
 import com.liferay.registry.RegistryUtil;
 import com.liferay.registry.ServiceRegistration;
@@ -47,8 +47,6 @@ import javax.portlet.ResourceResponse;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.ClassRule;
-import org.junit.Rule;
 import org.junit.Test;
 
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -59,13 +57,10 @@ import org.springframework.mock.web.MockHttpServletRequest;
  */
 public class AuthTokenWhitelistUtilTest {
 
-	@ClassRule
-	@Rule
-	public static final LiferayIntegrationTestRule liferayIntegrationTestRule =
-		new LiferayIntegrationTestRule();
-
 	@BeforeClass
 	public static void setUpClass() {
+		RegistryUtil.setRegistry(new BasicRegistryImpl());
+
 		Registry registry = RegistryUtil.getRegistry();
 
 		_serviceRegistration1 = registry.registerService(
