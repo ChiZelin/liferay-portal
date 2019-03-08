@@ -24,16 +24,9 @@ import com.liferay.portal.kernel.security.auth.AuthTokenWhitelistUtil;
 import com.liferay.portal.kernel.service.PortletLocalServiceUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.PortalUtil;
+import com.liferay.portal.kernel.util.PortletKeys;
 import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.WebKeys;
-import com.liferay.portal.security.auth.bundle.authtokenwhitelistutil.TestAuthTokenIgnoreActions;
-import com.liferay.portal.security.auth.bundle.authtokenwhitelistutil.TestAuthTokenIgnoreOrigins;
-import com.liferay.portal.security.auth.bundle.authtokenwhitelistutil.TestAuthTokenIgnorePortlets;
-import com.liferay.portal.security.auth.bundle.authtokenwhitelistutil.TestMVCActionCommand;
-import com.liferay.portal.security.auth.bundle.authtokenwhitelistutil.TestMVCRenderCommand;
-import com.liferay.portal.security.auth.bundle.authtokenwhitelistutil.TestMVCResourceCommand;
-import com.liferay.portal.security.auth.bundle.authtokenwhitelistutil.TestPortalAddDefaultResourceCheckWhitelist;
-import com.liferay.portal.security.auth.bundle.authtokenwhitelistutil.TestPortalAddDefaultResourceCheckWhitelistActions;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.util.PropsValues;
 import com.liferay.registry.Registry;
@@ -44,7 +37,12 @@ import java.util.HashMap;
 import java.util.Set;
 
 import javax.portlet.ActionRequest;
+import javax.portlet.ActionResponse;
 import javax.portlet.PortletRequest;
+import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
+import javax.portlet.ResourceRequest;
+import javax.portlet.ResourceResponse;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -526,5 +524,91 @@ public class AuthTokenWhitelistUtilTest {
 		_serviceRegistration6;
 	private static ServiceRegistration<Object> _serviceRegistration7;
 	private static ServiceRegistration<Object> _serviceRegistration8;
+
+	private static class TestAuthTokenIgnoreActions {
+
+		public static final String TEST_AUTH_TOKEN_IGNORE_ACTION_URL =
+			"TEST_AUTH_TOKEN_IGNORE_ACTION_URL";
+
+	}
+
+	private static class TestAuthTokenIgnoreOrigins {
+
+		public static final String TEST_AUTH_TOKEN_IGNORE_ORIGINS_URL =
+			"TEST_AUTH_TOKEN_IGNORE_ORIGINS_URL";
+
+	}
+
+	private static class TestAuthTokenIgnorePortlets {
+
+		public static final String TEST_AUTH_TOKEN_IGNORE_PORTLETS_URL =
+			"TEST_AUTH_TOKEN_IGNORE_PORTLETS_URL";
+
+	}
+
+	private static class TestMVCActionCommand implements MVCActionCommand {
+
+		public static final String TEST_MVC_COMMAND_NAME =
+			"TEST_MVC_ACTION_COMMAND_NAME";
+
+		public static final String TEST_PORTLET_ID = PortletKeys.PORTAL;
+
+		@Override
+		public boolean processAction(
+			ActionRequest actionRequest, ActionResponse actionResponse) {
+
+			return false;
+		}
+
+	}
+
+	private static class TestMVCRenderCommand implements MVCRenderCommand {
+
+		public static final String TEST_MVC_COMMAND_NAME =
+			"TEST_MVC_RENDER_COMMAND_NAME";
+
+		public static final String TEST_PORTLET_ID = PortletKeys.PORTAL;
+
+		@Override
+		public String render(
+			RenderRequest renderRequest, RenderResponse renderResponse) {
+
+			return null;
+		}
+
+	}
+
+	private static class TestMVCResourceCommand implements MVCResourceCommand {
+
+		public static final String TEST_MVC_COMMAND_NAME =
+			"TEST_MVC_RESOURCE_COMMAND_NAME";
+
+		public static final String TEST_PORTLET_ID = PortletKeys.PORTAL;
+
+		@Override
+		public boolean serveResource(
+			ResourceRequest resourceRequest,
+			ResourceResponse resourceResponse) {
+
+			return false;
+		}
+
+	}
+
+	private static class TestPortalAddDefaultResourceCheckWhitelist {
+
+		public static final String
+			TEST_PORTLET_ADD_DEFAULT_RESOURCE_CHECK_WHITELIST_URL =
+				"TEST_PORTLET_ADD_DEFAULT_RESOURCE_CHECK_WHITELIST_URL";
+
+	}
+
+	private static class TestPortalAddDefaultResourceCheckWhitelistActions {
+
+		public static final String
+			TEST_PORTLET_ADD_DEFAULT_RESOURCE_CHECK_WHITELIST_ACTIONS_URL =
+				"TEST_PORTLET_ADD_DEFAULT_RESOURCE_CHECK_WHITELIST_ACTIONS_URL";
+
+	}
 
 }
