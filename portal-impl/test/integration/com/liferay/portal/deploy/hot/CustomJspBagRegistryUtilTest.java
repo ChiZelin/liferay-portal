@@ -14,8 +14,8 @@
 
 package com.liferay.portal.deploy.hot;
 
-import com.liferay.portal.deploy.hot.bundle.customjspbagregistryutil.TestCustomJspBag;
-import com.liferay.portal.deploy.hot.bundle.customjspbagregistryutil.TestGlobalCustomJspBag;
+import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.url.URLContainer;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.registry.Registry;
@@ -23,8 +23,14 @@ import com.liferay.registry.RegistryUtil;
 import com.liferay.registry.ServiceReference;
 import com.liferay.registry.ServiceRegistration;
 
+import java.net.URL;
+
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -108,5 +114,91 @@ public class CustomJspBagRegistryUtilTest {
 
 	private static ServiceRegistration<CustomJspBag> _serviceRegistration1;
 	private static ServiceRegistration<CustomJspBag> _serviceRegistration2;
+
+	private static class TestCustomJspBag implements CustomJspBag {
+
+		@Override
+		public String getCustomJspDir() {
+			return StringPool.SLASH;
+		}
+
+		@Override
+		public List<String> getCustomJsps() {
+			return _customJsps;
+		}
+
+		@Override
+		public URLContainer getURLContainer() {
+			return _urlContainer;
+		}
+
+		@Override
+		public boolean isCustomJspGlobal() {
+			return false;
+		}
+
+		private final List<String> _customJsps = new ArrayList<>();
+
+		private final URLContainer _urlContainer = new URLContainer() {
+
+			@Override
+			public URL getResource(String name) {
+				Class<?> clazz = getClass();
+
+				return clazz.getResource("dependencies/bottom-ext.jsp");
+			}
+
+			@Override
+			public Set<String> getResources(String path) {
+				return Collections.singleton(
+					"/html/common/themes/bottom-ext.jsp");
+			}
+
+		};
+
+	}
+
+	private static class TestGlobalCustomJspBag implements CustomJspBag {
+
+		@Override
+		public String getCustomJspDir() {
+			return StringPool.SLASH;
+		}
+
+		@Override
+		public List<String> getCustomJsps() {
+			return _customJsps;
+		}
+
+		@Override
+		public URLContainer getURLContainer() {
+			return _urlContainer;
+		}
+
+		@Override
+		public boolean isCustomJspGlobal() {
+			return true;
+		}
+
+		private final List<String> _customJsps = new ArrayList<>();
+
+		private final URLContainer _urlContainer = new URLContainer() {
+
+			@Override
+			public URL getResource(String name) {
+				Class<?> clazz = getClass();
+
+				return clazz.getResource("dependencies/bottom-ext.jsp");
+			}
+
+			@Override
+			public Set<String> getResources(String path) {
+				return Collections.singleton(
+					"/html/common/themes/bottom-ext.jsp");
+			}
+
+		};
+
+	}
 
 }
