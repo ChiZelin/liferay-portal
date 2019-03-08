@@ -25,20 +25,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import org.osgi.service.component.annotations.Component;
-
 /**
  * @author Peter Fellwock
  */
-@Component(
-	immediate = true,
-	property = {
-		"context.id=TestGlobalCustomJspBag",
-		"context.name=Test Global Custom JSP Bag",
-		"service.ranking:Integer=" + Integer.MAX_VALUE
-	},
-	service = CustomJspBag.class
-)
 public class TestGlobalCustomJspBag implements CustomJspBag {
 
 	@Override
