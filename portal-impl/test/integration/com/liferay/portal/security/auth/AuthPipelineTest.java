@@ -19,17 +19,16 @@ import com.liferay.portal.kernel.security.auth.AuthFailure;
 import com.liferay.portal.kernel.security.auth.Authenticator;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
-import com.liferay.portal.util.test.AtomicState;
 import com.liferay.registry.Registry;
 import com.liferay.registry.RegistryUtil;
 import com.liferay.registry.ServiceRegistration;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -47,8 +46,6 @@ public class AuthPipelineTest {
 
 	@BeforeClass
 	public static void setUpClass() {
-		_atomicState = new AtomicState();
-
 		Registry registry = RegistryUtil.getRegistry();
 
 		_serviceRegistration1 = registry.registerService(
@@ -74,49 +71,44 @@ public class AuthPipelineTest {
 
 	@AfterClass
 	public static void tearDownClass() {
-		_atomicState.close();
-
 		_serviceRegistration1.unregister();
 		_serviceRegistration2.unregister();
 	}
 
+	@Before
+	public void setUp() {
+		_called = false;
+	}
+
 	@Test
 	public void testAuthenticateByEmailAddress() throws AuthException {
-		_atomicState.reset();
-
 		AuthPipeline.authenticateByEmailAddress(
 			"auth.pipeline.pre", 0, RandomTestUtil.randomString(),
 			RandomTestUtil.randomString(), null, null);
 
-		Assert.assertTrue(_atomicState.isSet());
+		Assert.assertTrue(_called);
 	}
 
 	@Test
 	public void testAuthenticateByScreenName() throws AuthException {
-		_atomicState.reset();
-
 		AuthPipeline.authenticateByScreenName(
 			"auth.pipeline.pre", 0, RandomTestUtil.randomString(),
 			RandomTestUtil.randomString(), null, null);
 
-		Assert.assertTrue(_atomicState.isSet());
+		Assert.assertTrue(_called);
 	}
 
 	@Test
 	public void testAuthenticateByUserId() throws AuthException {
-		_atomicState.reset();
-
 		AuthPipeline.authenticateByUserId(
 			"auth.pipeline.pre", 0, RandomTestUtil.randomLong(),
 			RandomTestUtil.randomString(), null, null);
 
-		Assert.assertTrue(_atomicState.isSet());
+		Assert.assertTrue(_called);
 	}
 
 	@Test
 	public void testOnFailureByScreenName() {
-		_atomicState.reset();
-
 		try {
 			AuthPipeline.onFailureByScreenName(
 				"auth.failure", 0, RandomTestUtil.randomString(), null, null);
@@ -124,13 +116,11 @@ public class AuthPipelineTest {
 		catch (AuthException ae) {
 		}
 
-		Assert.assertTrue(_atomicState.isSet());
+		Assert.assertTrue(_called);
 	}
 
 	@Test
 	public void testOnFailureByUserId() {
-		_atomicState.reset();
-
 		try {
 			AuthPipeline.onFailureByUserId(
 				"auth.failure", 0, RandomTestUtil.randomLong(), null, null);
@@ -138,13 +128,11 @@ public class AuthPipelineTest {
 		catch (AuthException ae) {
 		}
 
-		Assert.assertTrue(_atomicState.isSet());
+		Assert.assertTrue(_called);
 	}
 
 	@Test
 	public void testOnMaxFailuresByEmailAddress() {
-		_atomicState.reset();
-
 		try {
 			AuthPipeline.onMaxFailuresByEmailAddress(
 				"auth.max.failures", 0, RandomTestUtil.randomString(), null,
@@ -153,13 +141,11 @@ public class AuthPipelineTest {
 		catch (AuthException ae) {
 		}
 
-		Assert.assertTrue(_atomicState.isSet());
+		Assert.assertTrue(_called);
 	}
 
 	@Test
 	public void testOnMaxFailuresByScreenName() {
-		_atomicState.reset();
-
 		try {
 			AuthPipeline.onMaxFailuresByScreenName(
 				"auth.max.failures", 0, RandomTestUtil.randomString(), null,
@@ -168,13 +154,11 @@ public class AuthPipelineTest {
 		catch (AuthException ae) {
 		}
 
-		Assert.assertTrue(_atomicState.isSet());
+		Assert.assertTrue(_called);
 	}
 
 	@Test
 	public void testOnMaxFailuresByUserId() {
-		_atomicState.reset();
-
 		try {
 			AuthPipeline.onMaxFailuresByUserId(
 				"auth.max.failures", 0, RandomTestUtil.randomLong(), null,
@@ -183,10 +167,10 @@ public class AuthPipelineTest {
 		catch (AuthException ae) {
 		}
 
-		Assert.assertTrue(_atomicState.isSet());
+		Assert.assertTrue(_called);
 	}
 
-	private static AtomicState _atomicState;
+	private static boolean _called;
 	private static ServiceRegistration<AuthFailure> _serviceRegistration1;
 	private static ServiceRegistration<Authenticator> _serviceRegistration2;
 
@@ -198,7 +182,7 @@ public class AuthPipelineTest {
 			Map<String, String[]> headerMap,
 			Map<String, String[]> parameterMap) {
 
-			_atomicBoolean.set(Boolean.TRUE);
+			_called = true;
 
 			return Authenticator.SUCCESS;
 		}
@@ -209,7 +193,7 @@ public class AuthPipelineTest {
 			Map<String, String[]> headerMap,
 			Map<String, String[]> parameterMap) {
 
-			_atomicBoolean.set(Boolean.TRUE);
+			_called = true;
 
 			return Authenticator.SUCCESS;
 		}
@@ -220,16 +204,10 @@ public class AuthPipelineTest {
 			Map<String, String[]> headerMap,
 			Map<String, String[]> parameterMap) {
 
-			_atomicBoolean.set(Boolean.TRUE);
+			_called = true;
 
 			return Authenticator.SUCCESS;
 		}
-
-		protected void setAtomicBoolean(AtomicBoolean atomicBoolean) {
-			_atomicBoolean = atomicBoolean;
-		}
-
-		private AtomicBoolean _atomicBoolean;
 
 	}
 
@@ -241,7 +219,7 @@ public class AuthPipelineTest {
 			Map<String, String[]> headerMap,
 			Map<String, String[]> parameterMap) {
 
-			_atomicBoolean.set(Boolean.TRUE);
+			_called = true;
 		}
 
 		@Override
@@ -249,7 +227,7 @@ public class AuthPipelineTest {
 			long companyId, String screenName, Map<String, String[]> headerMap,
 			Map<String, String[]> parameterMap) {
 
-			_atomicBoolean.set(Boolean.TRUE);
+			_called = true;
 		}
 
 		@Override
@@ -257,14 +235,8 @@ public class AuthPipelineTest {
 			long companyId, long userId, Map<String, String[]> headerMap,
 			Map<String, String[]> parameterMap) {
 
-			_atomicBoolean.set(Boolean.TRUE);
+			_called = true;
 		}
-
-		protected void setAtomicBoolean(AtomicBoolean atomicBoolean) {
-			_atomicBoolean = atomicBoolean;
-		}
-
-		private AtomicBoolean _atomicBoolean;
 
 	}
 
