@@ -20,7 +20,7 @@ import com.liferay.portal.kernel.model.EmailAddress;
 import com.liferay.portal.kernel.service.EmailAddressLocalService;
 import com.liferay.portal.kernel.service.EmailAddressLocalServiceWrapper;
 import com.liferay.portal.kernel.service.ServiceWrapper;
-import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
+import com.liferay.registry.BasicRegistryImpl;
 import com.liferay.registry.Registry;
 import com.liferay.registry.RegistryUtil;
 import com.liferay.registry.ServiceRegistration;
@@ -28,8 +28,6 @@ import com.liferay.registry.ServiceRegistration;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.ClassRule;
-import org.junit.Rule;
 import org.junit.Test;
 
 /**
@@ -38,14 +36,11 @@ import org.junit.Test;
  */
 public class ServiceWrapperRegistryTest {
 
-	@ClassRule
-	@Rule
-	public static final LiferayIntegrationTestRule liferayIntegrationTestRule =
-		new LiferayIntegrationTestRule();
-
 	@BeforeClass
 	public static void setUpClass() {
 		_serviceWrapperRegistry = new ServiceWrapperRegistry();
+
+		RegistryUtil.setRegistry(new BasicRegistryImpl());
 
 		Registry registry = RegistryUtil.getRegistry();
 
