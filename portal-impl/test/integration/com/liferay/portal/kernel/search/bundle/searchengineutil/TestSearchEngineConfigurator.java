@@ -20,16 +20,9 @@ import com.liferay.portal.kernel.search.SearchEngineConfigurator;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-
 /**
  * @author Peter Fellwock
  */
-@Component(
-	immediate = true, property = "service.ranking:Integer=" + Integer.MAX_VALUE,
-	service = SearchEngineConfigurator.class
-)
 public class TestSearchEngineConfigurator implements SearchEngineConfigurator {
 
 	@Override
@@ -47,7 +40,6 @@ public class TestSearchEngineConfigurator implements SearchEngineConfigurator {
 		_atomicBoolean.set(Boolean.TRUE);
 	}
 
-	@Reference(target = "(test=AtomicState)")
 	protected void setAtomicBoolean(AtomicBoolean atomicBoolean) {
 		_atomicBoolean = atomicBoolean;
 	}
