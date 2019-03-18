@@ -12,15 +12,20 @@
  * details.
  */
 
-package com.liferay.portal.deploy.hot;
+package com.liferay.portal.deploy.hot.test;
 
+import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.portal.kernel.bean.PortalBeanLocatorUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.EmailAddress;
 import com.liferay.portal.kernel.service.EmailAddressLocalService;
-import com.liferay.portal.kernel.test.rule.AggregateTestRule;
+import com.liferay.portal.kernel.service.EmailAddressLocalServiceWrapper;
+import com.liferay.portal.kernel.service.ServiceWrapper;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
-import com.liferay.portal.test.rule.SyntheticBundleClassTestRule;
+import com.liferay.registry.Registry;
+import com.liferay.registry.RegistryUtil;
+import com.liferay.registry.ServiceRegistration;
+import com.liferay.portal.deploy.hot.ServiceWrapperRegistry;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -28,28 +33,34 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 /**
  * @author Manuel de la Peña
  * @author Miguel Pastor
  */
+@RunWith(Arquillian.class)
 public class ServiceWrapperRegistryTest {
 
 	@ClassRule
 	@Rule
-	public static final AggregateTestRule aggregateTestRule =
-		new AggregateTestRule(
-			new LiferayIntegrationTestRule(),
-			new SyntheticBundleClassTestRule("bundle.servicewrapperregistry"));
+	public static final LiferayIntegrationTestRule liferayIntegrationTestRule =
+		new LiferayIntegrationTestRule();
 
 	@BeforeClass
-	public static void setUpClass() throws Exception {
+	public static void setUpClass() {
 		_serviceWrapperRegistry = new ServiceWrapperRegistry();
+
+		Registry registry = RegistryUtil.getRegistry();
+
+		_serviceRegistration = registry.registerService(
+			ServiceWrapper.class, new TestEmailLocalServiceWrapper());
 	}
 
 	@AfterClass
-	public static void tearDownClass() throws Exception {
+	public static void tearDownClass() {
 		_serviceWrapperRegistry.close();
+		_serviceRegistration.unregister();
 	}
 
 	@Test
@@ -63,6 +74,31 @@ public class ServiceWrapperRegistryTest {
 		Assert.assertEquals("email@liferay.com", emailAddress.getAddress());
 	}
 
+	private static ServiceRegistration<ServiceWrapper> _serviceRegistration;
 	private static ServiceWrapperRegistry _serviceWrapperRegistry;
+
+	private static class TestEmailLocalServiceWrapper
+		extends EmailAddressLocalServiceWrapper {
+
+		public TestEmailLocalServiceWrapper() {
+			super(null);
+		}
+
+		public TestEmailLocalServiceWrapper(
+			EmailAddressLocalService emailAddressService) {
+
+			super(emailAddressService);
+		}
+
+		@Override
+		public EmailAddress getEmailAddress(long emailAddressId) {
+			EmailAddress emailAddress = createEmailAddress(1);
+
+			emailAddress.setAddress("email@liferay.com");
+
+			return emailAddress;
+		}
+
+	}
 
 }
