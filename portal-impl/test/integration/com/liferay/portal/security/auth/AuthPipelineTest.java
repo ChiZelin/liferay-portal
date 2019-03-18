@@ -18,8 +18,6 @@ import com.liferay.portal.kernel.security.auth.AuthException;
 import com.liferay.portal.kernel.security.auth.AuthFailure;
 import com.liferay.portal.kernel.security.auth.Authenticator;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
-import com.liferay.portal.security.auth.bundle.authpipeline.TestAuthFailure;
-import com.liferay.portal.security.auth.bundle.authpipeline.TestAuthenticator;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.util.test.AtomicState;
 import com.liferay.registry.Registry;
@@ -27,6 +25,8 @@ import com.liferay.registry.RegistryUtil;
 import com.liferay.registry.ServiceRegistration;
 
 import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -189,5 +189,83 @@ public class AuthPipelineTest {
 	private static AtomicState _atomicState;
 	private static ServiceRegistration<AuthFailure> _serviceRegistration1;
 	private static ServiceRegistration<Authenticator> _serviceRegistration2;
+
+	private static class TestAuthenticator implements Authenticator {
+
+		@Override
+		public int authenticateByEmailAddress(
+			long companyId, String emailAddress, String password,
+			Map<String, String[]> headerMap,
+			Map<String, String[]> parameterMap) {
+
+			_atomicBoolean.set(Boolean.TRUE);
+
+			return Authenticator.SUCCESS;
+		}
+
+		@Override
+		public int authenticateByScreenName(
+			long companyId, String screenName, String password,
+			Map<String, String[]> headerMap,
+			Map<String, String[]> parameterMap) {
+
+			_atomicBoolean.set(Boolean.TRUE);
+
+			return Authenticator.SUCCESS;
+		}
+
+		@Override
+		public int authenticateByUserId(
+			long companyId, long userId, String password,
+			Map<String, String[]> headerMap,
+			Map<String, String[]> parameterMap) {
+
+			_atomicBoolean.set(Boolean.TRUE);
+
+			return Authenticator.SUCCESS;
+		}
+
+		protected void setAtomicBoolean(AtomicBoolean atomicBoolean) {
+			_atomicBoolean = atomicBoolean;
+		}
+
+		private AtomicBoolean _atomicBoolean;
+
+	}
+
+	private static class TestAuthFailure implements AuthFailure {
+
+		@Override
+		public void onFailureByEmailAddress(
+			long companyId, String emailAddress,
+			Map<String, String[]> headerMap,
+			Map<String, String[]> parameterMap) {
+
+			_atomicBoolean.set(Boolean.TRUE);
+		}
+
+		@Override
+		public void onFailureByScreenName(
+			long companyId, String screenName, Map<String, String[]> headerMap,
+			Map<String, String[]> parameterMap) {
+
+			_atomicBoolean.set(Boolean.TRUE);
+		}
+
+		@Override
+		public void onFailureByUserId(
+			long companyId, long userId, Map<String, String[]> headerMap,
+			Map<String, String[]> parameterMap) {
+
+			_atomicBoolean.set(Boolean.TRUE);
+		}
+
+		protected void setAtomicBoolean(AtomicBoolean atomicBoolean) {
+			_atomicBoolean = atomicBoolean;
+		}
+
+		private AtomicBoolean _atomicBoolean;
+
+	}
 
 }
