@@ -18,16 +18,20 @@ import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.security.auth.AccessControlContext;
 import com.liferay.portal.kernel.security.auth.verifier.AuthVerifier;
+import com.liferay.portal.kernel.security.auth.verifier.AuthVerifierResult;
 import com.liferay.portal.kernel.servlet.HttpMethods;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.util.WebKeys;
-import com.liferay.portal.security.auth.bundle.authverifierpipeline.TestAuthVerifier;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.registry.Registry;
 import com.liferay.registry.RegistryUtil;
 import com.liferay.registry.ServiceRegistration;
 
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -100,5 +104,34 @@ public class AuthVerifierPipelineTest {
 	}
 
 	private static ServiceRegistration<AuthVerifier> _serviceRegistration;
+
+	private static class TestAuthVerifier implements AuthVerifier {
+
+		@Override
+		public String getAuthType() {
+			return HttpServletRequest.BASIC_AUTH;
+		}
+
+		@Override
+		public AuthVerifierResult verify(
+			AccessControlContext accessControlContext, Properties properties) {
+
+			AuthVerifierResult authVerifierResult = new AuthVerifierResult();
+
+			authVerifierResult.setPassword("best_password_ever");
+
+			Map<String, Object> settings = new HashMap<>();
+
+			settings.put("auth.type", HttpServletRequest.BASIC_AUTH);
+
+			authVerifierResult.setSettings(settings);
+
+			authVerifierResult.setState(AuthVerifierResult.State.SUCCESS);
+			authVerifierResult.setUserId(1);
+
+			return authVerifierResult;
+		}
+
+	}
 
 }
