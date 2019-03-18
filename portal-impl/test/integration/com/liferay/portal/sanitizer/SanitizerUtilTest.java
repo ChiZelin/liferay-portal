@@ -17,11 +17,12 @@ package com.liferay.portal.sanitizer;
 import com.liferay.portal.kernel.sanitizer.Sanitizer;
 import com.liferay.portal.kernel.sanitizer.SanitizerException;
 import com.liferay.portal.kernel.sanitizer.SanitizerUtil;
-import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.sanitizer.bundle.sanitizerimpl.TestSanitizer;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
-import com.liferay.portal.test.rule.SyntheticBundleRule;
 import com.liferay.portal.util.test.AtomicState;
+import com.liferay.registry.Registry;
+import com.liferay.registry.RegistryUtil;
+import com.liferay.registry.ServiceRegistration;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -42,19 +43,29 @@ public class SanitizerUtilTest {
 
 	@ClassRule
 	@Rule
-	public static final AggregateTestRule aggregateTestRule =
-		new AggregateTestRule(
-			new LiferayIntegrationTestRule(),
-			new SyntheticBundleRule("bundle.sanitizerimpl"));
+	public static final LiferayIntegrationTestRule liferayIntegrationTestRule =
+		new LiferayIntegrationTestRule();
 
 	@BeforeClass
 	public static void setUpClass() {
 		_atomicState = new AtomicState();
+
+		Registry registry = RegistryUtil.getRegistry();
+
+		_serviceRegistration = registry.registerService(
+			Sanitizer.class, new TestSanitizer(),
+			new HashMap<String, Object>() {
+				{
+					put("service.ranking", Integer.MAX_VALUE);
+				}
+			});
 	}
 
 	@AfterClass
 	public static void tearDownClass() {
 		_atomicState.close();
+
+		_serviceRegistration.unregister();
 	}
 
 	@SuppressWarnings("deprecation")
@@ -184,5 +195,6 @@ public class SanitizerUtilTest {
 	}
 
 	private static AtomicState _atomicState;
+	private static ServiceRegistration<Sanitizer> _serviceRegistration;
 
 }
