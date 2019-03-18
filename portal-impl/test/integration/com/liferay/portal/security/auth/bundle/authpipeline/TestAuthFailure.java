@@ -19,20 +19,9 @@ import com.liferay.portal.kernel.security.auth.AuthFailure;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-
 /**
  * @author Philip Jones
  */
-@Component(
-	immediate = true,
-	property = {
-		"key=auth.failure", "key=auth.max.failures",
-		"service.ranking:Integer=" + Integer.MAX_VALUE
-	},
-	service = AuthFailure.class
-)
 public class TestAuthFailure implements AuthFailure {
 
 	@Override
@@ -59,7 +48,6 @@ public class TestAuthFailure implements AuthFailure {
 		_atomicBoolean.set(Boolean.TRUE);
 	}
 
-	@Reference(target = "(test=AtomicState)")
 	protected void setAtomicBoolean(AtomicBoolean atomicBoolean) {
 		_atomicBoolean = atomicBoolean;
 	}

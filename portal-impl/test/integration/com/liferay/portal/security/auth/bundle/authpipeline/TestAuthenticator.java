@@ -19,19 +19,9 @@ import com.liferay.portal.kernel.security.auth.Authenticator;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-
 /**
  * @author Philip Jones
  */
-@Component(
-	immediate = true,
-	property = {
-		"key=auth.pipeline.pre", "service.ranking:Integer=" + Integer.MAX_VALUE
-	},
-	service = Authenticator.class
-)
 public class TestAuthenticator implements Authenticator {
 
 	@Override
@@ -64,7 +54,6 @@ public class TestAuthenticator implements Authenticator {
 		return Authenticator.SUCCESS;
 	}
 
-	@Reference(target = "(test=AtomicState)")
 	protected void setAtomicBoolean(AtomicBoolean atomicBoolean) {
 		_atomicBoolean = atomicBoolean;
 	}

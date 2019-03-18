@@ -15,11 +15,18 @@
 package com.liferay.portal.security.auth;
 
 import com.liferay.portal.kernel.security.auth.AuthException;
-import com.liferay.portal.kernel.test.rule.AggregateTestRule;
+import com.liferay.portal.kernel.security.auth.AuthFailure;
+import com.liferay.portal.kernel.security.auth.Authenticator;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
+import com.liferay.portal.security.auth.bundle.authpipeline.TestAuthFailure;
+import com.liferay.portal.security.auth.bundle.authpipeline.TestAuthenticator;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
-import com.liferay.portal.test.rule.SyntheticBundleRule;
 import com.liferay.portal.util.test.AtomicState;
+import com.liferay.registry.Registry;
+import com.liferay.registry.RegistryUtil;
+import com.liferay.registry.ServiceRegistration;
+
+import java.util.HashMap;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -35,19 +42,42 @@ public class AuthPipelineTest {
 
 	@ClassRule
 	@Rule
-	public static final AggregateTestRule aggregateTestRule =
-		new AggregateTestRule(
-			new LiferayIntegrationTestRule(),
-			new SyntheticBundleRule("bundle.authpipeline"));
+	public static final LiferayIntegrationTestRule liferayIntegrationTestRule =
+		new LiferayIntegrationTestRule();
 
 	@BeforeClass
 	public static void setUpClass() {
 		_atomicState = new AtomicState();
+
+		Registry registry = RegistryUtil.getRegistry();
+
+		_serviceRegistration1 = registry.registerService(
+			AuthFailure.class, new TestAuthFailure(),
+			new HashMap<String, Object>() {
+				{
+					put(
+						"key",
+						new String[] {"auth.failure", "auth.max.failures"});
+					put("service.ranking", Integer.MAX_VALUE);
+				}
+			});
+
+		_serviceRegistration2 = registry.registerService(
+			Authenticator.class, new TestAuthenticator(),
+			new HashMap<String, Object>() {
+				{
+					put("key", "auth.pipeline.pre");
+					put("service.ranking", Integer.MAX_VALUE);
+				}
+			});
 	}
 
 	@AfterClass
 	public static void tearDownClass() {
 		_atomicState.close();
+
+		_serviceRegistration1.unregister();
+		_serviceRegistration2.unregister();
 	}
 
 	@Test
@@ -157,5 +187,7 @@ public class AuthPipelineTest {
 	}
 
 	private static AtomicState _atomicState;
+	private static ServiceRegistration<AuthFailure> _serviceRegistration1;
+	private static ServiceRegistration<Authenticator> _serviceRegistration2;
 
 }
