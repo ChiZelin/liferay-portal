@@ -14,7 +14,6 @@
 
 package com.liferay.portal.deploy.hot;
 
-import com.liferay.portal.deploy.hot.bundle.osgihotdeploylistener.TestHotDeployListener;
 import com.liferay.portal.kernel.deploy.hot.DependencyManagementThreadLocal;
 import com.liferay.portal.kernel.deploy.hot.HotDeployEvent;
 import com.liferay.portal.kernel.deploy.hot.HotDeployException;
@@ -25,6 +24,8 @@ import com.liferay.portal.util.test.AtomicState;
 import com.liferay.registry.Registry;
 import com.liferay.registry.RegistryUtil;
 import com.liferay.registry.ServiceRegistration;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.servlet.ServletContext;
 
@@ -100,5 +101,25 @@ public class OSGiHotDeployListenerTest {
 		new OSGiHotDeployListener();
 	private final ServletContext _servletContext =
 		ProxyFactory.newDummyInstance(ServletContext.class);
+
+	private static class TestHotDeployListener implements HotDeployListener {
+
+		@Override
+		public void invokeDeploy(HotDeployEvent event) {
+			_atomicBoolean.set(Boolean.TRUE);
+		}
+
+		@Override
+		public void invokeUndeploy(HotDeployEvent event) {
+			_atomicBoolean.set(Boolean.TRUE);
+		}
+
+		protected void setAtomicBoolean(AtomicBoolean atomicBoolean) {
+			_atomicBoolean = atomicBoolean;
+		}
+
+		private AtomicBoolean _atomicBoolean;
+
+	}
 
 }
