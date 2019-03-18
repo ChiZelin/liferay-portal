@@ -19,7 +19,6 @@ import com.liferay.portal.kernel.model.LayoutFriendlyURLComposite;
 import com.liferay.portal.kernel.portlet.FriendlyURLResolver;
 import com.liferay.portal.kernel.portlet.FriendlyURLResolverRegistryUtil;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
-import com.liferay.portlet.bundle.friendlyurlresolverregistryutil.TestFriendlyURLResolver;
 import com.liferay.registry.Registry;
 import com.liferay.registry.RegistryUtil;
 import com.liferay.registry.ServiceRegistration;
@@ -152,6 +151,39 @@ public class FriendlyURLResolverRegistryUtilTest {
 
 	private static ServiceRegistration<FriendlyURLResolver>
 		_serviceRegistration;
+
+	private static class TestFriendlyURLResolver
+		implements FriendlyURLResolver {
+
+		public static final String SEPARATOR = "/-foo-";
+
+		@Override
+		public String getActualURL(
+				long companyId, long groupId, boolean privateLayout,
+				String mainPath, String friendlyURL,
+				Map<String, String[]> params,
+				Map<String, Object> requestContext)
+			throws PortalException {
+
+			return null;
+		}
+
+		@Override
+		public LayoutFriendlyURLComposite getLayoutFriendlyURLComposite(
+				long companyId, long groupId, boolean privateLayout,
+				String friendlyURL, Map<String, String[]> params,
+				Map<String, Object> requestContext)
+			throws PortalException {
+
+			return null;
+		}
+
+		@Override
+		public String getURLSeparator() {
+			return SEPARATOR;
+		}
+
+	}
 
 	private class OverrideFriendlyURLResolver implements FriendlyURLResolver {
 
