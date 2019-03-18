@@ -15,14 +15,12 @@
 package com.liferay.portal.kernel.search;
 
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
-import com.liferay.portal.util.test.AtomicState;
 import com.liferay.registry.Registry;
 import com.liferay.registry.RegistryUtil;
 import com.liferay.registry.ServiceRegistration;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -43,8 +41,6 @@ public class SearchEngineUtilTest {
 
 	@BeforeClass
 	public static void setUpClass() {
-		_atomicState = new AtomicState();
-
 		Registry registry = RegistryUtil.getRegistry();
 
 		_serviceRegistration = registry.registerService(
@@ -58,17 +54,15 @@ public class SearchEngineUtilTest {
 
 	@AfterClass
 	public static void tearDownClass() {
-		_atomicState.close();
-
-		serviceRegistration.unregister();
+		_serviceRegistration.unregister();
 	}
 
 	@Test
 	public void testAfterPropertiesSet() {
-		Assert.assertTrue(_atomicState.get());
+		Assert.assertTrue(_called);
 	}
 
-	private static AtomicState _atomicState;
+	private static boolean _called;
 	private static ServiceRegistration<SearchEngineConfigurator>
 		_serviceRegistration;
 
@@ -77,24 +71,18 @@ public class SearchEngineUtilTest {
 
 		@Override
 		public void afterPropertiesSet() {
-			_atomicBoolean.set(Boolean.TRUE);
+			_called = true;
 		}
 
 		@Override
 		public void destroy() {
-			_atomicBoolean.set(Boolean.TRUE);
+			_called = true;
 		}
 
 		@Override
 		public void setSearchEngines(Map<String, SearchEngine> searchEngines) {
-			_atomicBoolean.set(Boolean.TRUE);
+			_called = true;
 		}
-
-		protected void setAtomicBoolean(AtomicBoolean atomicBoolean) {
-			_atomicBoolean = atomicBoolean;
-		}
-
-		private AtomicBoolean _atomicBoolean;
 
 	}
 
