@@ -14,10 +14,10 @@
 
 package com.liferay.portal.sanitizer;
 
+import com.liferay.portal.kernel.sanitizer.BaseSanitizer;
 import com.liferay.portal.kernel.sanitizer.Sanitizer;
 import com.liferay.portal.kernel.sanitizer.SanitizerException;
 import com.liferay.portal.kernel.sanitizer.SanitizerUtil;
-import com.liferay.portal.sanitizer.bundle.sanitizerimpl.TestSanitizer;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.util.test.AtomicState;
 import com.liferay.registry.Registry;
@@ -28,6 +28,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
 import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -196,5 +198,26 @@ public class SanitizerUtilTest {
 
 	private static AtomicState _atomicState;
 	private static ServiceRegistration<Sanitizer> _serviceRegistration;
+
+	private static class TestSanitizer extends BaseSanitizer {
+
+		@Override
+		public String sanitize(
+			long companyId, long groupId, long userId, String className,
+			long classPK, String contentType, String[] modes, String content,
+			Map<String, Object> options) {
+
+			_atomicBoolean.set(Boolean.TRUE);
+
+			return companyId + ":" + groupId;
+		}
+
+		protected void setAtomicBoolean(AtomicBoolean atomicBoolean) {
+			_atomicBoolean = atomicBoolean;
+		}
+
+		private AtomicBoolean _atomicBoolean;
+
+	}
 
 }
