@@ -20,12 +20,9 @@ import com.liferay.portal.kernel.deploy.hot.HotDeployException;
 import com.liferay.portal.kernel.deploy.hot.HotDeployListener;
 import com.liferay.portal.kernel.util.ProxyFactory;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
-import com.liferay.portal.util.test.AtomicState;
 import com.liferay.registry.Registry;
 import com.liferay.registry.RegistryUtil;
 import com.liferay.registry.ServiceRegistration;
-
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.servlet.ServletContext;
 
@@ -50,8 +47,6 @@ public class OSGiHotDeployListenerTest {
 
 	@BeforeClass
 	public static void setUpClass() {
-		_atomicState = new AtomicState();
-
 		Registry registry = RegistryUtil.getRegistry();
 
 		_serviceRegistration = registry.registerService(
@@ -60,8 +55,6 @@ public class OSGiHotDeployListenerTest {
 
 	@AfterClass
 	public static void tearDownClass() {
-		_atomicState.close();
-
 		_serviceRegistration.unregister();
 	}
 
@@ -70,6 +63,8 @@ public class OSGiHotDeployListenerTest {
 		_dependencyManagerEnabled = DependencyManagementThreadLocal.isEnabled();
 
 		DependencyManagementThreadLocal.setEnabled(false);
+
+		_called = false;
 	}
 
 	@After
@@ -82,7 +77,7 @@ public class OSGiHotDeployListenerTest {
 		_hotDeployListener.invokeDeploy(
 			new HotDeployEvent(_servletContext, null));
 
-		Assert.assertTrue(_atomicState.isSet());
+		Assert.assertTrue(_called);
 	}
 
 	@Test
@@ -90,10 +85,10 @@ public class OSGiHotDeployListenerTest {
 		_hotDeployListener.invokeUndeploy(
 			new HotDeployEvent(_servletContext, null));
 
-		Assert.assertTrue(_atomicState.isSet());
+		Assert.assertTrue(_called);
 	}
 
-	private static AtomicState _atomicState;
+	private static boolean _called;
 	private static ServiceRegistration<HotDeployListener> _serviceRegistration;
 
 	private boolean _dependencyManagerEnabled;
@@ -106,19 +101,13 @@ public class OSGiHotDeployListenerTest {
 
 		@Override
 		public void invokeDeploy(HotDeployEvent event) {
-			_atomicBoolean.set(Boolean.TRUE);
+			_called = true;
 		}
 
 		@Override
 		public void invokeUndeploy(HotDeployEvent event) {
-			_atomicBoolean.set(Boolean.TRUE);
+			_called = true;
 		}
-
-		protected void setAtomicBoolean(AtomicBoolean atomicBoolean) {
-			_atomicBoolean = atomicBoolean;
-		}
-
-		private AtomicBoolean _atomicBoolean;
 
 	}
 
