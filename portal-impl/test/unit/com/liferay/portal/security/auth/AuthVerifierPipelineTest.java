@@ -22,7 +22,7 @@ import com.liferay.portal.kernel.security.auth.verifier.AuthVerifierResult;
 import com.liferay.portal.kernel.servlet.HttpMethods;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.util.WebKeys;
-import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
+import com.liferay.registry.BasicRegistryImpl;
 import com.liferay.registry.Registry;
 import com.liferay.registry.RegistryUtil;
 import com.liferay.registry.ServiceRegistration;
@@ -35,8 +35,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.ClassRule;
-import org.junit.Rule;
 import org.junit.Test;
 
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -47,13 +45,10 @@ import org.springframework.mock.web.MockServletContext;
  */
 public class AuthVerifierPipelineTest {
 
-	@ClassRule
-	@Rule
-	public static final LiferayIntegrationTestRule liferayIntegrationTestRule =
-		new LiferayIntegrationTestRule();
-
 	@BeforeClass
 	public static void setUpClass() {
+		RegistryUtil.setRegistry(new BasicRegistryImpl());
+
 		Registry registry = RegistryUtil.getRegistry();
 
 		_serviceRegistration = registry.registerService(
