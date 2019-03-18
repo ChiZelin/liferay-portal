@@ -24,15 +24,9 @@ import com.liferay.portal.kernel.repository.registry.RepositoryFactoryRegistry;
 
 import java.util.Locale;
 
-import org.osgi.service.component.annotations.Component;
-
 /**
  * @author Peter Fellwock
  */
-@Component(
-	immediate = true, property = "service.ranking:Integer=" + Integer.MAX_VALUE,
-	service = RepositoryDefiner.class
-)
 public class TestRepositoryDefiner implements RepositoryDefiner {
 
 	public TestRepositoryDefiner() {

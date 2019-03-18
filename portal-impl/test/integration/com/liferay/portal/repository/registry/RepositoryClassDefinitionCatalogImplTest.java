@@ -14,15 +14,20 @@
 
 package com.liferay.portal.repository.registry;
 
-import com.liferay.portal.kernel.test.rule.AggregateTestRule;
+import com.liferay.portal.kernel.repository.registry.RepositoryDefiner;
 import com.liferay.portal.repository.registry.bundle.repositoryclassdefinitioncatalogimpl.TestExternalRepositoryDefiner;
 import com.liferay.portal.repository.registry.bundle.repositoryclassdefinitioncatalogimpl.TestRepositoryDefiner;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
-import com.liferay.portal.test.rule.SyntheticBundleRule;
+import com.liferay.registry.Registry;
+import com.liferay.registry.RegistryUtil;
+import com.liferay.registry.ServiceRegistration;
 
 import java.util.Collection;
+import java.util.HashMap;
 
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,11 +39,35 @@ public class RepositoryClassDefinitionCatalogImplTest {
 
 	@ClassRule
 	@Rule
-	public static final AggregateTestRule aggregateTestRule =
-		new AggregateTestRule(
-			new LiferayIntegrationTestRule(),
-			new SyntheticBundleRule(
-				"bundle.repositoryclassdefinitioncatalogimpl"));
+	public static final LiferayIntegrationTestRule liferayIntegrationTestRule =
+		new LiferayIntegrationTestRule();
+
+	@BeforeClass
+	public static void setUpClass() {
+		Registry registry = RegistryUtil.getRegistry();
+
+		_serviceRegistration1 = registry.registerService(
+			RepositoryDefiner.class, new TestExternalRepositoryDefiner(),
+			new HashMap<String, Object>() {
+				{
+					put("service.ranking", Integer.MAX_VALUE);
+				}
+			});
+
+		_serviceRegistration2 = registry.registerService(
+			RepositoryDefiner.class, new TestRepositoryDefiner(),
+			new HashMap<String, Object>() {
+				{
+					put("service.ranking", Integer.MAX_VALUE);
+				}
+			});
+	}
+
+	@AfterClass
+	public static void tearDownClass() {
+		_serviceRegistration1.unregister();
+		_serviceRegistration2.unregister();
+	}
 
 	@Test
 	public void testGetExternalRepositoryClassDefinitions() {
@@ -158,5 +187,8 @@ public class RepositoryClassDefinitionCatalogImplTest {
 
 	private static final String _REPOSITORY_DEFINER_CLASS_NAME =
 		TestRepositoryDefiner.class.getName();
+
+	private static ServiceRegistration<RepositoryDefiner> _serviceRegistration1;
+	private static ServiceRegistration<RepositoryDefiner> _serviceRegistration2;
 
 }
