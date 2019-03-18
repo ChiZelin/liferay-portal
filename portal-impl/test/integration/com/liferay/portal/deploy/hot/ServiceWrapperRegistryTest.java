@@ -14,11 +14,11 @@
 
 package com.liferay.portal.deploy.hot;
 
-import com.liferay.portal.deploy.hot.bundle.servicewrapperregistry.TestEmailLocalServiceWrapper;
 import com.liferay.portal.kernel.bean.PortalBeanLocatorUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.EmailAddress;
 import com.liferay.portal.kernel.service.EmailAddressLocalService;
+import com.liferay.portal.kernel.service.EmailAddressLocalServiceWrapper;
 import com.liferay.portal.kernel.service.ServiceWrapper;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.registry.Registry;
@@ -72,5 +72,29 @@ public class ServiceWrapperRegistryTest {
 
 	private static ServiceRegistration<ServiceWrapper> _serviceRegistration;
 	private static ServiceWrapperRegistry _serviceWrapperRegistry;
+
+	private static class TestEmailLocalServiceWrapper
+		extends EmailAddressLocalServiceWrapper {
+
+		public TestEmailLocalServiceWrapper() {
+			super(null);
+		}
+
+		public TestEmailLocalServiceWrapper(
+			EmailAddressLocalService emailAddressService) {
+
+			super(emailAddressService);
+		}
+
+		@Override
+		public EmailAddress getEmailAddress(long emailAddressId) {
+			EmailAddress emailAddress = createEmailAddress(1);
+
+			emailAddress.setAddress("email@liferay.com");
+
+			return emailAddress;
+		}
+
+	}
 
 }
