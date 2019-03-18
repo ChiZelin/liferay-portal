@@ -14,16 +14,19 @@
 
 package com.liferay.portal.kernel.template;
 
-import com.liferay.portal.kernel.template.bundle.templatehandlerregistryutil.TestTemplateHandler;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
+import com.liferay.portal.kernel.xml.Element;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.registry.Registry;
 import com.liferay.registry.RegistryUtil;
 import com.liferay.registry.ServiceRegistration;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -115,5 +118,71 @@ public class TemplateHandlerRegistryUtilTest {
 	}
 
 	private static ServiceRegistration<TemplateHandler> _serviceRegistration;
+
+	private static class TestTemplateHandler implements TemplateHandler {
+
+		@Override
+		public String getClassName() {
+			return TestTemplateHandler.class.getName();
+		}
+
+		@Override
+		public Map<String, Object> getCustomContextObjects() {
+			return Collections.emptyMap();
+		}
+
+		@Override
+		public List<Element> getDefaultTemplateElements() {
+			return Collections.emptyList();
+		}
+
+		@Override
+		public String getDefaultTemplateKey() {
+			return null;
+		}
+
+		@Override
+		public String getName(Locale locale) {
+			return null;
+		}
+
+		@Override
+		public String getResourceName() {
+			return null;
+		}
+
+		@Override
+		public String[] getRestrictedVariables(String language) {
+			return null;
+		}
+
+		@Override
+		public String getTemplatesHelpContent(String language) {
+			return null;
+		}
+
+		@Override
+		public String getTemplatesHelpPath(String language) {
+			return null;
+		}
+
+		@Override
+		public String getTemplatesHelpPropertyKey() {
+			return null;
+		}
+
+		@Override
+		public Map<String, TemplateVariableGroup> getTemplateVariableGroups(
+			long classPK, String language, Locale locale) {
+
+			return null;
+		}
+
+		@Override
+		public boolean isDisplayTemplateHandler() {
+			return false;
+		}
+
+	}
 
 }
