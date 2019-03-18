@@ -23,15 +23,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.osgi.service.component.annotations.Component;
-
 /**
  * @author Peter Fellwock
  */
-@Component(
-	immediate = true, property = "service.ranking:Integer=" + Integer.MAX_VALUE,
-	service = TemplateHandler.class
-)
 public class TestTemplateHandler implements TemplateHandler {
 
 	@Override

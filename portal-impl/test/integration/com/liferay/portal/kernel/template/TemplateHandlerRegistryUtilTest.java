@@ -15,15 +15,19 @@
 package com.liferay.portal.kernel.template;
 
 import com.liferay.portal.kernel.template.bundle.templatehandlerregistryutil.TestTemplateHandler;
-import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
-import com.liferay.portal.test.rule.SyntheticBundleRule;
+import com.liferay.registry.Registry;
+import com.liferay.registry.RegistryUtil;
+import com.liferay.registry.ServiceRegistration;
 
+import java.util.HashMap;
 import java.util.List;
 
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -35,10 +39,26 @@ public class TemplateHandlerRegistryUtilTest {
 
 	@ClassRule
 	@Rule
-	public static final AggregateTestRule aggregateTestRule =
-		new AggregateTestRule(
-			new LiferayIntegrationTestRule(),
-			new SyntheticBundleRule("bundle.templatehandlerregistryutil"));
+	public static final LiferayIntegrationTestRule liferayIntegrationTestRule =
+		new LiferayIntegrationTestRule();
+
+	@BeforeClass
+	public static void setUpClass() {
+		Registry registry = RegistryUtil.getRegistry();
+
+		_serviceRegistration = registry.registerService(
+			TemplateHandler.class, new TestTemplateHandler(),
+			new HashMap<String, Object>() {
+				{
+					put("service.ranking", Integer.MAX_VALUE);
+				}
+			});
+	}
+
+	@AfterClass
+	public static void tearDownClass() {
+		_serviceRegistration.unregister();
+	}
 
 	@Test
 	public void testGetClassNameIds() {
@@ -93,5 +113,7 @@ public class TemplateHandlerRegistryUtilTest {
 
 		Assert.assertTrue(exists);
 	}
+
+	private static ServiceRegistration<TemplateHandler> _serviceRegistration;
 
 }
