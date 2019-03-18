@@ -17,7 +17,6 @@ package com.liferay.portal.servlet.filters.autologin;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.security.auto.login.AutoLogin;
 import com.liferay.portal.kernel.util.ProxyFactory;
-import com.liferay.portal.servlet.filters.autologin.bundle.autologinfilter.TestAutoLogin;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.util.test.AtomicState;
 import com.liferay.registry.Registry;
@@ -27,11 +26,13 @@ import com.liferay.registry.ServiceRegistration;
 import java.io.IOException;
 
 import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.junit.AfterClass;
@@ -104,5 +105,32 @@ public class AutoLoginFilterTest {
 
 	private static AtomicState _atomicState;
 	private static ServiceRegistration<AutoLogin> _serviceRegistration;
+
+	private static class TestAutoLogin implements AutoLogin {
+
+		@Override
+		public String[] handleException(
+			HttpServletRequest request, HttpServletResponse response,
+			Exception e) {
+
+			return null;
+		}
+
+		@Override
+		public String[] login(
+			HttpServletRequest request, HttpServletResponse response) {
+
+			_atomicBoolean.set(Boolean.TRUE);
+
+			return null;
+		}
+
+		protected void setAtomicBoolean(AtomicBoolean atomicBoolean) {
+			_atomicBoolean = atomicBoolean;
+		}
+
+		private AtomicBoolean _atomicBoolean;
+
+	}
 
 }
