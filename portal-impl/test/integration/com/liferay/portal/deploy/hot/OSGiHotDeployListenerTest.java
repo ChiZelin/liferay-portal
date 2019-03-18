@@ -14,15 +14,17 @@
 
 package com.liferay.portal.deploy.hot;
 
+import com.liferay.portal.deploy.hot.bundle.osgihotdeploylistener.TestHotDeployListener;
 import com.liferay.portal.kernel.deploy.hot.DependencyManagementThreadLocal;
 import com.liferay.portal.kernel.deploy.hot.HotDeployEvent;
 import com.liferay.portal.kernel.deploy.hot.HotDeployException;
 import com.liferay.portal.kernel.deploy.hot.HotDeployListener;
-import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.util.ProxyFactory;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
-import com.liferay.portal.test.rule.SyntheticBundleRule;
 import com.liferay.portal.util.test.AtomicState;
+import com.liferay.registry.Registry;
+import com.liferay.registry.RegistryUtil;
+import com.liferay.registry.ServiceRegistration;
 
 import javax.servlet.ServletContext;
 
@@ -42,19 +44,24 @@ public class OSGiHotDeployListenerTest {
 
 	@ClassRule
 	@Rule
-	public static final AggregateTestRule aggregateTestRule =
-		new AggregateTestRule(
-			new LiferayIntegrationTestRule(),
-			new SyntheticBundleRule("bundle.osgihotdeploylistener"));
+	public static final LiferayIntegrationTestRule liferayIntegrationTestRule =
+		new LiferayIntegrationTestRule();
 
 	@BeforeClass
 	public static void setUpClass() {
 		_atomicState = new AtomicState();
+
+		Registry registry = RegistryUtil.getRegistry();
+
+		_serviceRegistration = registry.registerService(
+			HotDeployListener.class, new TestHotDeployListener());
 	}
 
 	@AfterClass
 	public static void tearDownClass() {
 		_atomicState.close();
+
+		_serviceRegistration.unregister();
 	}
 
 	@Before
@@ -86,6 +93,7 @@ public class OSGiHotDeployListenerTest {
 	}
 
 	private static AtomicState _atomicState;
+	private static ServiceRegistration<HotDeployListener> _serviceRegistration;
 
 	private boolean _dependencyManagerEnabled;
 	private final HotDeployListener _hotDeployListener =

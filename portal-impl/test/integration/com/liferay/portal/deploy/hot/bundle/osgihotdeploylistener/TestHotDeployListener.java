@@ -19,13 +19,9 @@ import com.liferay.portal.kernel.deploy.hot.HotDeployListener;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-
 /**
  * @author Adolfo Pérez
  */
-@Component(immediate = true, service = HotDeployListener.class)
 public class TestHotDeployListener implements HotDeployListener {
 
 	@Override
@@ -38,7 +34,6 @@ public class TestHotDeployListener implements HotDeployListener {
 		_atomicBoolean.set(Boolean.TRUE);
 	}
 
-	@Reference(target = "(test=AtomicState)")
 	protected void setAtomicBoolean(AtomicBoolean atomicBoolean) {
 		_atomicBoolean = atomicBoolean;
 	}
