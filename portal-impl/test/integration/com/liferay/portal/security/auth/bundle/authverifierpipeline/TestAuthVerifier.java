@@ -24,19 +24,9 @@ import java.util.Properties;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.osgi.service.component.annotations.Component;
-
 /**
  * @author Peter Fellwock
  */
-@Component(
-	immediate = true,
-	property = {
-		"service.ranking:Integer=" + Integer.MAX_VALUE,
-		"urls.includes=/TestAuthVerifier/*,/TestAuthVerifierTest/*"
-	},
-	service = AuthVerifier.class
-)
 public class TestAuthVerifier implements AuthVerifier {
 
 	@Override

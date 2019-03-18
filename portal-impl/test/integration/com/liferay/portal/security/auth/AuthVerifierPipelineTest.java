@@ -17,13 +17,20 @@ package com.liferay.portal.security.auth;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.security.auth.AccessControlContext;
+import com.liferay.portal.kernel.security.auth.verifier.AuthVerifier;
 import com.liferay.portal.kernel.servlet.HttpMethods;
-import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.util.WebKeys;
+import com.liferay.portal.security.auth.bundle.authverifierpipeline.TestAuthVerifier;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
-import com.liferay.portal.test.rule.SyntheticBundleRule;
+import com.liferay.registry.Registry;
+import com.liferay.registry.RegistryUtil;
+import com.liferay.registry.ServiceRegistration;
 
+import java.util.HashMap;
+
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -38,10 +45,29 @@ public class AuthVerifierPipelineTest {
 
 	@ClassRule
 	@Rule
-	public static final AggregateTestRule aggregateTestRule =
-		new AggregateTestRule(
-			new LiferayIntegrationTestRule(),
-			new SyntheticBundleRule("bundle.authverifierpipeline"));
+	public static final LiferayIntegrationTestRule liferayIntegrationTestRule =
+		new LiferayIntegrationTestRule();
+
+	@BeforeClass
+	public static void setUpClass() {
+		Registry registry = RegistryUtil.getRegistry();
+
+		_serviceRegistration = registry.registerService(
+			AuthVerifier.class, new TestAuthVerifier(),
+			new HashMap<String, Object>() {
+				{
+					put("service.ranking", Integer.MAX_VALUE);
+					put(
+						"urls.includes",
+						"/TestAuthVerifier/*,/TestAuthVerifierTest/*");
+				}
+			});
+	}
+
+	@AfterClass
+	public static void tearDownClass() {
+		_serviceRegistration.unregister();
+	}
 
 	@Test
 	public void testVerifyRequest() throws PortalException {
@@ -72,5 +98,7 @@ public class AuthVerifierPipelineTest {
 
 		return mockHttpServletRequest;
 	}
+
+	private static ServiceRegistration<AuthVerifier> _serviceRegistration;
 
 }
