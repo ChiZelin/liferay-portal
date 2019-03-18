@@ -14,9 +14,13 @@
 
 package com.liferay.portal.repository.registry;
 
+import com.liferay.portal.kernel.repository.DocumentRepository;
+import com.liferay.portal.kernel.repository.RepositoryConfiguration;
+import com.liferay.portal.kernel.repository.RepositoryConfigurationBuilder;
+import com.liferay.portal.kernel.repository.registry.CapabilityRegistry;
 import com.liferay.portal.kernel.repository.registry.RepositoryDefiner;
-import com.liferay.portal.repository.registry.bundle.repositoryclassdefinitioncatalogimpl.TestExternalRepositoryDefiner;
-import com.liferay.portal.repository.registry.bundle.repositoryclassdefinitioncatalogimpl.TestRepositoryDefiner;
+import com.liferay.portal.kernel.repository.registry.RepositoryEventRegistry;
+import com.liferay.portal.kernel.repository.registry.RepositoryFactoryRegistry;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.registry.Registry;
 import com.liferay.registry.RegistryUtil;
@@ -24,6 +28,7 @@ import com.liferay.registry.ServiceRegistration;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Locale;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -190,5 +195,102 @@ public class RepositoryClassDefinitionCatalogImplTest {
 
 	private static ServiceRegistration<RepositoryDefiner> _serviceRegistration1;
 	private static ServiceRegistration<RepositoryDefiner> _serviceRegistration2;
+
+	private static class TestExternalRepositoryDefiner
+		implements RepositoryDefiner {
+
+		public TestExternalRepositoryDefiner() {
+			RepositoryConfigurationBuilder repositoryConfigurationBuilder =
+				new RepositoryConfigurationBuilder();
+
+			_repositoryConfiguration = repositoryConfigurationBuilder.build();
+		}
+
+		@Override
+		public String getClassName() {
+			return TestExternalRepositoryDefiner.class.getName();
+		}
+
+		@Override
+		public RepositoryConfiguration getRepositoryConfiguration() {
+			return _repositoryConfiguration;
+		}
+
+		@Override
+		public String getRepositoryTypeLabel(Locale locale) {
+			return null;
+		}
+
+		@Override
+		public boolean isExternalRepository() {
+			return true;
+		}
+
+		@Override
+		public void registerCapabilities(
+			CapabilityRegistry<DocumentRepository> capabilityRegistry) {
+		}
+
+		@Override
+		public void registerRepositoryEventListeners(
+			RepositoryEventRegistry repositoryEventRegistry) {
+		}
+
+		@Override
+		public void registerRepositoryFactory(
+			RepositoryFactoryRegistry repositoryFactoryRegistry) {
+		}
+
+		private final RepositoryConfiguration _repositoryConfiguration;
+
+	}
+
+	private static class TestRepositoryDefiner implements RepositoryDefiner {
+
+		public TestRepositoryDefiner() {
+			RepositoryConfigurationBuilder repositoryConfigurationBuilder =
+				new RepositoryConfigurationBuilder();
+
+			_repositoryConfiguration = repositoryConfigurationBuilder.build();
+		}
+
+		@Override
+		public String getClassName() {
+			return TestRepositoryDefiner.class.getName();
+		}
+
+		@Override
+		public RepositoryConfiguration getRepositoryConfiguration() {
+			return _repositoryConfiguration;
+		}
+
+		@Override
+		public String getRepositoryTypeLabel(Locale locale) {
+			return null;
+		}
+
+		@Override
+		public boolean isExternalRepository() {
+			return false;
+		}
+
+		@Override
+		public void registerCapabilities(
+			CapabilityRegistry<DocumentRepository> capabilityRegistry) {
+		}
+
+		@Override
+		public void registerRepositoryEventListeners(
+			RepositoryEventRegistry repositoryEventRegistry) {
+		}
+
+		@Override
+		public void registerRepositoryFactory(
+			RepositoryFactoryRegistry repositoryFactoryRegistry) {
+		}
+
+		private final RepositoryConfiguration _repositoryConfiguration;
+
+	}
 
 }
