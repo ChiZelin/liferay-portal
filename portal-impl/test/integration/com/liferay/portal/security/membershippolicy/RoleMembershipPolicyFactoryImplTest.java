@@ -18,12 +18,13 @@ import com.liferay.portal.kernel.security.membershippolicy.RoleMembershipPolicy;
 import com.liferay.portal.kernel.security.membershippolicy.RoleMembershipPolicyFactory;
 import com.liferay.portal.kernel.security.membershippolicy.RoleMembershipPolicyFactoryUtil;
 import com.liferay.portal.kernel.security.membershippolicy.RoleMembershipPolicyUtil;
-import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.model.impl.RoleImpl;
 import com.liferay.portal.security.membershippolicy.bundle.rolemembershippolicyfactoryimpl.TestRoleMembershipPolicy;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
-import com.liferay.portal.test.rule.SyntheticBundleRule;
 import com.liferay.portal.util.test.AtomicState;
+import com.liferay.registry.Registry;
+import com.liferay.registry.RegistryUtil;
+import com.liferay.registry.ServiceRegistration;
 
 import java.io.Serializable;
 
@@ -43,19 +44,29 @@ public class RoleMembershipPolicyFactoryImplTest {
 
 	@ClassRule
 	@Rule
-	public static final AggregateTestRule aggregateTestRule =
-		new AggregateTestRule(
-			new LiferayIntegrationTestRule(),
-			new SyntheticBundleRule("bundle.rolemembershippolicyfactoryimpl"));
+	public static final LiferayIntegrationTestRule liferayIntegrationTestRule =
+		new LiferayIntegrationTestRule();
 
 	@BeforeClass
 	public static void setUpClass() {
 		_atomicState = new AtomicState();
+
+		Registry registry = RegistryUtil.getRegistry();
+
+		_serviceRegistration = registry.registerService(
+			RoleMembershipPolicy.class, new TestRoleMembershipPolicy(),
+			new HashMap<String, Object>() {
+				{
+					put("service.ranking", Integer.MAX_VALUE);
+				}
+			});
 	}
 
 	@AfterClass
 	public static void tearDownClass() {
 		_atomicState.close();
+
+		_serviceRegistration.unregister();
 	}
 
 	@Test
@@ -147,5 +158,7 @@ public class RoleMembershipPolicyFactoryImplTest {
 	}
 
 	private static AtomicState _atomicState;
+	private static ServiceRegistration<RoleMembershipPolicy>
+		_serviceRegistration;
 
 }
