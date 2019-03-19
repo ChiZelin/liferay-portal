@@ -14,9 +14,6 @@
 
 package com.liferay.portal.jmx;
 
-import com.liferay.portal.jmx.bundle.jmxwhiteboard.JMXWhiteboardByDynamicMBean;
-import com.liferay.portal.jmx.bundle.jmxwhiteboard.JMXWhiteboardByInterface;
-import com.liferay.portal.jmx.bundle.jmxwhiteboard.JMXWhiteboardByInterfaceMBean;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.registry.Registry;
@@ -32,6 +29,7 @@ import javax.management.MBeanParameterInfo;
 import javax.management.MBeanServer;
 import javax.management.NotCompliantMBeanException;
 import javax.management.ObjectName;
+import javax.management.StandardMBean;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -143,11 +141,49 @@ public class JMXWhiteboardTest {
 		Assert.assertEquals("{Hello!}", result);
 	}
 
+	public interface JMXWhiteboardByInterfaceMBean {
+
+		public static final String OBJECT_NAME =
+			"JMXWhiteboard:name=com.liferay.portal.jmx.JMXWhiteboardTest." +
+				"JMXWhiteboardByInterfaceMBean";
+
+		public String returnValue(String value);
+
+	}
+
 	@Inject
 	private static MBeanServer _mBeanServer;
 
 	private static ServiceRegistration<DynamicMBean> _serviceRegistration1;
 	private static ServiceRegistration<JMXWhiteboardByInterfaceMBean>
 		_serviceRegistration2;
+
+	private static class JMXWhiteboardByDynamicMBean
+		extends StandardMBean implements JMXWhiteboardByInterfaceMBean {
+
+		public static final String OBJECT_NAME =
+			"JMXWhiteboard:name=com.liferay.portal.jmx.JMXWhiteboardTest." +
+				"JMXWhiteboardByDynamicMBean";
+
+		public JMXWhiteboardByDynamicMBean() throws NotCompliantMBeanException {
+			super(JMXWhiteboardByInterfaceMBean.class);
+		}
+
+		@Override
+		public String returnValue(String value) {
+			return "{" + value + "}";
+		}
+
+	}
+
+	private static class JMXWhiteboardByInterface
+		implements JMXWhiteboardByInterfaceMBean {
+
+		@Override
+		public String returnValue(String value) {
+			return "{" + value + "}";
+		}
+
+	}
 
 }
