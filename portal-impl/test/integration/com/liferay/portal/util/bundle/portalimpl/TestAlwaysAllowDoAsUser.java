@@ -20,16 +20,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-
 /**
  * @author Peter Fellwock
  */
-@Component(
-	immediate = true, property = "service.ranking:Integer=" + Integer.MAX_VALUE,
-	service = AlwaysAllowDoAsUser.class
-)
 public class TestAlwaysAllowDoAsUser implements AlwaysAllowDoAsUser {
 
 	public static final String ACTION_NAME =
@@ -87,7 +80,6 @@ public class TestAlwaysAllowDoAsUser implements AlwaysAllowDoAsUser {
 		return strutsActions;
 	}
 
-	@Reference(target = "(test=AtomicState)")
 	protected void setAtomicBoolean(AtomicBoolean atomicBoolean) {
 		_atomicBoolean = atomicBoolean;
 	}
