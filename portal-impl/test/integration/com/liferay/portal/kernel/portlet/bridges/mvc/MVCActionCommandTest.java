@@ -37,6 +37,7 @@ import java.util.Map;
 
 import javax.portlet.ActionParameters;
 import javax.portlet.ActionRequest;
+import javax.portlet.ActionResponse;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
@@ -361,6 +362,56 @@ public class MVCActionCommandTest {
 
 		private final MockHttpServletRequest _mockHttpServletRequest =
 			new MockHttpServletRequest();
+
+	}
+
+	private static class TestMVCActionCommand1 implements MVCActionCommand {
+
+		public static final String TEST_MVC_ACTION_COMMAND_ATTRIBUTE =
+			"TEST_MVC_ACTION_COMMAND_ATTRIBUTE";
+
+		public static final String TEST_MVC_ACTION_COMMAND_NAME =
+			"TEST_MVC_ACTION_COMMAND_NAME";
+
+		@Override
+		public boolean processAction(
+			ActionRequest actionRequest, ActionResponse actionResponse) {
+
+			actionRequest.setAttribute(
+				TEST_MVC_ACTION_COMMAND_ATTRIBUTE,
+				TEST_MVC_ACTION_COMMAND_ATTRIBUTE);
+
+			return true;
+		}
+
+	}
+
+	private static class TestMVCActionCommand2 implements MVCActionCommand {
+
+		public static final String TEST_MVC_ACTION_COMMAND_ATTRIBUTE =
+			"TEST_MVC_ACTION_COMMAND_ATTRIBUTE";
+
+		public static final String TEST_MVC_ACTION_COMMAND_NAME =
+			"TEST_MVC_ACTION_COMMAND_NAME";
+
+		@Override
+		public boolean processAction(
+			ActionRequest actionRequest, ActionResponse actionResponse) {
+
+			actionRequest.setAttribute(
+				TEST_MVC_ACTION_COMMAND_ATTRIBUTE,
+				TEST_MVC_ACTION_COMMAND_ATTRIBUTE);
+
+			return true;
+		}
+
+	}
+
+	private static class TestPortlet extends MVCPortlet {
+
+		public static final String PORTLET_NAME =
+			"com_liferay_portal_kernel_portlet_bridges_mvc_" +
+				"MVCActionCommandTest_TestPortlet";
 
 	}
 
