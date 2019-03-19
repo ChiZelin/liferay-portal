@@ -19,20 +19,9 @@ import com.liferay.portal.kernel.security.permission.PermissionChecker;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-
 /**
  * @author Philip Jones
  */
-@Component(
-	immediate = true,
-	property = {
-		"model.class.name=PermissionServiceImplTest",
-		"service.ranking:Integer=" + Integer.MAX_VALUE
-	},
-	service = BaseModelPermissionChecker.class
-)
 public class TestBaseModelPermissionChecker
 	implements BaseModelPermissionChecker {
 
@@ -44,7 +33,6 @@ public class TestBaseModelPermissionChecker
 		_atomicBoolean.set(Boolean.TRUE);
 	}
 
-	@Reference(target = "(test=AtomicState)")
 	protected void setAtomicBoolean(AtomicBoolean atomicBoolean) {
 		_atomicBoolean = atomicBoolean;
 	}
