@@ -20,13 +20,11 @@ import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.service.PermissionService;
 import com.liferay.portal.kernel.service.PermissionServiceUtil;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
-import com.liferay.portal.util.test.AtomicState;
 import com.liferay.registry.Registry;
 import com.liferay.registry.RegistryUtil;
 import com.liferay.registry.ServiceRegistration;
 
 import java.util.HashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -47,8 +45,6 @@ public class PermissionServiceImplTest {
 
 	@BeforeClass
 	public static void setUpClass() {
-		_atomicState = new AtomicState();
-
 		Registry registry = RegistryUtil.getRegistry();
 
 		_serviceRegistration = registry.registerService(
@@ -64,8 +60,6 @@ public class PermissionServiceImplTest {
 
 	@AfterClass
 	public static void tearDownClass() {
-		_atomicState.close();
-
 		_serviceRegistration.unregister();
 	}
 
@@ -74,11 +68,9 @@ public class PermissionServiceImplTest {
 		PermissionService permissionService =
 			PermissionServiceUtil.getService();
 
-		_atomicState.reset();
-
 		permissionService.checkPermission(0, "PermissionServiceImplTest", 0);
 
-		Assert.assertTrue(_atomicState.isSet());
+		Assert.assertTrue(_called);
 	}
 
 	@Test
@@ -86,14 +78,12 @@ public class PermissionServiceImplTest {
 		PermissionService permissionService =
 			PermissionServiceUtil.getService();
 
-		_atomicState.reset();
-
 		permissionService.checkPermission(0, "PermissionServiceImplTest", null);
 
-		Assert.assertTrue(_atomicState.isSet());
+		Assert.assertTrue(_called);
 	}
 
-	private static AtomicState _atomicState;
+	private static boolean _called;
 	private static ServiceRegistration<BaseModelPermissionChecker>
 		_serviceRegistration;
 
@@ -105,14 +95,8 @@ public class PermissionServiceImplTest {
 			PermissionChecker permissionChecker, long groupId, long primaryKey,
 			String actionId) {
 
-			_atomicBoolean.set(Boolean.TRUE);
+			_called = true;
 		}
-
-		protected void setAtomicBoolean(AtomicBoolean atomicBoolean) {
-			_atomicBoolean = atomicBoolean;
-		}
-
-		private AtomicBoolean _atomicBoolean;
 
 	}
 
