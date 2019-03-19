@@ -16,12 +16,12 @@ package com.liferay.portlet.ratings.transformer;
 
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
 import com.liferay.portal.kernel.util.UnicodeProperties;
-import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portlet.PortletPreferencesImpl;
 import com.liferay.ratings.kernel.RatingsType;
 import com.liferay.ratings.kernel.model.RatingsEntry;
 import com.liferay.ratings.kernel.transformer.RatingsDataTransformer;
 import com.liferay.ratings.kernel.transformer.RatingsDataTransformerUtil;
+import com.liferay.registry.BasicRegistryImpl;
 import com.liferay.registry.Registry;
 import com.liferay.registry.RegistryUtil;
 import com.liferay.registry.ServiceRegistration;
@@ -33,8 +33,6 @@ import javax.portlet.PortletPreferences;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.ClassRule;
-import org.junit.Rule;
 import org.junit.Test;
 
 /**
@@ -42,13 +40,10 @@ import org.junit.Test;
  */
 public class RatingsDataTransformerUtilTest {
 
-	@ClassRule
-	@Rule
-	public static final LiferayIntegrationTestRule liferayIntegrationTestRule =
-		new LiferayIntegrationTestRule();
-
 	@BeforeClass
 	public static void setUpClass() {
+		RegistryUtil.setRegistry(new BasicRegistryImpl());
+
 		Registry registry = RegistryUtil.getRegistry();
 
 		_serviceRegistration = registry.registerService(
