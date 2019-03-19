@@ -22,7 +22,6 @@ import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
-import com.liferay.portal.util.test.AtomicState;
 import com.liferay.registry.Registry;
 import com.liferay.registry.RegistryUtil;
 import com.liferay.registry.ServiceRegistration;
@@ -33,7 +32,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
@@ -44,6 +42,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -61,8 +60,6 @@ public class WorkflowHandlerRegistryUtilTest {
 
 	@BeforeClass
 	public static void setUpClass() {
-		_atomicState = new AtomicState();
-
 		Registry registry = RegistryUtil.getRegistry();
 
 		_serviceRegistration = registry.registerService(
@@ -76,9 +73,12 @@ public class WorkflowHandlerRegistryUtilTest {
 
 	@AfterClass
 	public static void tearDownClass() {
-		_atomicState.close();
-
 		_serviceRegistration.unregister();
+	}
+
+	@Before
+	public void setUp() {
+		_called = false;
 	}
 
 	@Test
@@ -111,31 +111,27 @@ public class WorkflowHandlerRegistryUtilTest {
 
 	@Test
 	public void testStartWorkflowInstance1() throws PortalException {
-		_atomicState.reset();
-
 		ServiceContext serviceContext = new ServiceContext();
 
 		WorkflowHandlerRegistryUtil.startWorkflowInstance(
 			1, 1, 1, TestWorkflowHandler.class.getName(), 1, null,
 			serviceContext, new HashMap<String, Serializable>());
 
-		Assert.assertTrue(_atomicState.isSet());
+		Assert.assertTrue(_called);
 	}
 
 	@Test
 	public void testStartWorkflowInstance2() throws PortalException {
-		_atomicState.reset();
-
 		ServiceContext serviceContext = new ServiceContext();
 
 		WorkflowHandlerRegistryUtil.startWorkflowInstance(
 			1, 1, 1, TestWorkflowHandler.class.getName(), 1, null,
 			serviceContext);
 
-		Assert.assertTrue(_atomicState.isSet());
+		Assert.assertTrue(_called);
 	}
 
-	private static AtomicState _atomicState;
+	private static boolean _called;
 	private static ServiceRegistration<WorkflowHandler> _serviceRegistration;
 
 	private static class TestWorkflowHandler
@@ -153,7 +149,7 @@ public class WorkflowHandlerRegistryUtilTest {
 
 		@Override
 		public String getClassName() {
-			_atomicBoolean.set(Boolean.TRUE);
+			_called = true;
 
 			return TestWorkflowHandler.class.getName();
 		}
@@ -271,16 +267,10 @@ public class WorkflowHandlerRegistryUtilTest {
 		public Object updateStatus(
 			int status, Map<String, Serializable> workflowContext) {
 
-			_atomicBoolean.set(Boolean.TRUE);
+			_called = true;
 
 			return null;
 		}
-
-		protected void setAtomicBoolean(AtomicBoolean atomicBoolean) {
-			_atomicBoolean = atomicBoolean;
-		}
-
-		private AtomicBoolean _atomicBoolean;
 
 	}
 
