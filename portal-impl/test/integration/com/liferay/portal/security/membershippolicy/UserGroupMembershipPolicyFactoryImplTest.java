@@ -14,18 +14,22 @@
 
 package com.liferay.portal.security.membershippolicy;
 
+import com.liferay.portal.kernel.model.UserGroup;
 import com.liferay.portal.kernel.security.membershippolicy.UserGroupMembershipPolicy;
 import com.liferay.portal.kernel.security.membershippolicy.UserGroupMembershipPolicyFactory;
 import com.liferay.portal.kernel.security.membershippolicy.UserGroupMembershipPolicyFactoryUtil;
 import com.liferay.portal.kernel.security.membershippolicy.UserGroupMembershipPolicyUtil;
-import com.liferay.portal.security.membershippolicy.bundle.usergroupmembershippolicyfactoryimpl.TestUserGroupMembershipPolicy;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.util.test.AtomicState;
 import com.liferay.registry.Registry;
 import com.liferay.registry.RegistryUtil;
 import com.liferay.registry.ServiceRegistration;
 
+import java.io.Serializable;
+
 import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -160,5 +164,66 @@ public class UserGroupMembershipPolicyFactoryImplTest {
 	private static AtomicState _atomicState;
 	private static ServiceRegistration<UserGroupMembershipPolicy>
 		_serviceRegistration;
+
+	private static class TestUserGroupMembershipPolicy
+		implements UserGroupMembershipPolicy {
+
+		@Override
+		public void checkMembership(
+			long[] userIds, long[] addUserGroupIds, long[] removeUserGroupIds) {
+
+			_atomicBoolean.set(Boolean.TRUE);
+		}
+
+		@Override
+		public boolean isMembershipAllowed(long userId, long userGroupId) {
+			if (userId == 1) {
+				return true;
+			}
+
+			return false;
+		}
+
+		@Override
+		public boolean isMembershipRequired(long userId, long userGroupId) {
+			if (userId == 1) {
+				return true;
+			}
+
+			return false;
+		}
+
+		@Override
+		public void propagateMembership(
+			long[] userIds, long[] addUserGroupIds, long[] removeUserGroupIds) {
+
+			_atomicBoolean.set(Boolean.TRUE);
+		}
+
+		@Override
+		public void verifyPolicy() {
+			_atomicBoolean.set(Boolean.TRUE);
+		}
+
+		@Override
+		public void verifyPolicy(UserGroup userGroup) {
+			_atomicBoolean.set(Boolean.TRUE);
+		}
+
+		@Override
+		public void verifyPolicy(
+			UserGroup userGroup, UserGroup oldUserGroup,
+			Map<String, Serializable> oldExpandoAttributes) {
+
+			_atomicBoolean.set(Boolean.TRUE);
+		}
+
+		protected void setAtomicBoolean(AtomicBoolean atomicBoolean) {
+			_atomicBoolean = atomicBoolean;
+		}
+
+		private AtomicBoolean _atomicBoolean;
+
+	}
 
 }
