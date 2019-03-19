@@ -24,10 +24,6 @@ import com.liferay.portal.model.impl.PortletImpl;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.callback.MainServletTestCallback;
 import com.liferay.portal.util.test.AtomicState;
-import com.liferay.portlet.bundle.invokerfiltercontainerimpl.TestActionFilter;
-import com.liferay.portlet.bundle.invokerfiltercontainerimpl.TestEventFilter;
-import com.liferay.portlet.bundle.invokerfiltercontainerimpl.TestRenderFilter;
-import com.liferay.portlet.bundle.invokerfiltercontainerimpl.TestResourceFilter;
 import com.liferay.portlet.internal.InvokerFilterContainerImpl;
 import com.liferay.portlet.internal.PortletContextFactoryImpl;
 import com.liferay.registry.Registry;
@@ -36,11 +32,22 @@ import com.liferay.registry.ServiceRegistration;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+import javax.portlet.ActionRequest;
+import javax.portlet.ActionResponse;
+import javax.portlet.EventRequest;
+import javax.portlet.EventResponse;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
+import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
+import javax.portlet.ResourceRequest;
+import javax.portlet.ResourceResponse;
 import javax.portlet.filter.ActionFilter;
 import javax.portlet.filter.EventFilter;
+import javax.portlet.filter.FilterChain;
+import javax.portlet.filter.FilterConfig;
 import javax.portlet.filter.PortletFilter;
 import javax.portlet.filter.RenderFilter;
 import javax.portlet.filter.ResourceFilter;
@@ -256,5 +263,84 @@ public class InvokerFilterContainerImplTest {
 	private static ServiceRegistration<PortletFilter> _serviceRegistration2;
 	private static ServiceRegistration<PortletFilter> _serviceRegistration3;
 	private static ServiceRegistration<PortletFilter> _serviceRegistration4;
+
+	private static class TestActionFilter implements ActionFilter {
+
+		@Override
+		public void destroy() {
+		}
+
+		@Override
+		public void doFilter(
+			ActionRequest actionRequest, ActionResponse actionResponse,
+			FilterChain filterChain) {
+		}
+
+		@Override
+		public void init(FilterConfig filterConfig) {
+			_atomicBoolean.set(Boolean.TRUE);
+		}
+
+		protected void setAtomicBoolean(AtomicBoolean atomicBoolean) {
+			_atomicBoolean = atomicBoolean;
+		}
+
+		private AtomicBoolean _atomicBoolean;
+
+	}
+
+	private static class TestEventFilter implements EventFilter {
+
+		@Override
+		public void destroy() {
+		}
+
+		@Override
+		public void doFilter(
+			EventRequest eventRequest, EventResponse eventResponse,
+			FilterChain filterChain) {
+		}
+
+		@Override
+		public void init(FilterConfig filterConfig) {
+		}
+
+	}
+
+	private static class TestRenderFilter implements RenderFilter {
+
+		@Override
+		public void destroy() {
+		}
+
+		@Override
+		public void doFilter(
+			RenderRequest renderRequest, RenderResponse renderResponse,
+			FilterChain filterChain) {
+		}
+
+		@Override
+		public void init(FilterConfig filterConfig) {
+		}
+
+	}
+
+	private static class TestResourceFilter implements ResourceFilter {
+
+		@Override
+		public void destroy() {
+		}
+
+		@Override
+		public void doFilter(
+			ResourceRequest resourceRequest, ResourceResponse resourceResponse,
+			FilterChain filterChain) {
+		}
+
+		@Override
+		public void init(FilterConfig filterConfig) {
+		}
+
+	}
 
 }
