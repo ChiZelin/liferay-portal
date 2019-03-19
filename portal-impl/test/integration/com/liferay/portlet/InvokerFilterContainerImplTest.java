@@ -19,11 +19,9 @@ import com.liferay.portal.kernel.model.Portlet;
 import com.liferay.portal.kernel.portlet.PortletContextFactory;
 import com.liferay.portal.kernel.portlet.PortletContextFactoryUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
-import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.model.impl.PortletAppImpl;
 import com.liferay.portal.model.impl.PortletImpl;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
-import com.liferay.portal.test.rule.SyntheticBundleRule;
 import com.liferay.portal.test.rule.callback.MainServletTestCallback;
 import com.liferay.portal.util.test.AtomicState;
 import com.liferay.portlet.bundle.invokerfiltercontainerimpl.TestActionFilter;
@@ -32,13 +30,18 @@ import com.liferay.portlet.bundle.invokerfiltercontainerimpl.TestRenderFilter;
 import com.liferay.portlet.bundle.invokerfiltercontainerimpl.TestResourceFilter;
 import com.liferay.portlet.internal.InvokerFilterContainerImpl;
 import com.liferay.portlet.internal.PortletContextFactoryImpl;
+import com.liferay.registry.Registry;
+import com.liferay.registry.RegistryUtil;
+import com.liferay.registry.ServiceRegistration;
 
+import java.util.HashMap;
 import java.util.List;
 
 import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
 import javax.portlet.filter.ActionFilter;
 import javax.portlet.filter.EventFilter;
+import javax.portlet.filter.PortletFilter;
 import javax.portlet.filter.RenderFilter;
 import javax.portlet.filter.ResourceFilter;
 
@@ -59,14 +62,54 @@ public class InvokerFilterContainerImplTest {
 
 	@ClassRule
 	@Rule
-	public static final AggregateTestRule aggregateTestRule =
-		new AggregateTestRule(
-			new LiferayIntegrationTestRule(),
-			new SyntheticBundleRule("bundle.invokerfiltercontainerimpl"));
+	public static final LiferayIntegrationTestRule liferayIntegrationTestRule =
+		new LiferayIntegrationTestRule();
 
 	@BeforeClass
 	public static void setUpClass() {
 		_atomicState = new AtomicState();
+
+		Registry registry = RegistryUtil.getRegistry();
+
+		_serviceRegistration1 = registry.registerService(
+			PortletFilter.class, new TestActionFilter(),
+			new HashMap<String, Object>() {
+				{
+					put("javax.portlet.name", "InvokerFilterContainerImplTest");
+					put("preinitialized.filter", "false");
+					put("service.ranking", Integer.MAX_VALUE);
+				}
+			});
+
+		_serviceRegistration2 = registry.registerService(
+			PortletFilter.class, new TestEventFilter(),
+			new HashMap<String, Object>() {
+				{
+					put("javax.portlet.name", "InvokerFilterContainerImplTest");
+					put("preinitialized.filter", "true");
+					put("service.ranking", Integer.MAX_VALUE);
+				}
+			});
+
+		_serviceRegistration3 = registry.registerService(
+			PortletFilter.class, new TestRenderFilter(),
+			new HashMap<String, Object>() {
+				{
+					put("javax.portlet.name", "InvokerFilterContainerImplTest");
+					put("preinitialized.filter", "true");
+					put("service.ranking", Integer.MAX_VALUE);
+				}
+			});
+
+		_serviceRegistration4 = registry.registerService(
+			PortletFilter.class, new TestResourceFilter(),
+			new HashMap<String, Object>() {
+				{
+					put("javax.portlet.name", "InvokerFilterContainerImplTest");
+					put("preinitialized.filter", "true");
+					put("service.ranking", Integer.MAX_VALUE);
+				}
+			});
 
 		PortletContextFactory portletContextFactory =
 			new PortletContextFactoryImpl();
@@ -107,6 +150,11 @@ public class InvokerFilterContainerImplTest {
 	@AfterClass
 	public static void tearDownClass() {
 		_atomicState.close();
+
+		_serviceRegistration1.unregister();
+		_serviceRegistration2.unregister();
+		_serviceRegistration3.unregister();
+		_serviceRegistration4.unregister();
 	}
 
 	@Test
@@ -204,5 +252,9 @@ public class InvokerFilterContainerImplTest {
 
 	private static AtomicState _atomicState;
 	private static InvokerFilterContainerImpl _invokerFilterContainerImpl;
+	private static ServiceRegistration<PortletFilter> _serviceRegistration1;
+	private static ServiceRegistration<PortletFilter> _serviceRegistration2;
+	private static ServiceRegistration<PortletFilter> _serviceRegistration3;
+	private static ServiceRegistration<PortletFilter> _serviceRegistration4;
 
 }

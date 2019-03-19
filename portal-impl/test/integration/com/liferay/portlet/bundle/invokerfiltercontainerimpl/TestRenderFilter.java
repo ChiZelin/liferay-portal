@@ -18,24 +18,12 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.filter.FilterChain;
 import javax.portlet.filter.FilterConfig;
-import javax.portlet.filter.PortletFilter;
 import javax.portlet.filter.RenderFilter;
-
-import org.osgi.service.component.annotations.Component;
 
 /**
  * @author Philip Jones
  * @author Peter Fellwock
  */
-@Component(
-	immediate = true,
-	property = {
-		"javax.portlet.name=InvokerFilterContainerImplTest",
-		"preinitialized.filter=true",
-		"service.ranking:Integer=" + Integer.MAX_VALUE
-	},
-	service = PortletFilter.class
-)
 public class TestRenderFilter implements RenderFilter {
 
 	@Override

@@ -21,24 +21,11 @@ import javax.portlet.ActionResponse;
 import javax.portlet.filter.ActionFilter;
 import javax.portlet.filter.FilterChain;
 import javax.portlet.filter.FilterConfig;
-import javax.portlet.filter.PortletFilter;
-
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Philip Jones
  * @author Peter Fellwock
  */
-@Component(
-	immediate = true,
-	property = {
-		"javax.portlet.name=InvokerFilterContainerImplTest",
-		"preinitialized.filter=false",
-		"service.ranking:Integer=" + Integer.MAX_VALUE
-	},
-	service = PortletFilter.class
-)
 public class TestActionFilter implements ActionFilter {
 
 	@Override
@@ -56,7 +43,6 @@ public class TestActionFilter implements ActionFilter {
 		_atomicBoolean.set(Boolean.TRUE);
 	}
 
-	@Reference(target = "(test=AtomicState)")
 	protected void setAtomicBoolean(AtomicBoolean atomicBoolean) {
 		_atomicBoolean = atomicBoolean;
 	}

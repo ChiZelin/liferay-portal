@@ -19,23 +19,11 @@ import javax.portlet.EventResponse;
 import javax.portlet.filter.EventFilter;
 import javax.portlet.filter.FilterChain;
 import javax.portlet.filter.FilterConfig;
-import javax.portlet.filter.PortletFilter;
-
-import org.osgi.service.component.annotations.Component;
 
 /**
  * @author Philip Jones
  * @author Peter Fellwock
  */
-@Component(
-	immediate = true,
-	property = {
-		"javax.portlet.name=InvokerFilterContainerImplTest",
-		"preinitialized.filter=true",
-		"service.ranking:Integer=" + Integer.MAX_VALUE
-	},
-	service = PortletFilter.class
-)
 public class TestEventFilter implements EventFilter {
 
 	@Override
