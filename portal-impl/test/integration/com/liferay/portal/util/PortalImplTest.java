@@ -23,7 +23,6 @@ import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.upload.LiferayServletRequest;
 import com.liferay.portal.upload.UploadServletRequestImpl;
-import com.liferay.portal.util.bundle.portalimpl.TestAlwaysAllowDoAsUser;
 import com.liferay.portal.util.test.AtomicState;
 import com.liferay.portal.util.test.PortletContainerTestUtil;
 import com.liferay.registry.Registry;
@@ -32,7 +31,10 @@ import com.liferay.registry.ServiceRegistration;
 
 import java.io.InputStream;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
@@ -253,6 +255,72 @@ public class PortalImplTest {
 
 			super(request);
 		}
+
+	}
+
+	private static class TestAlwaysAllowDoAsUser
+		implements AlwaysAllowDoAsUser {
+
+		public static final String ACTION_NAME =
+			"/TestAlwaysAllowDoAsUser/action/name";
+
+		public static final String MVC_RENDER_COMMMAND_NAME =
+			"/TestAlwaysAllowDoAsUser/mvc/render/command/name";
+
+		public static final String PATH = "/TestAlwaysAllowDoAsUser/";
+
+		public static final String STRUTS_ACTION =
+			"/TestAlwaysAllowDoAsUser/struts/action";
+
+		@Override
+		public Collection<String> getActionNames() {
+			_atomicBoolean.set(Boolean.TRUE);
+
+			Collection<String> actionNames = new ArrayList<>();
+
+			actionNames.add(ACTION_NAME);
+
+			return actionNames;
+		}
+
+		@Override
+		public Collection<String> getMVCRenderCommandNames() {
+			_atomicBoolean.set(Boolean.TRUE);
+
+			Collection<String> mvcRenderCommandNames = new ArrayList<>();
+
+			mvcRenderCommandNames.add(MVC_RENDER_COMMMAND_NAME);
+
+			return mvcRenderCommandNames;
+		}
+
+		@Override
+		public Collection<String> getPaths() {
+			_atomicBoolean.set(Boolean.TRUE);
+
+			Collection<String> paths = new ArrayList<>();
+
+			paths.add(PATH);
+
+			return paths;
+		}
+
+		@Override
+		public Collection<String> getStrutsActions() {
+			_atomicBoolean.set(Boolean.TRUE);
+
+			Collection<String> strutsActions = new ArrayList<>();
+
+			strutsActions.add(STRUTS_ACTION);
+
+			return strutsActions;
+		}
+
+		protected void setAtomicBoolean(AtomicBoolean atomicBoolean) {
+			_atomicBoolean = atomicBoolean;
+		}
+
+		private AtomicBoolean _atomicBoolean;
 
 	}
 
