@@ -16,9 +16,9 @@ package com.liferay.portal.service.impl;
 
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.security.permission.BaseModelPermissionChecker;
+import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.service.PermissionService;
 import com.liferay.portal.kernel.service.PermissionServiceUtil;
-import com.liferay.portal.service.impl.bundle.permissionserviceimpl.TestBaseModelPermissionChecker;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.util.test.AtomicState;
 import com.liferay.registry.Registry;
@@ -26,6 +26,7 @@ import com.liferay.registry.RegistryUtil;
 import com.liferay.registry.ServiceRegistration;
 
 import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -95,5 +96,24 @@ public class PermissionServiceImplTest {
 	private static AtomicState _atomicState;
 	private static ServiceRegistration<BaseModelPermissionChecker>
 		_serviceRegistration;
+
+	private static class TestBaseModelPermissionChecker
+		implements BaseModelPermissionChecker {
+
+		@Override
+		public void checkBaseModel(
+			PermissionChecker permissionChecker, long groupId, long primaryKey,
+			String actionId) {
+
+			_atomicBoolean.set(Boolean.TRUE);
+		}
+
+		protected void setAtomicBoolean(AtomicBoolean atomicBoolean) {
+			_atomicBoolean = atomicBoolean;
+		}
+
+		private AtomicBoolean _atomicBoolean;
+
+	}
 
 }
