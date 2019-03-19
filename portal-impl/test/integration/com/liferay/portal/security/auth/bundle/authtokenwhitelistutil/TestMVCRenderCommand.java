@@ -20,21 +20,9 @@ import com.liferay.portal.kernel.util.PortletKeys;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
-import org.osgi.service.component.annotations.Component;
-
 /**
  * @author Tomas Polesovsky
  */
-@Component(
-	immediate = true,
-	property = {
-		"javax.portlet.name=" + TestMVCRenderCommand.TEST_PORTLET_ID,
-		"mvc.command.name=" + TestMVCRenderCommand.TEST_MVC_COMMAND_NAME,
-		"portlet.add.default.resource.check.whitelist.mvc.action=1",
-		"service.ranking:Integer=" + Integer.MAX_VALUE
-	},
-	service = MVCRenderCommand.class
-)
 public class TestMVCRenderCommand implements MVCRenderCommand {
 
 	public static final String TEST_MVC_COMMAND_NAME =

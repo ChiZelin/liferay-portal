@@ -17,11 +17,14 @@ package com.liferay.portal.security.auth;
 import com.liferay.portal.kernel.model.Portlet;
 import com.liferay.portal.kernel.portlet.LiferayPortletURL;
 import com.liferay.portal.kernel.portlet.PortletURLFactoryUtil;
+import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
+import com.liferay.portal.kernel.portlet.bridges.mvc.MVCRenderCommand;
+import com.liferay.portal.kernel.portlet.bridges.mvc.MVCResourceCommand;
 import com.liferay.portal.kernel.security.auth.AuthTokenWhitelistUtil;
 import com.liferay.portal.kernel.service.PortletLocalServiceUtil;
-import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.PortalUtil;
+import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.security.auth.bundle.authtokenwhitelistutil.TestAuthTokenIgnoreActions;
 import com.liferay.portal.security.auth.bundle.authtokenwhitelistutil.TestAuthTokenIgnoreOrigins;
@@ -32,15 +35,20 @@ import com.liferay.portal.security.auth.bundle.authtokenwhitelistutil.TestMVCRes
 import com.liferay.portal.security.auth.bundle.authtokenwhitelistutil.TestPortalAddDefaultResourceCheckWhitelist;
 import com.liferay.portal.security.auth.bundle.authtokenwhitelistutil.TestPortalAddDefaultResourceCheckWhitelistActions;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
-import com.liferay.portal.test.rule.SyntheticBundleRule;
 import com.liferay.portal.util.PropsValues;
+import com.liferay.registry.Registry;
+import com.liferay.registry.RegistryUtil;
+import com.liferay.registry.ServiceRegistration;
 
+import java.util.HashMap;
 import java.util.Set;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.PortletRequest;
 
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -55,10 +63,142 @@ public class AuthTokenWhitelistUtilTest {
 
 	@ClassRule
 	@Rule
-	public static final AggregateTestRule aggregateTestRule =
-		new AggregateTestRule(
-			new LiferayIntegrationTestRule(),
-			new SyntheticBundleRule("bundle.authtokenwhitelistutil"));
+	public static final LiferayIntegrationTestRule liferayIntegrationTestRule =
+		new LiferayIntegrationTestRule();
+
+	@BeforeClass
+	public static void setUpClass() {
+		Registry registry = RegistryUtil.getRegistry();
+
+		_serviceRegistration1 = registry.registerService(
+			Object.class, new TestAuthTokenIgnoreActions(),
+			new HashMap<String, Object>() {
+				{
+					put(
+						PropsKeys.AUTH_TOKEN_IGNORE_ACTIONS,
+						TestAuthTokenIgnoreActions.
+							TEST_AUTH_TOKEN_IGNORE_ACTION_URL);
+					put("service.ranking", Integer.MAX_VALUE);
+				}
+			});
+
+		_serviceRegistration2 = registry.registerService(
+			Object.class, new TestAuthTokenIgnoreOrigins(),
+			new HashMap<String, Object>() {
+				{
+					put(
+						PropsKeys.AUTH_TOKEN_IGNORE_ORIGINS,
+						TestAuthTokenIgnoreOrigins.
+							TEST_AUTH_TOKEN_IGNORE_ORIGINS_URL);
+					put("service.ranking", Integer.MAX_VALUE);
+				}
+			});
+
+		_serviceRegistration3 = registry.registerService(
+			Object.class, new TestAuthTokenIgnorePortlets(),
+			new HashMap<String, Object>() {
+				{
+					put(
+						PropsKeys.AUTH_TOKEN_IGNORE_PORTLETS,
+						TestAuthTokenIgnorePortlets.
+							TEST_AUTH_TOKEN_IGNORE_PORTLETS_URL);
+					put("service.ranking", Integer.MAX_VALUE);
+				}
+			});
+
+		_serviceRegistration4 = registry.registerService(
+			MVCActionCommand.class, new TestMVCActionCommand(),
+			new HashMap<String, Object>() {
+				{
+					put("auth.token.ignore.mvc.action", "1");
+					put(
+						"javax.portlet.name",
+						TestMVCActionCommand.TEST_PORTLET_ID);
+					put(
+						"mvc.command.name",
+						TestMVCActionCommand.TEST_MVC_COMMAND_NAME);
+					put(
+						"portlet.add.default.resource.check.whitelist.mvc." +
+							"action",
+						"1");
+					put("service.ranking", Integer.MAX_VALUE);
+				}
+			});
+
+		_serviceRegistration5 = registry.registerService(
+			MVCRenderCommand.class, new TestMVCRenderCommand(),
+			new HashMap<String, Object>() {
+				{
+					put(
+						"javax.portlet.name",
+						TestMVCRenderCommand.TEST_PORTLET_ID);
+					put(
+						"mvc.command.name",
+						TestMVCRenderCommand.TEST_MVC_COMMAND_NAME);
+					put(
+						"portlet.add.default.resource.check.whitelist.mvc." +
+							"action",
+						"1");
+					put("service.ranking", Integer.MAX_VALUE);
+				}
+			});
+
+		_serviceRegistration6 = registry.registerService(
+			MVCResourceCommand.class, new TestMVCResourceCommand(),
+			new HashMap<String, Object>() {
+				{
+					put(
+						"javax.portlet.name",
+						TestMVCResourceCommand.TEST_PORTLET_ID);
+					put(
+						"mvc.command.name",
+						TestMVCResourceCommand.TEST_MVC_COMMAND_NAME);
+					put(
+						"portlet.add.default.resource.check.whitelist.mvc." +
+							"action",
+						"1");
+					put("service.ranking", Integer.MAX_VALUE);
+				}
+			});
+
+		_serviceRegistration7 = registry.registerService(
+			Object.class, new TestPortalAddDefaultResourceCheckWhitelist(),
+			new HashMap<String, Object>() {
+				{
+					put(
+						PropsKeys.PORTLET_ADD_DEFAULT_RESOURCE_CHECK_WHITELIST,
+						TestPortalAddDefaultResourceCheckWhitelist.
+							TEST_PORTLET_ADD_DEFAULT_RESOURCE_CHECK_WHITELIST_URL);
+					put("service.ranking", Integer.MAX_VALUE);
+				}
+			});
+
+		_serviceRegistration8 = registry.registerService(
+			Object.class,
+			new TestPortalAddDefaultResourceCheckWhitelistActions(),
+			new HashMap<String, Object>() {
+				{
+					put(
+						PropsKeys.
+							PORTLET_ADD_DEFAULT_RESOURCE_CHECK_WHITELIST_ACTIONS,
+						TestPortalAddDefaultResourceCheckWhitelistActions.
+							TEST_PORTLET_ADD_DEFAULT_RESOURCE_CHECK_WHITELIST_ACTIONS_URL);
+					put("service.ranking", Integer.MAX_VALUE);
+				}
+			});
+	}
+
+	@AfterClass
+	public static void tearDownClass() {
+		_serviceRegistration1.unregister();
+		_serviceRegistration2.unregister();
+		_serviceRegistration3.unregister();
+		_serviceRegistration4.unregister();
+		_serviceRegistration5.unregister();
+		_serviceRegistration6.unregister();
+		_serviceRegistration7.unregister();
+		_serviceRegistration8.unregister();
+	}
 
 	/**
 	 * @deprecated As of Wilberforce (7.0.x)
@@ -376,5 +516,15 @@ public class AuthTokenWhitelistUtilTest {
 			AuthTokenWhitelistUtil.isPortletURLPortletInvocationWhitelisted(
 				liferayPortletURL));
 	}
+
+	private static ServiceRegistration<Object> _serviceRegistration1;
+	private static ServiceRegistration<Object> _serviceRegistration2;
+	private static ServiceRegistration<Object> _serviceRegistration3;
+	private static ServiceRegistration<MVCActionCommand> _serviceRegistration4;
+	private static ServiceRegistration<MVCRenderCommand> _serviceRegistration5;
+	private static ServiceRegistration<MVCResourceCommand>
+		_serviceRegistration6;
+	private static ServiceRegistration<Object> _serviceRegistration7;
+	private static ServiceRegistration<Object> _serviceRegistration8;
 
 }

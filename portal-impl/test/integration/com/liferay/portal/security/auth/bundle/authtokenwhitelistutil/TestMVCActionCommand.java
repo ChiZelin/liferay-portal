@@ -20,22 +20,9 @@ import com.liferay.portal.kernel.util.PortletKeys;
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 
-import org.osgi.service.component.annotations.Component;
-
 /**
  * @author Tomas Polesovsky
  */
-@Component(
-	immediate = true,
-	property = {
-		"auth.token.ignore.mvc.action=1",
-		"javax.portlet.name=" + TestMVCActionCommand.TEST_PORTLET_ID,
-		"mvc.command.name=" + TestMVCActionCommand.TEST_MVC_COMMAND_NAME,
-		"portlet.add.default.resource.check.whitelist.mvc.action=1",
-		"service.ranking:Integer=" + Integer.MAX_VALUE
-	},
-	service = MVCActionCommand.class
-)
 public class TestMVCActionCommand implements MVCActionCommand {
 
 	public static final String TEST_MVC_COMMAND_NAME =
