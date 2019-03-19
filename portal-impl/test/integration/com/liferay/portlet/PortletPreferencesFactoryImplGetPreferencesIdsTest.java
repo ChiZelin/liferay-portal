@@ -18,6 +18,7 @@ import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.PortletPreferencesIds;
 import com.liferay.portal.kernel.portlet.PortletPreferencesFactoryUtil;
+import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
 import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
 import com.liferay.portal.kernel.test.util.GroupTestUtil;
@@ -27,11 +28,6 @@ import com.liferay.portal.kernel.util.PortletKeys;
 import com.liferay.portal.service.test.ServiceTestUtil;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.util.test.LayoutTestUtil;
-import com.liferay.portlet.bundle.portletpreferencesfactoryimplgetpreferencesids.TestCompanyPortlet;
-import com.liferay.portlet.bundle.portletpreferencesfactoryimplgetpreferencesids.TestGroupLayoutPortlet;
-import com.liferay.portlet.bundle.portletpreferencesfactoryimplgetpreferencesids.TestGroupPortlet;
-import com.liferay.portlet.bundle.portletpreferencesfactoryimplgetpreferencesids.TestUserLayoutPortlet;
-import com.liferay.portlet.bundle.portletpreferencesfactoryimplgetpreferencesids.TestUserPortlet;
 import com.liferay.registry.Registry;
 import com.liferay.registry.RegistryUtil;
 import com.liferay.registry.ServiceRegistration;
@@ -311,5 +307,45 @@ public class PortletPreferencesFactoryImplGetPreferencesIdsTest {
 	private Group _group;
 
 	private Layout _layout;
+
+	private static class TestCompanyPortlet extends MVCPortlet {
+
+		public static final String PORTLET_NAME =
+			"com_liferay_portlet_PortletPreferencesFactoryImplGet" +
+				"PreferencesIdsTest_TestCompanyPortlet";
+
+	}
+
+	private static class TestGroupLayoutPortlet extends MVCPortlet {
+
+		public static final String PORTLET_NAME =
+			"com_liferay_portlet_PortletPreferencesFactoryImplGet" +
+				"PreferencesIdsTest_TestGroupLayoutPortlet";
+
+	}
+
+	private static class TestGroupPortlet extends MVCPortlet {
+
+		public static final String PORTLET_NAME =
+			"com_liferay_portlet_PortletPreferencesFactoryImplGet" +
+				"PreferencesIdsTest_TestGroupPortlet";
+
+	}
+
+	private static class TestUserLayoutPortlet extends MVCPortlet {
+
+		public static final String PORTLET_NAME =
+			"com_liferay_portlet_PortletPreferencesFactoryImplGet" +
+				"PreferencesIdsTest_TestUserLayoutPortlet";
+
+	}
+
+	private static class TestUserPortlet extends MVCPortlet {
+
+		public static final String PORTLET_NAME =
+			"com_liferay_portlet_PortletPreferencesFactoryImplGet" +
+				"PreferencesIdsTest_TestUserPortlet";
+
+	}
 
 }
