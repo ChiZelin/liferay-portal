@@ -29,16 +29,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-
 /**
  * @author Peter Fellwock
  */
-@Component(
-	immediate = true, property = "service.ranking:Integer=" + Integer.MAX_VALUE,
-	service = SiteMembershipPolicy.class
-)
 public class TestSiteMembershipPolicy implements SiteMembershipPolicy {
 
 	@Override
@@ -163,7 +156,6 @@ public class TestSiteMembershipPolicy implements SiteMembershipPolicy {
 		_atomicBoolean.set(Boolean.TRUE);
 	}
 
-	@Reference(target = "(test=AtomicState)")
 	protected void setAtomicBoolean(AtomicBoolean atomicBoolean) {
 		_atomicBoolean = atomicBoolean;
 	}

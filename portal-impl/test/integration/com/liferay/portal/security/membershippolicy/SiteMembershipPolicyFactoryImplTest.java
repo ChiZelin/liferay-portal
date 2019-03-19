@@ -21,14 +21,15 @@ import com.liferay.portal.kernel.security.membershippolicy.SiteMembershipPolicy;
 import com.liferay.portal.kernel.security.membershippolicy.SiteMembershipPolicyFactory;
 import com.liferay.portal.kernel.security.membershippolicy.SiteMembershipPolicyFactoryUtil;
 import com.liferay.portal.kernel.security.membershippolicy.SiteMembershipPolicyUtil;
-import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.model.impl.RoleImpl;
 import com.liferay.portal.security.membershippolicy.bundle.sitemembershippolicyfactoryimpl.TestGroup;
 import com.liferay.portal.security.membershippolicy.bundle.sitemembershippolicyfactoryimpl.TestSiteMembershipPolicy;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
-import com.liferay.portal.test.rule.SyntheticBundleRule;
 import com.liferay.portal.util.test.AtomicState;
+import com.liferay.registry.Registry;
+import com.liferay.registry.RegistryUtil;
+import com.liferay.registry.ServiceRegistration;
 
 import java.io.Serializable;
 
@@ -49,19 +50,29 @@ public class SiteMembershipPolicyFactoryImplTest {
 
 	@ClassRule
 	@Rule
-	public static final AggregateTestRule aggregateTestRule =
-		new AggregateTestRule(
-			new LiferayIntegrationTestRule(),
-			new SyntheticBundleRule("bundle.sitemembershippolicyfactoryimpl"));
+	public static final LiferayIntegrationTestRule liferayIntegrationTestRule =
+		new LiferayIntegrationTestRule();
 
 	@BeforeClass
 	public static void setUpClass() {
 		_atomicState = new AtomicState();
+
+		Registry registry = RegistryUtil.getRegistry();
+
+		_serviceRegistration = registry.registerService(
+			SiteMembershipPolicy.class, new TestSiteMembershipPolicy(),
+			new HashMap<String, Object>() {
+				{
+					put("service.ranking", Integer.MAX_VALUE);
+				}
+			});
 	}
 
 	@AfterClass
 	public static void tearDownClass() {
 		_atomicState.close();
+
+		_serviceRegistration.unregister();
 	}
 
 	@Test
@@ -220,5 +231,7 @@ public class SiteMembershipPolicyFactoryImplTest {
 	}
 
 	private static AtomicState _atomicState;
+	private static ServiceRegistration<SiteMembershipPolicy>
+		_serviceRegistration;
 
 }
