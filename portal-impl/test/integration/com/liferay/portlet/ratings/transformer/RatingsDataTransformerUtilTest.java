@@ -14,11 +14,13 @@
 
 package com.liferay.portlet.ratings.transformer;
 
+import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
 import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.util.test.AtomicState;
 import com.liferay.portlet.PortletPreferencesImpl;
-import com.liferay.portlet.ratings.transformer.bundle.ratingsdatatransformerutil.TestRatingsDataTransformer;
+import com.liferay.ratings.kernel.RatingsType;
+import com.liferay.ratings.kernel.model.RatingsEntry;
 import com.liferay.ratings.kernel.transformer.RatingsDataTransformer;
 import com.liferay.ratings.kernel.transformer.RatingsDataTransformerUtil;
 import com.liferay.registry.Registry;
@@ -26,6 +28,7 @@ import com.liferay.registry.RegistryUtil;
 import com.liferay.registry.ServiceRegistration;
 
 import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.portlet.PortletPreferences;
 
@@ -175,5 +178,26 @@ public class RatingsDataTransformerUtilTest {
 	private static AtomicState _atomicState;
 	private static ServiceRegistration<RatingsDataTransformer>
 		_serviceRegistration;
+
+	private static class TestRatingsDataTransformer
+		implements RatingsDataTransformer {
+
+		@Override
+		public ActionableDynamicQuery.PerformActionMethod<RatingsEntry>
+			transformRatingsData(
+				RatingsType fromRatingsType, RatingsType toRatingsType) {
+
+			_atomicBoolean.set(Boolean.TRUE);
+
+			return null;
+		}
+
+		protected void setAtomicBoolean(AtomicBoolean atomicBoolean) {
+			_atomicBoolean = atomicBoolean;
+		}
+
+		private AtomicBoolean _atomicBoolean;
+
+	}
 
 }
