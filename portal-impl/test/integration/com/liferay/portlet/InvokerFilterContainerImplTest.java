@@ -23,7 +23,6 @@ import com.liferay.portal.model.impl.PortletAppImpl;
 import com.liferay.portal.model.impl.PortletImpl;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.callback.MainServletTestCallback;
-import com.liferay.portal.util.test.AtomicState;
 import com.liferay.portlet.internal.InvokerFilterContainerImpl;
 import com.liferay.portlet.internal.PortletContextFactoryImpl;
 import com.liferay.registry.Registry;
@@ -32,7 +31,6 @@ import com.liferay.registry.ServiceRegistration;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -74,8 +72,6 @@ public class InvokerFilterContainerImplTest {
 
 	@BeforeClass
 	public static void setUpClass() {
-		_atomicState = new AtomicState();
-
 		Registry registry = RegistryUtil.getRegistry();
 
 		_serviceRegistration1 = registry.registerService(
@@ -156,8 +152,6 @@ public class InvokerFilterContainerImplTest {
 
 	@AfterClass
 	public static void tearDownClass() {
-		_atomicState.close();
-
 		_serviceRegistration1.unregister();
 		_serviceRegistration2.unregister();
 		_serviceRegistration3.unregister();
@@ -254,10 +248,10 @@ public class InvokerFilterContainerImplTest {
 
 	@Test
 	public void testInit() {
-		Assert.assertTrue(_atomicState.isSet());
+		Assert.assertTrue(_called);
 	}
 
-	private static AtomicState _atomicState;
+	private static boolean _called;
 	private static InvokerFilterContainerImpl _invokerFilterContainerImpl;
 	private static ServiceRegistration<PortletFilter> _serviceRegistration1;
 	private static ServiceRegistration<PortletFilter> _serviceRegistration2;
@@ -278,14 +272,8 @@ public class InvokerFilterContainerImplTest {
 
 		@Override
 		public void init(FilterConfig filterConfig) {
-			_atomicBoolean.set(Boolean.TRUE);
+			_called = true;
 		}
-
-		protected void setAtomicBoolean(AtomicBoolean atomicBoolean) {
-			_atomicBoolean = atomicBoolean;
-		}
-
-		private AtomicBoolean _atomicBoolean;
 
 	}
 
