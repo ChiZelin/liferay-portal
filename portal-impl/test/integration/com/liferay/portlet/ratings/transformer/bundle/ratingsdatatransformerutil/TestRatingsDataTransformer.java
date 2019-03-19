@@ -21,16 +21,9 @@ import com.liferay.ratings.kernel.transformer.RatingsDataTransformer;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-
 /**
  * @author Peter Fellwock
  */
-@Component(
-	immediate = true, property = "service.ranking:Integer=" + Integer.MAX_VALUE,
-	service = RatingsDataTransformer.class
-)
 public class TestRatingsDataTransformer implements RatingsDataTransformer {
 
 	@Override
@@ -42,7 +35,6 @@ public class TestRatingsDataTransformer implements RatingsDataTransformer {
 		return null;
 	}
 
-	@Reference(target = "(test=AtomicState)")
 	protected void setAtomicBoolean(AtomicBoolean atomicBoolean) {
 		_atomicBoolean = atomicBoolean;
 	}
