@@ -35,16 +35,9 @@ import javax.portlet.PortletURL;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-
 /**
  * @author Peter Fellwock
  */
-@Component(
-	immediate = true, property = "service.ranking:Integer=" + Integer.MAX_VALUE,
-	service = WorkflowHandler.class
-)
 public class TestWorkflowHandler implements WorkflowHandler<Object> {
 
 	@Override
@@ -182,7 +175,6 @@ public class TestWorkflowHandler implements WorkflowHandler<Object> {
 		return null;
 	}
 
-	@Reference(target = "(test=AtomicState)")
 	protected void setAtomicBoolean(AtomicBoolean atomicBoolean) {
 		_atomicBoolean = atomicBoolean;
 	}
