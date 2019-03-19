@@ -17,7 +17,6 @@ package com.liferay.portlet.ratings.transformer;
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
 import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
-import com.liferay.portal.util.test.AtomicState;
 import com.liferay.portlet.PortletPreferencesImpl;
 import com.liferay.ratings.kernel.RatingsType;
 import com.liferay.ratings.kernel.model.RatingsEntry;
@@ -28,7 +27,6 @@ import com.liferay.registry.RegistryUtil;
 import com.liferay.registry.ServiceRegistration;
 
 import java.util.HashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.portlet.PortletPreferences;
 
@@ -51,8 +49,6 @@ public class RatingsDataTransformerUtilTest {
 
 	@BeforeClass
 	public static void setUpClass() {
-		_atomicState = new AtomicState();
-
 		Registry registry = RegistryUtil.getRegistry();
 
 		_serviceRegistration = registry.registerService(
@@ -66,15 +62,11 @@ public class RatingsDataTransformerUtilTest {
 
 	@AfterClass
 	public static void tearDownClass() {
-		_atomicState.close();
-
 		_serviceRegistration.unregister();
 	}
 
 	@Test
 	public void testTransformCompanyRatingsData() throws Exception {
-		_atomicState.reset();
-
 		PortletPreferences oldPortletPreferences = new PortletPreferencesImpl();
 
 		oldPortletPreferences.setValue(
@@ -120,13 +112,11 @@ public class RatingsDataTransformerUtilTest {
 		RatingsDataTransformerUtil.transformCompanyRatingsData(
 			1, oldPortletPreferences, unicodeProperties);
 
-		Assert.assertTrue(_atomicState.isSet());
+		Assert.assertTrue(_called);
 	}
 
 	@Test
 	public void testTransformGroupRatingsData() throws Exception {
-		_atomicState.reset();
-
 		UnicodeProperties oldUnicodeProperties = new UnicodeProperties();
 
 		oldUnicodeProperties.setProperty(
@@ -172,10 +162,10 @@ public class RatingsDataTransformerUtilTest {
 		RatingsDataTransformerUtil.transformGroupRatingsData(
 			1, oldUnicodeProperties, unicodeProperties);
 
-		Assert.assertTrue(_atomicState.isSet());
+		Assert.assertTrue(_called);
 	}
 
-	private static AtomicState _atomicState;
+	private static boolean _called;
 	private static ServiceRegistration<RatingsDataTransformer>
 		_serviceRegistration;
 
@@ -187,16 +177,10 @@ public class RatingsDataTransformerUtilTest {
 			transformRatingsData(
 				RatingsType fromRatingsType, RatingsType toRatingsType) {
 
-			_atomicBoolean.set(Boolean.TRUE);
+			_called = true;
 
 			return null;
 		}
-
-		protected void setAtomicBoolean(AtomicBoolean atomicBoolean) {
-			_atomicBoolean = atomicBoolean;
-		}
-
-		private AtomicBoolean _atomicBoolean;
 
 	}
 
