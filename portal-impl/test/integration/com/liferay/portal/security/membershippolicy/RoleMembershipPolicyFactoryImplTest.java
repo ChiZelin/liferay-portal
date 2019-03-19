@@ -21,7 +21,6 @@ import com.liferay.portal.kernel.security.membershippolicy.RoleMembershipPolicyF
 import com.liferay.portal.kernel.security.membershippolicy.RoleMembershipPolicyUtil;
 import com.liferay.portal.model.impl.RoleImpl;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
-import com.liferay.portal.util.test.AtomicState;
 import com.liferay.registry.Registry;
 import com.liferay.registry.RegistryUtil;
 import com.liferay.registry.ServiceRegistration;
@@ -30,10 +29,10 @@ import java.io.Serializable;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -51,8 +50,6 @@ public class RoleMembershipPolicyFactoryImplTest {
 
 	@BeforeClass
 	public static void setUpClass() {
-		_atomicState = new AtomicState();
-
 		Registry registry = RegistryUtil.getRegistry();
 
 		_serviceRegistration = registry.registerService(
@@ -66,20 +63,21 @@ public class RoleMembershipPolicyFactoryImplTest {
 
 	@AfterClass
 	public static void tearDownClass() {
-		_atomicState.close();
-
 		_serviceRegistration.unregister();
+	}
+
+	@Before
+	public void setUp() {
+		_called = false;
 	}
 
 	@Test
 	public void testCheckRoles() throws Exception {
-		_atomicState.reset();
-
 		long[] array = {1, 2, 3};
 
 		RoleMembershipPolicyUtil.checkRoles(array, array, array);
 
-		Assert.assertTrue(_atomicState.isSet());
+		Assert.assertTrue(_called);
 	}
 
 	@Test
@@ -121,45 +119,37 @@ public class RoleMembershipPolicyFactoryImplTest {
 
 	@Test
 	public void testPropagateRoles() throws Exception {
-		_atomicState.reset();
-
 		long[] array = {1, 2, 3};
 
 		RoleMembershipPolicyUtil.propagateRoles(array, array, array);
 
-		Assert.assertTrue(_atomicState.isSet());
+		Assert.assertTrue(_called);
 	}
 
 	@Test
 	public void testVerifyPolicy1() throws Exception {
-		_atomicState.reset();
-
 		RoleMembershipPolicyUtil.verifyPolicy();
 
-		Assert.assertTrue(_atomicState.isSet());
+		Assert.assertTrue(_called);
 	}
 
 	@Test
 	public void testVerifyPolicy2() throws Exception {
-		_atomicState.reset();
-
 		RoleMembershipPolicyUtil.verifyPolicy(new RoleImpl());
 
-		Assert.assertTrue(_atomicState.isSet());
+		Assert.assertTrue(_called);
 	}
 
 	@Test
 	public void testVerifyPolicy3() throws Exception {
-		_atomicState.reset();
-
 		RoleMembershipPolicyUtil.verifyPolicy(
 			new RoleImpl(), new RoleImpl(),
 			new HashMap<String, Serializable>());
 
-		Assert.assertTrue(_atomicState.isSet());
+		Assert.assertTrue(_called);
 	}
 
-	private static AtomicState _atomicState;
+	private static boolean _called;
 	private static ServiceRegistration<RoleMembershipPolicy>
 		_serviceRegistration;
 
@@ -170,7 +160,7 @@ public class RoleMembershipPolicyFactoryImplTest {
 		public void checkRoles(
 			long[] userIds, long[] addRoleIds, long[] removeRoleIds) {
 
-			_atomicBoolean.set(Boolean.TRUE);
+			_called = true;
 		}
 
 		@Override
@@ -195,17 +185,17 @@ public class RoleMembershipPolicyFactoryImplTest {
 		public void propagateRoles(
 			long[] userIds, long[] addRoleIds, long[] removeRoleIds) {
 
-			_atomicBoolean.set(Boolean.TRUE);
+			_called = true;
 		}
 
 		@Override
 		public void verifyPolicy() {
-			_atomicBoolean.set(Boolean.TRUE);
+			_called = true;
 		}
 
 		@Override
 		public void verifyPolicy(Role role) {
-			_atomicBoolean.set(Boolean.TRUE);
+			_called = true;
 		}
 
 		@Override
@@ -213,14 +203,8 @@ public class RoleMembershipPolicyFactoryImplTest {
 			Role role, Role oldRole,
 			Map<String, Serializable> oldExpandoAttributes) {
 
-			_atomicBoolean.set(Boolean.TRUE);
+			_called = true;
 		}
-
-		protected void setAtomicBoolean(AtomicBoolean atomicBoolean) {
-			_atomicBoolean = atomicBoolean;
-		}
-
-		private AtomicBoolean _atomicBoolean;
 
 	}
 
