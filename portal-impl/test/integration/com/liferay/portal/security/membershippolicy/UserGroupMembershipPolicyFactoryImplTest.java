@@ -20,7 +20,6 @@ import com.liferay.portal.kernel.security.membershippolicy.UserGroupMembershipPo
 import com.liferay.portal.kernel.security.membershippolicy.UserGroupMembershipPolicyFactoryUtil;
 import com.liferay.portal.kernel.security.membershippolicy.UserGroupMembershipPolicyUtil;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
-import com.liferay.portal.util.test.AtomicState;
 import com.liferay.registry.Registry;
 import com.liferay.registry.RegistryUtil;
 import com.liferay.registry.ServiceRegistration;
@@ -29,7 +28,6 @@ import java.io.Serializable;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -50,8 +48,6 @@ public class UserGroupMembershipPolicyFactoryImplTest {
 
 	@BeforeClass
 	public static void setUpClass() {
-		_atomicState = new AtomicState();
-
 		Registry registry = RegistryUtil.getRegistry();
 
 		_serviceRegistration = registry.registerService(
@@ -66,19 +62,16 @@ public class UserGroupMembershipPolicyFactoryImplTest {
 
 	@AfterClass
 	public static void tearDownClass() {
-		_atomicState.close();
 		_serviceRegistration.unregister();
 	}
 
 	@Test
 	public void testCheckMembership() throws Exception {
-		_atomicState.reset();
-
 		long[] array = {1, 2, 3};
 
 		UserGroupMembershipPolicyUtil.checkMembership(array, array, array);
 
-		Assert.assertTrue(_atomicState.isSet());
+		Assert.assertTrue(_called);
 	}
 
 	@Test
@@ -125,43 +118,35 @@ public class UserGroupMembershipPolicyFactoryImplTest {
 
 	@Test
 	public void testPropagateMembership() throws Exception {
-		_atomicState.reset();
-
 		long[] array = {1, 2, 3};
 
 		UserGroupMembershipPolicyUtil.propagateMembership(array, array, array);
 
-		Assert.assertTrue(_atomicState.isSet());
+		Assert.assertTrue(_called);
 	}
 
 	@Test
 	public void testVerifyPolicy1() throws Exception {
-		_atomicState.reset();
-
 		UserGroupMembershipPolicyUtil.verifyPolicy();
 
-		Assert.assertTrue(_atomicState.isSet());
+		Assert.assertTrue(_called);
 	}
 
 	@Test
 	public void testVerifyPolicy2() throws Exception {
-		_atomicState.reset();
-
 		UserGroupMembershipPolicyUtil.verifyPolicy(null);
 
-		Assert.assertTrue(_atomicState.isSet());
+		Assert.assertTrue(_called);
 	}
 
 	@Test
 	public void testVerifyPolicy3() throws Exception {
-		_atomicState.reset();
-
 		UserGroupMembershipPolicyUtil.verifyPolicy(null, null, null);
 
-		Assert.assertTrue(_atomicState.isSet());
+		Assert.assertTrue(_called);
 	}
 
-	private static AtomicState _atomicState;
+	private static boolean _called;
 	private static ServiceRegistration<UserGroupMembershipPolicy>
 		_serviceRegistration;
 
@@ -172,7 +157,7 @@ public class UserGroupMembershipPolicyFactoryImplTest {
 		public void checkMembership(
 			long[] userIds, long[] addUserGroupIds, long[] removeUserGroupIds) {
 
-			_atomicBoolean.set(Boolean.TRUE);
+			_called = true;
 		}
 
 		@Override
@@ -197,17 +182,17 @@ public class UserGroupMembershipPolicyFactoryImplTest {
 		public void propagateMembership(
 			long[] userIds, long[] addUserGroupIds, long[] removeUserGroupIds) {
 
-			_atomicBoolean.set(Boolean.TRUE);
+			_called = true;
 		}
 
 		@Override
 		public void verifyPolicy() {
-			_atomicBoolean.set(Boolean.TRUE);
+			_called = true;
 		}
 
 		@Override
 		public void verifyPolicy(UserGroup userGroup) {
-			_atomicBoolean.set(Boolean.TRUE);
+			_called = true;
 		}
 
 		@Override
@@ -215,14 +200,8 @@ public class UserGroupMembershipPolicyFactoryImplTest {
 			UserGroup userGroup, UserGroup oldUserGroup,
 			Map<String, Serializable> oldExpandoAttributes) {
 
-			_atomicBoolean.set(Boolean.TRUE);
+			_called = true;
 		}
-
-		protected void setAtomicBoolean(AtomicBoolean atomicBoolean) {
-			_atomicBoolean = atomicBoolean;
-		}
-
-		private AtomicBoolean _atomicBoolean;
 
 	}
 
