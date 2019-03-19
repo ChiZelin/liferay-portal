@@ -23,7 +23,6 @@ import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.upload.LiferayServletRequest;
 import com.liferay.portal.upload.UploadServletRequestImpl;
-import com.liferay.portal.util.test.AtomicState;
 import com.liferay.portal.util.test.PortletContainerTestUtil;
 import com.liferay.registry.Registry;
 import com.liferay.registry.RegistryUtil;
@@ -34,13 +33,13 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -61,8 +60,6 @@ public class PortalImplTest {
 
 	@BeforeClass
 	public static void setUpClass() {
-		_atomicState = new AtomicState();
-
 		Registry registry = RegistryUtil.getRegistry();
 
 		_serviceRegistration = registry.registerService(
@@ -76,9 +73,12 @@ public class PortalImplTest {
 
 	@AfterClass
 	public static void tearDownClass() {
-		_atomicState.close();
-
 		_serviceRegistration.unregister();
+	}
+
+	@Before
+	public void setUp() {
+		_called = false;
 	}
 
 	@Test
@@ -170,8 +170,6 @@ public class PortalImplTest {
 
 	@Test
 	public void testGetUserId() {
-		_atomicState.reset();
-
 		MockHttpServletRequest mockHttpServletRequest =
 			new MockHttpServletRequest();
 
@@ -189,9 +187,9 @@ public class PortalImplTest {
 
 		Assert.assertEquals(0, userId);
 
-		Assert.assertTrue(_atomicState.isSet());
+		Assert.assertTrue(_called);
 
-		_atomicState.reset();
+		_called = false;
 
 		mockHttpServletRequest = new MockHttpServletRequest();
 
@@ -203,7 +201,7 @@ public class PortalImplTest {
 
 		Assert.assertEquals(0, userId);
 
-		Assert.assertTrue(_atomicState.isSet());
+		Assert.assertTrue(_called);
 	}
 
 	@Test
@@ -232,7 +230,7 @@ public class PortalImplTest {
 		return (HttpServletRequest)requestWrapper.getRequest();
 	}
 
-	private static AtomicState _atomicState;
+	private static boolean _called;
 	private static ServiceRegistration<AlwaysAllowDoAsUser>
 		_serviceRegistration;
 
@@ -274,7 +272,7 @@ public class PortalImplTest {
 
 		@Override
 		public Collection<String> getActionNames() {
-			_atomicBoolean.set(Boolean.TRUE);
+			_called = true;
 
 			Collection<String> actionNames = new ArrayList<>();
 
@@ -285,7 +283,7 @@ public class PortalImplTest {
 
 		@Override
 		public Collection<String> getMVCRenderCommandNames() {
-			_atomicBoolean.set(Boolean.TRUE);
+			_called = true;
 
 			Collection<String> mvcRenderCommandNames = new ArrayList<>();
 
@@ -296,7 +294,7 @@ public class PortalImplTest {
 
 		@Override
 		public Collection<String> getPaths() {
-			_atomicBoolean.set(Boolean.TRUE);
+			_called = true;
 
 			Collection<String> paths = new ArrayList<>();
 
@@ -307,7 +305,7 @@ public class PortalImplTest {
 
 		@Override
 		public Collection<String> getStrutsActions() {
-			_atomicBoolean.set(Boolean.TRUE);
+			_called = true;
 
 			Collection<String> strutsActions = new ArrayList<>();
 
@@ -315,12 +313,6 @@ public class PortalImplTest {
 
 			return strutsActions;
 		}
-
-		protected void setAtomicBoolean(AtomicBoolean atomicBoolean) {
-			_atomicBoolean = atomicBoolean;
-		}
-
-		private AtomicBoolean _atomicBoolean;
 
 	}
 
