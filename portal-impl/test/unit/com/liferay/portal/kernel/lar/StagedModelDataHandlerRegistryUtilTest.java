@@ -46,7 +46,7 @@ public class StagedModelDataHandlerRegistryUtilTest {
 				new Class<?>[] {StagedModelDataHandler.class},
 				(proxy, method, args) -> {
 					if ("getClassNames".equals(method.getName())) {
-						return CLASS_NAMES;
+						return _CLASS_NAMES;
 					}
 
 					return null;
@@ -65,7 +65,7 @@ public class StagedModelDataHandlerRegistryUtilTest {
 	public void testGetStagedModelDataHandler() {
 		StagedModelDataHandler<?> stagedModelDataHandler =
 			StagedModelDataHandlerRegistryUtil.getStagedModelDataHandler(
-				CLASS_NAMES[0]);
+				_CLASS_NAMES[0]);
 
 		Assert.assertSame(_stagedModelDataHandler, stagedModelDataHandler);
 	}
@@ -82,7 +82,7 @@ public class StagedModelDataHandlerRegistryUtilTest {
 			_stagedModelDataHandler, stagedModelDataHandlers.get(0));
 	}
 
-	public static final String[] CLASS_NAMES = {
+	private static final String[] _CLASS_NAMES = {
 		StagedModelDataHandlerRegistryUtilTest.class.getName()
 	};
 
