@@ -21,6 +21,6 @@ public class DLOpenerFileEntryReferenceConstants {
 
 	public static final int TYPE_EDIT = 1;
 
-	public static final int TYPE_NEW = 0;
+	public static final int TYPE_NEW = 0;sss
 
 }
