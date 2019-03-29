@@ -25,7 +25,6 @@ import com.liferay.registry.Registry;
 import com.liferay.registry.RegistryUtil;
 import com.liferay.registry.ServiceRegistration;
 
-import java.util.HashMap;
 import java.util.Set;
 
 import org.junit.AfterClass;
@@ -45,12 +44,7 @@ public class XStreamConverterRegistryUtilTest {
 		Registry registry = RegistryUtil.getRegistry();
 
 		_serviceRegistration = registry.registerService(
-			XStreamConverter.class, new TestXStreamConverter(),
-			new HashMap<String, Object>() {
-				{
-					put("service.ranking", Integer.MAX_VALUE);
-				}
-			});
+			XStreamConverter.class, new TestXStreamConverter());
 	}
 
 	@AfterClass

@@ -24,7 +24,6 @@ import com.liferay.registry.Registry;
 import com.liferay.registry.RegistryUtil;
 import com.liferay.registry.ServiceRegistration;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -45,12 +44,7 @@ public class StagedModelDataHandlerRegistryUtilTest {
 		Registry registry = RegistryUtil.getRegistry();
 
 		_serviceRegistration = registry.registerService(
-			StagedModelDataHandler.class, new TestStagedModelDataHandler(),
-			new HashMap<String, Object>() {
-				{
-					put("service.ranking", Integer.MAX_VALUE);
-				}
-			});
+			StagedModelDataHandler.class, new TestStagedModelDataHandler());
 	}
 
 	@AfterClass

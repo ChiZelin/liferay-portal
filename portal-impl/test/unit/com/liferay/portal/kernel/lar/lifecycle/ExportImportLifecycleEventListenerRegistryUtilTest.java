@@ -43,21 +43,11 @@ public class ExportImportLifecycleEventListenerRegistryUtilTest {
 
 		_serviceRegistration1 = registry.registerService(
 			ExportImportLifecycleListener.class,
-			new TestAsyncExportImportLifecycleListener(),
-			new HashMap<String, Object>() {
-				{
-					put("service.ranking", Integer.MAX_VALUE);
-				}
-			});
+			new TestAsyncExportImportLifecycleListener());
 
 		_serviceRegistration2 = registry.registerService(
 			ExportImportLifecycleListener.class,
-			new TestSyncExportImportLifecycleListener(),
-			new HashMap<String, Object>() {
-				{
-					put("service.ranking", Integer.MAX_VALUE);
-				}
-			});
+			new TestSyncExportImportLifecycleListener());
 	}
 
 	@AfterClass
