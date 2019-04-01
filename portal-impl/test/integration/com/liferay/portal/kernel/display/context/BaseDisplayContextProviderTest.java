@@ -41,12 +41,12 @@ public class BaseDisplayContextProviderTest {
 	@BeforeClass
 	public static void setUpClass() throws Exception {
 		_baseDisplayContextProvider = new BaseDisplayContextProvider<>(
-			TestDisplayContextFactory.class);
+			DisplayContextFactory.class);
 
 		Registry registry = RegistryUtil.getRegistry();
 
 		_serviceRegistration = registry.registerService(
-			TestDisplayContextFactory.class,
+			DisplayContextFactory.class,
 			new TestBaseDisplayContextFactoryImpl());
 	}
 
@@ -58,39 +58,38 @@ public class BaseDisplayContextProviderTest {
 
 	@Test
 	public void testDisplayContextHasBeenRegistered() throws Exception {
-		TestDisplayContextFactory testDisplayContextFactoryExtension = null;
+		DisplayContextFactory displayContextFactoryExtension = null;
 
-		Iterable<TestDisplayContextFactory> displayContextFactories =
+		Iterable<DisplayContextFactory> displayContextFactories =
 			_baseDisplayContextProvider.getDisplayContextFactories();
 
-		Iterator<TestDisplayContextFactory> iterator =
+		Iterator<DisplayContextFactory> iterator =
 			displayContextFactories.iterator();
 
 		while (iterator.hasNext()) {
-			TestDisplayContextFactory testDisplayContextFactory =
-				iterator.next();
+			DisplayContextFactory displayContextFactory = iterator.next();
 
-			Class<?> clazz = testDisplayContextFactory.getClass();
+			Class<?> clazz = displayContextFactory.getClass();
 
 			String className = clazz.getName();
 
 			if (className.equals(
 					TestBaseDisplayContextFactoryImpl.class.getName())) {
 
-				testDisplayContextFactoryExtension = testDisplayContextFactory;
+				displayContextFactoryExtension = displayContextFactory;
 			}
 		}
 
-		Assert.assertNotNull(testDisplayContextFactoryExtension);
+		Assert.assertNotNull(displayContextFactoryExtension);
 	}
 
-	private static BaseDisplayContextProvider<TestDisplayContextFactory>
+	private static BaseDisplayContextProvider<DisplayContextFactory>
 		_baseDisplayContextProvider;
-	private static ServiceRegistration<TestDisplayContextFactory>
+	private static ServiceRegistration<DisplayContextFactory>
 		_serviceRegistration;
 
 	private static class TestBaseDisplayContextFactoryImpl
-		implements TestDisplayContextFactory {
+		implements DisplayContextFactory {
 	}
 
 }
