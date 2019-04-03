@@ -14,6 +14,7 @@
 
 package com.liferay.portal.search.test;
 
+import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.portal.kernel.search.SearchEngine;
 import com.liferay.portal.kernel.search.SearchEngineConfigurator;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
@@ -30,10 +31,12 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 /**
  * @author Peter Fellwock
  */
+@RunWith(Arquillian.class)
 public class SearchEngineUtilTest {
 
 	@ClassRule
