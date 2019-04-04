@@ -21,7 +21,6 @@ import com.liferay.dynamic.data.mapping.kernel.DDMFormFieldValue;
 import com.liferay.dynamic.data.mapping.kernel.DDMFormValues;
 import com.liferay.dynamic.data.mapping.kernel.DDMStructure;
 import com.liferay.dynamic.data.mapping.kernel.DDMStructureManager;
-import com.liferay.dynamic.data.mapping.kernel.DDMStructureManagerUtil;
 import com.liferay.dynamic.data.mapping.kernel.LocalizedValue;
 import com.liferay.dynamic.data.mapping.kernel.StorageEngineManager;
 import com.liferay.dynamic.data.mapping.kernel.Value;
@@ -37,8 +36,9 @@ import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.util.LocaleUtil;
-import com.liferay.portal.kernel.util.PortalUtil;
+import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
 import java.util.HashMap;
@@ -68,7 +68,7 @@ public class DDMStructureManagerUtilTest {
 	public void setUp() throws Exception {
 		_group = GroupTestUtil.addGroup();
 
-		_classNameId = PortalUtil.getClassNameId(
+		_classNameId = _portal.getClassNameId(
 			"com.liferay.dynamic.data.lists.model.DDLRecordSet");
 
 		_serviceContext = ServiceContextTestUtil.getServiceContext(
@@ -81,7 +81,7 @@ public class DDMStructureManagerUtilTest {
 
 		Document document = new DocumentImpl();
 
-		DDMStructureManagerUtil.addAttributes(
+		_ddmStructureManager.addAttributes(
 			structure.getStructureId(), document, createDDMFormValues());
 
 		String fieldProperty = structure.getFieldProperty(
@@ -103,9 +103,9 @@ public class DDMStructureManagerUtilTest {
 
 		Assert.assertNotNull(structure);
 
-		DDMStructureManagerUtil.deleteStructure(structure.getStructureId());
+		_ddmStructureManager.deleteStructure(structure.getStructureId());
 
-		structure = DDMStructureManagerUtil.fetchStructure(
+		structure = _ddmStructureManager.fetchStructure(
 			structure.getGroupId(), structure.getClassNameId(),
 			structure.getStructureKey());
 
@@ -120,10 +120,10 @@ public class DDMStructureManagerUtilTest {
 
 		DDMFormValues ddmFormValues = createDDMFormValues();
 
-		DDMStructureManagerUtil.addAttributes(
+		_ddmStructureManager.addAttributes(
 			structure.getStructureId(), document, ddmFormValues);
 
-		String attributes = DDMStructureManagerUtil.extractAttributes(
+		String attributes = _ddmStructureManager.extractAttributes(
 			structure.getStructureId(), ddmFormValues, LocaleUtil.US);
 
 		Assert.assertNotNull(attributes);
@@ -133,7 +133,7 @@ public class DDMStructureManagerUtilTest {
 	public void testFetchStructure() throws Exception {
 		DDMStructure expectedStructure = addStructure();
 
-		DDMStructure actualStructure = DDMStructureManagerUtil.fetchStructure(
+		DDMStructure actualStructure = _ddmStructureManager.fetchStructure(
 			_group.getGroupId(), expectedStructure.getClassNameId(),
 			expectedStructure.getStructureKey());
 
@@ -147,7 +147,7 @@ public class DDMStructureManagerUtilTest {
 		DDMStructure expectedStructure = addStructure();
 
 		DDMStructure actualStructure =
-			DDMStructureManagerUtil.fetchStructureByUuidAndGroupId(
+			_ddmStructureManager.fetchStructureByUuidAndGroupId(
 				expectedStructure.getUuid(), expectedStructure.getGroupId());
 
 		Assert.assertNotNull(actualStructure);
@@ -157,16 +157,15 @@ public class DDMStructureManagerUtilTest {
 
 	@Test
 	public void testGetClassStructures() throws Exception {
-		List<DDMStructure> structures =
-			DDMStructureManagerUtil.getClassStructures(
-				_group.getCompanyId(), _classNameId, QueryUtil.ALL_POS,
-				QueryUtil.ALL_POS);
+		List<DDMStructure> structures = _ddmStructureManager.getClassStructures(
+			_group.getCompanyId(), _classNameId, QueryUtil.ALL_POS,
+			QueryUtil.ALL_POS);
 
 		int initialSize = structures.size();
 
 		addStructure();
 
-		structures = DDMStructureManagerUtil.getClassStructures(
+		structures = _ddmStructureManager.getClassStructures(
 			_group.getCompanyId(), _classNameId, QueryUtil.ALL_POS,
 			QueryUtil.ALL_POS);
 
@@ -176,16 +175,15 @@ public class DDMStructureManagerUtilTest {
 
 	@Test
 	public void testGetClassStructuresUsingComparator() throws Exception {
-		List<DDMStructure> structures =
-			DDMStructureManagerUtil.getClassStructures(
-				_group.getCompanyId(), _classNameId,
-				DDMStructureManager.STRUCTURE_COMPARATOR_STRUCTURE_KEY);
+		List<DDMStructure> structures = _ddmStructureManager.getClassStructures(
+			_group.getCompanyId(), _classNameId,
+			DDMStructureManager.STRUCTURE_COMPARATOR_STRUCTURE_KEY);
 
 		int initialSize = structures.size();
 
 		addStructure();
 
-		structures = DDMStructureManagerUtil.getClassStructures(
+		structures = _ddmStructureManager.getClassStructures(
 			_group.getCompanyId(), _classNameId,
 			DDMStructureManager.STRUCTURE_COMPARATOR_STRUCTURE_KEY);
 
@@ -197,15 +195,14 @@ public class DDMStructureManagerUtilTest {
 	public void testGetClassStructuresWithCompanyAndClassNameId()
 		throws Exception {
 
-		List<DDMStructure> structures =
-			DDMStructureManagerUtil.getClassStructures(
-				_group.getCompanyId(), _classNameId);
+		List<DDMStructure> structures = _ddmStructureManager.getClassStructures(
+			_group.getCompanyId(), _classNameId);
 
 		int initialSize = structures.size();
 
 		addStructure();
 
-		structures = DDMStructureManagerUtil.getClassStructures(
+		structures = _ddmStructureManager.getClassStructures(
 			_group.getCompanyId(), _classNameId);
 
 		Assert.assertEquals(
@@ -216,7 +213,7 @@ public class DDMStructureManagerUtilTest {
 	public void testGetDDMFormFieldsJSONArray() throws Exception {
 		DDMStructure structure = addStructure();
 
-		JSONArray jsonArray = DDMStructureManagerUtil.getDDMFormFieldsJSONArray(
+		JSONArray jsonArray = _ddmStructureManager.getDDMFormFieldsJSONArray(
 			structure.getStructureId(), structure.getDefinition());
 
 		Assert.assertEquals(1, jsonArray.length());
@@ -226,7 +223,7 @@ public class DDMStructureManagerUtilTest {
 	public void testGetStructure() throws Exception {
 		DDMStructure expectedStructure = addStructure();
 
-		DDMStructure actualStructure = DDMStructureManagerUtil.getStructure(
+		DDMStructure actualStructure = _ddmStructureManager.getStructure(
 			_group.getGroupId(), expectedStructure.getClassNameId(),
 			expectedStructure.getStructureKey());
 
@@ -237,7 +234,7 @@ public class DDMStructureManagerUtilTest {
 	public void testGetStructureById() throws Exception {
 		DDMStructure expectedStructure = addStructure();
 
-		DDMStructure actualStructure = DDMStructureManagerUtil.getStructure(
+		DDMStructure actualStructure = _ddmStructureManager.getStructure(
 			expectedStructure.getStructureId());
 
 		assertEquals(expectedStructure, actualStructure);
@@ -248,7 +245,7 @@ public class DDMStructureManagerUtilTest {
 		DDMStructure expectedStructure = addStructure();
 
 		DDMStructure actualStructure =
-			DDMStructureManagerUtil.getStructureByUuidAndGroupId(
+			_ddmStructureManager.getStructureByUuidAndGroupId(
 				expectedStructure.getUuid(), _group.getGroupId());
 
 		assertEquals(expectedStructure, actualStructure);
@@ -266,7 +263,7 @@ public class DDMStructureManagerUtilTest {
 
 		descriptionMap.put(LocaleUtil.US, "Structure Description Modified");
 
-		DDMStructure actualStructure = DDMStructureManagerUtil.updateStructure(
+		DDMStructure actualStructure = _ddmStructureManager.updateStructure(
 			TestPropsValues.getUserId(), expectedStructure.getStructureId(), 0,
 			nameMap, descriptionMap, expectedStructure.getDDMForm(),
 			_serviceContext);
@@ -285,10 +282,10 @@ public class DDMStructureManagerUtilTest {
 		definition = definition.replaceAll(
 			"(?s)<dynamic-element[^>]*>.*?</dynamic-element>", "");
 
-		DDMStructureManagerUtil.updateStructureDefinition(
+		_ddmStructureManager.updateStructureDefinition(
 			expectedStructure.getStructureId(), definition);
 
-		DDMStructure structure = DDMStructureManagerUtil.getStructure(
+		DDMStructure structure = _ddmStructureManager.getStructure(
 			expectedStructure.getStructureId());
 
 		Assert.assertEquals(definition, structure.getDefinition());
@@ -298,10 +295,10 @@ public class DDMStructureManagerUtilTest {
 	public void testUpdateStructureKey() throws Exception {
 		DDMStructure expectedStructure = addStructure();
 
-		DDMStructureManagerUtil.updateStructureKey(
+		_ddmStructureManager.updateStructureKey(
 			expectedStructure.getStructureId(), "NEW_KEY");
 
-		DDMStructure structure = DDMStructureManagerUtil.getStructure(
+		DDMStructure structure = _ddmStructureManager.getStructure(
 			expectedStructure.getStructureId());
 
 		Assert.assertEquals("NEW_KEY", structure.getStructureKey());
@@ -316,7 +313,7 @@ public class DDMStructureManagerUtilTest {
 
 		descriptionMap.put(LocaleUtil.US, "Test Structure Description");
 
-		return DDMStructureManagerUtil.addStructure(
+		return _ddmStructureManager.addStructure(
 			TestPropsValues.getUserId(), _group.getGroupId(), null,
 			_classNameId, StringUtil.randomString(), nameMap, descriptionMap,
 			createDDMForm(), StorageEngineManager.STORAGE_TYPE_DEFAULT,
@@ -381,8 +378,14 @@ public class DDMStructureManagerUtilTest {
 
 	private long _classNameId;
 
+	@Inject
+	private DDMStructureManager _ddmStructureManager;
+
 	@DeleteAfterTestRun
 	private Group _group;
+
+	@Inject
+	private Portal _portal;
 
 	private ServiceContext _serviceContext;
 

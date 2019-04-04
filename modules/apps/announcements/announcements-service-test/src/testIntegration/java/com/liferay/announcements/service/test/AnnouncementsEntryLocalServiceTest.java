@@ -18,7 +18,7 @@ import com.liferay.announcements.kernel.exception.EntryDisplayDateException;
 import com.liferay.announcements.kernel.exception.EntryExpirationDateException;
 import com.liferay.announcements.kernel.model.AnnouncementsEntry;
 import com.liferay.announcements.kernel.model.AnnouncementsFlagConstants;
-import com.liferay.announcements.kernel.service.AnnouncementsEntryLocalServiceUtil;
+import com.liferay.announcements.kernel.service.AnnouncementsEntryLocalService;
 import com.liferay.announcements.kernel.service.AnnouncementsFlagLocalServiceUtil;
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
@@ -48,6 +48,7 @@ import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
 import com.liferay.portal.kernel.test.util.UserTestUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
 import java.util.Date;
@@ -89,11 +90,11 @@ public class AnnouncementsEntryLocalServiceTest {
 		addEntry(0, 0);
 		addEntry(0, 0);
 
-		AnnouncementsEntryLocalServiceUtil.deleteEntries(
+		_announcementsEntryLocalService.deleteEntries(
 			_company2.getCompanyId(), 0, 0);
 
 		List<AnnouncementsEntry> entries =
-			AnnouncementsEntryLocalServiceUtil.getEntries(
+			_announcementsEntryLocalService.getEntries(
 				_user.getCompanyId(), 0, 0, false, QueryUtil.ALL_POS,
 				QueryUtil.ALL_POS);
 
@@ -106,11 +107,11 @@ public class AnnouncementsEntryLocalServiceTest {
 		addEntry(0, 0);
 		addEntry(0, 0);
 
-		AnnouncementsEntryLocalServiceUtil.deleteEntries(
+		_announcementsEntryLocalService.deleteEntries(
 			_user.getCompanyId(), 0, 0);
 
 		List<AnnouncementsEntry> entries =
-			AnnouncementsEntryLocalServiceUtil.getEntries(
+			_announcementsEntryLocalService.getEntries(
 				_user.getCompanyId(), 0, 0, false, QueryUtil.ALL_POS,
 				QueryUtil.ALL_POS);
 
@@ -127,13 +128,13 @@ public class AnnouncementsEntryLocalServiceTest {
 			group.getClassNameId(), group.getGroupId());
 
 		Assert.assertNotNull(
-			AnnouncementsEntryLocalServiceUtil.fetchAnnouncementsEntry(
+			_announcementsEntryLocalService.fetchAnnouncementsEntry(
 				entry.getEntryId()));
 
 		GroupLocalServiceUtil.deleteGroup(group);
 
 		Assert.assertNull(
-			AnnouncementsEntryLocalServiceUtil.fetchAnnouncementsEntry(
+			_announcementsEntryLocalService.fetchAnnouncementsEntry(
 				entry.getEntryId()));
 	}
 
@@ -152,13 +153,13 @@ public class AnnouncementsEntryLocalServiceTest {
 			classNameId, organization.getOrganizationId());
 
 		Assert.assertNotNull(
-			AnnouncementsEntryLocalServiceUtil.fetchAnnouncementsEntry(
+			_announcementsEntryLocalService.fetchAnnouncementsEntry(
 				entry.getEntryId()));
 
 		OrganizationLocalServiceUtil.deleteOrganization(organization);
 
 		Assert.assertNull(
-			AnnouncementsEntryLocalServiceUtil.fetchAnnouncementsEntry(
+			_announcementsEntryLocalService.fetchAnnouncementsEntry(
 				entry.getEntryId()));
 	}
 
@@ -178,13 +179,13 @@ public class AnnouncementsEntryLocalServiceTest {
 		AnnouncementsEntry entry = addEntry(classNameId, group.getGroupId());
 
 		Assert.assertNotNull(
-			AnnouncementsEntryLocalServiceUtil.fetchAnnouncementsEntry(
+			_announcementsEntryLocalService.fetchAnnouncementsEntry(
 				entry.getEntryId()));
 
 		OrganizationLocalServiceUtil.deleteOrganization(organization);
 
 		Assert.assertNull(
-			AnnouncementsEntryLocalServiceUtil.fetchAnnouncementsEntry(
+			_announcementsEntryLocalService.fetchAnnouncementsEntry(
 				entry.getEntryId()));
 	}
 
@@ -218,13 +219,13 @@ public class AnnouncementsEntryLocalServiceTest {
 			classNameId, userGroup.getUserGroupId());
 
 		Assert.assertNotNull(
-			AnnouncementsEntryLocalServiceUtil.fetchAnnouncementsEntry(
+			_announcementsEntryLocalService.fetchAnnouncementsEntry(
 				entry.getEntryId()));
 
 		UserGroupLocalServiceUtil.deleteUserGroup(userGroup);
 
 		Assert.assertNull(
-			AnnouncementsEntryLocalServiceUtil.fetchAnnouncementsEntry(
+			_announcementsEntryLocalService.fetchAnnouncementsEntry(
 				entry.getEntryId()));
 	}
 
@@ -255,7 +256,7 @@ public class AnnouncementsEntryLocalServiceTest {
 			new long[] {group.getGroupId()});
 
 		List<AnnouncementsEntry> hiddenEntries =
-			AnnouncementsEntryLocalServiceUtil.getEntries(
+			_announcementsEntryLocalService.getEntries(
 				_user.getUserId(), scopes, false,
 				AnnouncementsFlagConstants.HIDDEN, QueryUtil.ALL_POS,
 				QueryUtil.ALL_POS);
@@ -263,7 +264,7 @@ public class AnnouncementsEntryLocalServiceTest {
 		Assert.assertEquals(hiddenEntries.toString(), 2, hiddenEntries.size());
 
 		List<AnnouncementsEntry> notHiddenEntries =
-			AnnouncementsEntryLocalServiceUtil.getEntries(
+			_announcementsEntryLocalService.getEntries(
 				_user.getUserId(), scopes, false,
 				AnnouncementsFlagConstants.NOT_HIDDEN, QueryUtil.ALL_POS,
 				QueryUtil.ALL_POS);
@@ -280,7 +281,7 @@ public class AnnouncementsEntryLocalServiceTest {
 	public void testGetEntriesCountInDifferentCompany() throws Exception {
 		addEntry(0, 0);
 
-		int entriesCount = AnnouncementsEntryLocalServiceUtil.getEntriesCount(
+		int entriesCount = _announcementsEntryLocalService.getEntriesCount(
 			_company2.getCompanyId(), 0, 0, false);
 
 		Assert.assertEquals(0, entriesCount);
@@ -290,7 +291,7 @@ public class AnnouncementsEntryLocalServiceTest {
 	public void testGetEntriesCountInSameCompany() throws Exception {
 		addEntry(0, 0);
 
-		int entriesCount = AnnouncementsEntryLocalServiceUtil.getEntriesCount(
+		int entriesCount = _announcementsEntryLocalService.getEntriesCount(
 			_user.getCompanyId(), 0, 0, false);
 
 		Assert.assertEquals(1, entriesCount);
@@ -301,7 +302,7 @@ public class AnnouncementsEntryLocalServiceTest {
 		addEntry(0, 0);
 
 		List<AnnouncementsEntry> entries =
-			AnnouncementsEntryLocalServiceUtil.getEntries(
+			_announcementsEntryLocalService.getEntries(
 				_company2.getCompanyId(), 0, 0, false, QueryUtil.ALL_POS,
 				QueryUtil.ALL_POS);
 
@@ -313,7 +314,7 @@ public class AnnouncementsEntryLocalServiceTest {
 		AnnouncementsEntry entry = addEntry(0, 0);
 
 		List<AnnouncementsEntry> entries =
-			AnnouncementsEntryLocalServiceUtil.getEntries(
+			_announcementsEntryLocalService.getEntries(
 				_user.getCompanyId(), 0, 0, false, QueryUtil.ALL_POS,
 				QueryUtil.ALL_POS);
 
@@ -332,7 +333,7 @@ public class AnnouncementsEntryLocalServiceTest {
 			1, 1, 3000, 1, 1, _user.getTimeZone(),
 			EntryExpirationDateException.class);
 
-		return AnnouncementsEntryLocalServiceUtil.addEntry(
+		return _announcementsEntryLocalService.addEntry(
 			_user.getUserId(), classNameId, classPK, StringUtil.randomString(),
 			StringUtil.randomString(), "http://localhost", "general",
 			displayDate, expirationDate, 1, false);
@@ -350,15 +351,18 @@ public class AnnouncementsEntryLocalServiceTest {
 			role.getClassNameId(), role.getRoleId());
 
 		Assert.assertNotNull(
-			AnnouncementsEntryLocalServiceUtil.fetchAnnouncementsEntry(
+			_announcementsEntryLocalService.fetchAnnouncementsEntry(
 				entry.getEntryId()));
 
 		RoleLocalServiceUtil.deleteRole(role);
 
 		Assert.assertNull(
-			AnnouncementsEntryLocalServiceUtil.fetchAnnouncementsEntry(
+			_announcementsEntryLocalService.fetchAnnouncementsEntry(
 				entry.getEntryId()));
 	}
+
+	@Inject
+	private AnnouncementsEntryLocalService _announcementsEntryLocalService;
 
 	@DeleteAfterTestRun
 	private Company _company1;
