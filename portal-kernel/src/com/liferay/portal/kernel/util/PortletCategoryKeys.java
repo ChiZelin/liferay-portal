@@ -58,13 +58,6 @@ public class PortletCategoryKeys {
 
 	public static final String CURRENT_SITE = "current_site";
 
-	/**
-	 * @deprecated As of Wilberforce (7.0.x), replaced by {@link
-	 *             #USER_MY_ACCOUNT}
-	 */
-	@Deprecated
-	public static final String MY = "user";
-
 	public static final String PORTLET = "portlet";
 
 	public static final String SITE_ADMINISTRATION = "site_administration.";
