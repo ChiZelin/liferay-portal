@@ -835,16 +835,6 @@ public class TemplateContextHelper {
 		catch (SecurityException se) {
 			_log.error(se, se);
 		}
-
-		try {
-			com.liferay.portal.kernel.util.Randomizer_IW randomizer =
-				com.liferay.portal.kernel.util.Randomizer_IW.getInstance();
-
-			variables.put("randomizer", randomizer.getWrappedInstance());
-		}
-		catch (SecurityException se) {
-			_log.error(se, se);
-		}
 	}
 
 	protected void populateExtraHelperUtilities(Map<String, Object> variables) {
