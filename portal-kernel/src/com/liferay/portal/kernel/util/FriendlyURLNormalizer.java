@@ -16,8 +16,6 @@ package com.liferay.portal.kernel.util;
 
 import aQute.bnd.annotation.ProviderType;
 
-import java.util.regex.Pattern;
-
 /**
  * @author Julio Camarero
  */
@@ -25,12 +23,6 @@ import java.util.regex.Pattern;
 public interface FriendlyURLNormalizer {
 
 	public String normalize(String friendlyURL);
-
-	/**
-	 * @deprecated As of Wilberforce (7.0.x), with no direct replacement
-	 */
-	@Deprecated
-	public String normalize(String friendlyURL, Pattern friendlyURLPattern);
 
 	public String normalizeWithEncoding(String friendlyURL);
 
