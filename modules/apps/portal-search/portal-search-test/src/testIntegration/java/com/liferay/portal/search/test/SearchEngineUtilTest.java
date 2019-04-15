@@ -14,6 +14,7 @@
 
 package com.liferay.portal.search.test;
 
+import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.portal.kernel.search.SearchEngine;
 import com.liferay.portal.kernel.search.SearchEngineConfigurator;
 import com.liferay.portal.kernel.util.HashMapDictionary;
@@ -27,6 +28,7 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -36,6 +38,7 @@ import org.osgi.framework.ServiceRegistration;
 /**
  * @author Peter Fellwock
  */
+@RunWith(Arquillian.class)
 public class SearchEngineUtilTest {
 
 	@ClassRule
