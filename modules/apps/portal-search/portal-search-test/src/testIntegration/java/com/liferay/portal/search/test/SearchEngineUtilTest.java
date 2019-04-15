@@ -85,12 +85,10 @@ public class SearchEngineUtilTest {
 
 		@Override
 		public void destroy() {
-			_called = true;
 		}
 
 		@Override
 		public void setSearchEngines(Map<String, SearchEngine> searchEngines) {
-			_called = true;
 		}
 
 	}
