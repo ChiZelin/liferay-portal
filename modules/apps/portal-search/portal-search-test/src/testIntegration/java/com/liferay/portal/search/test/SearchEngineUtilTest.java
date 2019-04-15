@@ -16,12 +16,9 @@ package com.liferay.portal.search.test;
 
 import com.liferay.portal.kernel.search.SearchEngine;
 import com.liferay.portal.kernel.search.SearchEngineConfigurator;
+import com.liferay.portal.kernel.util.HashMapDictionary;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
-import com.liferay.registry.Registry;
-import com.liferay.registry.RegistryUtil;
-import com.liferay.registry.ServiceRegistration;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.AfterClass;
@@ -30,6 +27,11 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
+
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.ServiceRegistration;
 
 /**
  * @author Peter Fellwock
@@ -43,11 +45,13 @@ public class SearchEngineUtilTest {
 
 	@BeforeClass
 	public static void setUpClass() {
-		Registry registry = RegistryUtil.getRegistry();
+		Bundle bundle = FrameworkUtil.getBundle(SearchEngineUtilTest.class);
 
-		_serviceRegistration = registry.registerService(
+		BundleContext bundleContext = bundle.getBundleContext();
+
+		_serviceRegistration = bundleContext.registerService(
 			SearchEngineConfigurator.class, new TestSearchEngineConfigurator(),
-			new HashMap<String, Object>() {
+			new HashMapDictionary<String, Object>() {
 				{
 					put("service.ranking", Integer.MAX_VALUE);
 				}
