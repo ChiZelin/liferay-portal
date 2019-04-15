@@ -15,12 +15,10 @@
 package com.liferay.portal.search.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
-import com.liferay.portal.kernel.search.SearchEngine;
 import com.liferay.portal.kernel.search.SearchEngineConfigurator;
 import com.liferay.portal.kernel.util.HashMapDictionary;
+import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
-
-import java.util.Map;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -53,7 +51,17 @@ public class SearchEngineUtilTest {
 		BundleContext bundleContext = bundle.getBundleContext();
 
 		_serviceRegistration = bundleContext.registerService(
-			SearchEngineConfigurator.class, new TestSearchEngineConfigurator(),
+			SearchEngineConfigurator.class,
+			(SearchEngineConfigurator)ProxyUtil.newProxyInstance(
+				SearchEngineUtilTest.class.getClassLoader(),
+				new Class<?>[] {SearchEngineConfigurator.class},
+				(proxy, method, args) -> {
+					if ("afterPropertiesSet".equals(method.getName())) {
+						_calledAfterPropertiesSet = true;
+					}
+
+					return null;
+				}),
 			new HashMapDictionary<String, Object>() {
 				{
 					put("service.ranking", Integer.MAX_VALUE);
@@ -74,23 +82,5 @@ public class SearchEngineUtilTest {
 	private static boolean _calledAfterPropertiesSet;
 	private static ServiceRegistration<SearchEngineConfigurator>
 		_serviceRegistration;
-
-	private static class TestSearchEngineConfigurator
-		implements SearchEngineConfigurator {
-
-		@Override
-		public void afterPropertiesSet() {
-			_calledAfterPropertiesSet = true;
-		}
-
-		@Override
-		public void destroy() {
-		}
-
-		@Override
-		public void setSearchEngines(Map<String, SearchEngine> searchEngines) {
-		}
-
-	}
 
 }
