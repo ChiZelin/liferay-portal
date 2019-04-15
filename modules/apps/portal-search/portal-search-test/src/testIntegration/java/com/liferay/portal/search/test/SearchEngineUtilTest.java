@@ -68,10 +68,10 @@ public class SearchEngineUtilTest {
 
 	@Test
 	public void testAfterPropertiesSet() {
-		Assert.assertTrue(_called);
+		Assert.assertTrue(_calledAfterPropertiesSet);
 	}
 
-	private static boolean _called;
+	private static boolean _calledAfterPropertiesSet;
 	private static ServiceRegistration<SearchEngineConfigurator>
 		_serviceRegistration;
 
@@ -80,7 +80,7 @@ public class SearchEngineUtilTest {
 
 		@Override
 		public void afterPropertiesSet() {
-			_called = true;
+			_calledAfterPropertiesSet = true;
 		}
 
 		@Override
