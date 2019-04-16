@@ -37,7 +37,7 @@ import org.osgi.framework.ServiceRegistration;
  * @author Peter Fellwock
  */
 @RunWith(Arquillian.class)
-public class SearchEngineUtilTest {
+public class SearchEngineHelperImplTest {
 
 	@ClassRule
 	@Rule
@@ -46,14 +46,15 @@ public class SearchEngineUtilTest {
 
 	@BeforeClass
 	public static void setUpClass() {
-		Bundle bundle = FrameworkUtil.getBundle(SearchEngineUtilTest.class);
+		Bundle bundle = FrameworkUtil.getBundle(
+			SearchEngineHelperImplTest.class);
 
 		BundleContext bundleContext = bundle.getBundleContext();
 
 		_serviceRegistration = bundleContext.registerService(
 			SearchEngineConfigurator.class,
 			(SearchEngineConfigurator)ProxyUtil.newProxyInstance(
-				SearchEngineUtilTest.class.getClassLoader(),
+				SearchEngineHelperImplTest.class.getClassLoader(),
 				new Class<?>[] {SearchEngineConfigurator.class},
 				(proxy, method, args) -> {
 					if ("afterPropertiesSet".equals(method.getName())) {
