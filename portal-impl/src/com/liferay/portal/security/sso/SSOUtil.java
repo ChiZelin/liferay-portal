@@ -16,7 +16,6 @@ package com.liferay.portal.security.sso;
 
 import com.liferay.portal.kernel.security.sso.SSO;
 import com.liferay.portal.kernel.util.PropsKeys;
-import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.util.PrefsPropsUtil;
 import com.liferay.portal.util.PropsValues;
 import com.liferay.registry.Registry;
@@ -37,84 +36,20 @@ public class SSOUtil {
 	public static String getSessionExpirationRedirectURL(
 		long companyId, String sessionExpirationRedirectURL) {
 
-		String ssoSessionExpirationRedirectURL =
-			_instance._getSessionExpirationRedirectURL(companyId);
-
-		if (_instance._ssoMap.isEmpty() ||
-			Validator.isNull(ssoSessionExpirationRedirectURL)) {
-
-			return sessionExpirationRedirectURL;
-		}
-
-		return ssoSessionExpirationRedirectURL;
-	}
-
-	public static String getSignInURL(long companyId, String signInURL) {
-		if (_instance._ssoMap.isEmpty()) {
-			return null;
-		}
-
-		return _instance._getSignInURL(companyId, signInURL);
-	}
-
-	public static boolean isLoginRedirectRequired(long companyId) {
-		if (PrefsPropsUtil.getBoolean(
-				companyId, PropsKeys.LOGIN_DIALOG_DISABLED,
-				PropsValues.LOGIN_DIALOG_DISABLED)) {
-
-			return true;
-		}
-
-		if (_instance._ssoMap.isEmpty()) {
-			return false;
-		}
-
-		return _instance._isLoginRedirectRequired(companyId);
-	}
-
-	public static boolean isRedirectRequired(long companyId) {
-		if (_instance._ssoMap.isEmpty()) {
-			return false;
-		}
-
-		return _instance._isRedirectRequired(companyId);
-	}
-
-	public static boolean isSessionRedirectOnExpire(long companyId) {
-		boolean sessionRedirectOnExpire =
-			PropsValues.SESSION_TIMEOUT_REDIRECT_ON_EXPIRE;
-
-		if (_instance._ssoMap.isEmpty() || sessionRedirectOnExpire) {
-			return sessionRedirectOnExpire;
-		}
-
-		return _instance._isSessionRedirectOnExpire(companyId);
-	}
-
-	private SSOUtil() {
-		Registry registry = RegistryUtil.getRegistry();
-
-		_serviceTracker = registry.trackServices(
-			SSO.class, new SSOServiceTrackerCustomizer());
-
-		_serviceTracker.open();
-	}
-
-	private String _getSessionExpirationRedirectURL(long companyId) {
-		for (SSO sso : _ssoMap.values()) {
-			String sessionExpirationRedirectURL =
+		for (SSO sso : _instance._ssoMap.values()) {
+			String ssoSessionExpirationRedirectURL =
 				sso.getSessionExpirationRedirectUrl(companyId);
 
-			if (sessionExpirationRedirectURL != null) {
-				return sessionExpirationRedirectURL;
+			if (ssoSessionExpirationRedirectURL != null) {
+				return ssoSessionExpirationRedirectURL;
 			}
 		}
 
-		return null;
+		return sessionExpirationRedirectURL;
 	}
 
-	private String _getSignInURL(long companyId, String defaultSignInURL) {
-		for (SSO sso : _ssoMap.values()) {
+	public static String getSignInURL(long companyId, String defaultSignInURL) {
+		for (SSO sso : _instance._ssoMap.values()) {
 			String signInURL = sso.getSignInURL(companyId, defaultSignInURL);
 
 			if (signInURL != null) {
@@ -125,8 +60,15 @@ public class SSOUtil {
 		return null;
 	}
 
-	private boolean _isLoginRedirectRequired(long companyId) {
-		for (SSO sso : _ssoMap.values()) {
+	public static boolean isLoginRedirectRequired(long companyId) {
+		if (PrefsPropsUtil.getBoolean(
+				companyId, PropsKeys.LOGIN_DIALOG_DISABLED,
+				PropsValues.LOGIN_DIALOG_DISABLED)) {
+
+			return true;
+		}
+
+		for (SSO sso : _instance._ssoMap.values()) {
 			if (sso.isLoginRedirectRequired(companyId)) {
 				return true;
 			}
@@ -135,8 +77,8 @@ public class SSOUtil {
 		return false;
 	}
 
-	private boolean _isRedirectRequired(long companyId) {
-		for (SSO sso : _ssoMap.values()) {
+	public static boolean isRedirectRequired(long companyId) {
+		for (SSO sso : _instance._ssoMap.values()) {
 			if (sso.isRedirectRequired(companyId)) {
 				return true;
 			}
@@ -145,14 +87,27 @@ public class SSOUtil {
 		return false;
 	}
 
-	private boolean _isSessionRedirectOnExpire(long companyId) {
-		for (SSO sso : _ssoMap.values()) {
+	public static boolean isSessionRedirectOnExpire(long companyId) {
+		if (PropsValues.SESSION_TIMEOUT_REDIRECT_ON_EXPIRE) {
+			return PropsValues.SESSION_TIMEOUT_REDIRECT_ON_EXPIRE;
+		}
+
+		for (SSO sso : _instance._ssoMap.values()) {
 			if (sso.isSessionRedirectOnExpire(companyId)) {
 				return true;
 			}
 		}
 
 		return false;
+	}
+
+	private SSOUtil() {
+		Registry registry = RegistryUtil.getRegistry();
+
+		_serviceTracker = registry.trackServices(
+			SSO.class, new SSOServiceTrackerCustomizer());
+
+		_serviceTracker.open();
 	}
 
 	private static final SSOUtil _instance = new SSOUtil();
