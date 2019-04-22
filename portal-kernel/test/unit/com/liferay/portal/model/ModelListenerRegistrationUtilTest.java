@@ -40,7 +40,7 @@ public class ModelListenerRegistrationUtilTest {
 		Registry registry = RegistryUtil.getRegistry();
 
 		_serviceRegistration = registry.registerService(
-			ModelListener.class, new TestModelListener());
+			ModelListener.class, new BaseModelListener<Contact>() {});
 	}
 
 	@AfterClass
@@ -50,20 +50,18 @@ public class ModelListenerRegistrationUtilTest {
 
 	@Test
 	public void testGetModelListeners() {
+		Registry registry = RegistryUtil.getRegistry();
+
 		ModelListener<Contact>[] modelListeners =
 			ModelListenerRegistrationUtil.getModelListeners(Contact.class);
 
 		Assert.assertEquals(
 			modelListeners.toString(), 1, modelListeners.length);
-
-		Class<?> clazz = modelListeners[0].getClass();
-
-		Assert.assertEquals(TestModelListener.class.getName(), clazz.getName());
+		Assert.assertSame(
+			registry.getService(_serviceRegistration.getServiceReference()),
+			modelListeners[0]);
 	}
 
 	private static ServiceRegistration<ModelListener> _serviceRegistration;
-
-	private static class TestModelListener extends BaseModelListener<Contact> {
-	}
 
 }
