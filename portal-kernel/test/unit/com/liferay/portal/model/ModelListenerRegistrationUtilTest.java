@@ -55,11 +55,11 @@ public class ModelListenerRegistrationUtilTest {
 		ModelListener<Contact>[] modelListeners =
 			ModelListenerRegistrationUtil.getModelListeners(Contact.class);
 
-		Assert.assertEquals(
-			modelListeners.toString(), 1, modelListeners.length);
-		Assert.assertSame(
-			registry.getService(_serviceRegistration.getServiceReference()),
-			modelListeners[0]);
+		Assert.assertArrayEquals(
+			new ModelListener[] {
+				registry.getService(_serviceRegistration.getServiceReference())
+			},
+			modelListeners);
 	}
 
 	private static ServiceRegistration<ModelListener> _serviceRegistration;
