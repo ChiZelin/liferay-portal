@@ -14,8 +14,8 @@
 
 package com.liferay.portal.xmlrpc;
 
+import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.xmlrpc.Method;
-import com.liferay.portal.kernel.xmlrpc.Response;
 import com.liferay.registry.BasicRegistryImpl;
 import com.liferay.registry.Registry;
 import com.liferay.registry.RegistryUtil;
@@ -38,7 +38,25 @@ public class XmlRpcMethodUtilTest {
 		Registry registry = RegistryUtil.getRegistry();
 
 		_serviceRegistration = registry.registerService(
-			Method.class, new TestMethod());
+			Method.class,
+			(Method)ProxyUtil.newProxyInstance(
+				Method.class.getClassLoader(),
+				new Class<?>[] {Method.class},
+				(proxy, method, args) -> {
+					if ("getToken".equals(method.getName())) {
+						return _TOKEN;
+					}
+
+					if ("getMethodName".equals(method.getName())) {
+						return _METHOD_NAME;
+					}
+
+					if ("equals".equals(method.getName())) {
+						return proxy == args[0];
+					}
+
+					return null;
+				}));
 	}
 
 	@AfterClass
@@ -48,42 +66,17 @@ public class XmlRpcMethodUtilTest {
 
 	@Test
 	public void testNoReturn() {
-		Method method = XmlRpcMethodUtil.getMethod(
-			TestMethod.TOKEN, TestMethod.METHOD_NAME);
+		Registry registry = RegistryUtil.getRegistry();
 
-		Class<?> clazz = method.getClass();
-
-		Assert.assertEquals(TestMethod.class.getName(), clazz.getName());
+		Assert.assertEquals(
+			registry.getService(_serviceRegistration.getServiceReference()),
+			XmlRpcMethodUtil.getMethod(_TOKEN, _METHOD_NAME));
 	}
+
+	private static final String _METHOD_NAME = "METHOD_NAME";
+
+	private static final String _TOKEN = "TOKEN";
 
 	private static ServiceRegistration<Method> _serviceRegistration;
-
-	private static class TestMethod implements Method {
-
-		public static final String METHOD_NAME = "METHOD_NAME";
-
-		public static final String TOKEN = "TOKEN";
-
-		@Override
-		public Response execute(long companyId) {
-			return null;
-		}
-
-		@Override
-		public String getMethodName() {
-			return METHOD_NAME;
-		}
-
-		@Override
-		public String getToken() {
-			return TOKEN;
-		}
-
-		@Override
-		public boolean setArguments(Object[] arguments) {
-			return false;
-		}
-
-	}
 
 }
