@@ -81,17 +81,13 @@ public class ExportImportLifecycleEventListenerRegistryUtilTest {
 		ExportImportLifecycleListener expectedExportImportLifecycleListener,
 		Set<ExportImportLifecycleListener> exportImportLifecycleListeners) {
 
-		Assert.assertEquals(
-			exportImportLifecycleListeners.toString(), 1,
-			exportImportLifecycleListeners.size());
-
-		for (ExportImportLifecycleListener exportImportLifecycleListener :
-				exportImportLifecycleListeners) {
-
-			Assert.assertSame(
-				expectedExportImportLifecycleListener,
-				exportImportLifecycleListener);
-		}
+		Assert.assertTrue(
+			expectedExportImportLifecycleListener + " not found in " +
+				exportImportLifecycleListeners,
+			exportImportLifecycleListeners.removeIf(
+				exportImportLifecycleListener ->
+					expectedExportImportLifecycleListener ==
+						exportImportLifecycleListener));
 	}
 
 	private static ExportImportLifecycleListener
