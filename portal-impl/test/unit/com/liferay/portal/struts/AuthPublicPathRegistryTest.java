@@ -38,7 +38,7 @@ public class AuthPublicPathRegistryTest {
 		Registry registry = RegistryUtil.getRegistry();
 
 		_serviceRegistration = registry.registerService(
-			Object.class, new TestAuthPublicPath(),
+			Object.class, new Object(),
 			new HashMap<String, Object>() {
 				{
 					put("auth.public.path", "testAuthPublicPath");
@@ -60,8 +60,5 @@ public class AuthPublicPathRegistryTest {
 	}
 
 	private static ServiceRegistration<Object> _serviceRegistration;
-
-	private static class TestAuthPublicPath {
-	}
 
 }
