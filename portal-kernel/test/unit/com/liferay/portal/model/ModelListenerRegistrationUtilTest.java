@@ -40,7 +40,9 @@ public class ModelListenerRegistrationUtilTest {
 		Registry registry = RegistryUtil.getRegistry();
 
 		_serviceRegistration = registry.registerService(
-			ModelListener.class, new BaseModelListener<Contact>() {});
+			ModelListener.class,
+			new BaseModelListener<Contact>() {
+			});
 	}
 
 	@AfterClass

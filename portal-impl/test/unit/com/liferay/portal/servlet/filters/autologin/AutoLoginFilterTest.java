@@ -68,8 +68,7 @@ public class AutoLoginFilterTest {
 					}
 
 					return null;
-				}
-			));
+				}));
 	}
 
 	@AfterClass
@@ -101,7 +100,7 @@ public class AutoLoginFilterTest {
 		Assert.assertTrue(_calledLogin);
 	}
 
-	private static boolean _calledLogin = false;
+	private static boolean _calledLogin;
 	private static ServiceRegistration<AutoLogin> _serviceRegistration;
 
 }

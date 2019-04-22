@@ -40,8 +40,7 @@ public class XmlRpcMethodUtilTest {
 		_serviceRegistration = registry.registerService(
 			Method.class,
 			(Method)ProxyUtil.newProxyInstance(
-				Method.class.getClassLoader(),
-				new Class<?>[] {Method.class},
+				Method.class.getClassLoader(), new Class<?>[] {Method.class},
 				(proxy, method, args) -> {
 					if ("getToken".equals(method.getName())) {
 						return _TOKEN;
