@@ -14,41 +14,52 @@
 
 package com.liferay.portal.kernel.portlet.toolbar;
 
-import com.liferay.portal.kernel.portlet.toolbar.bundle.portlettoolbar.TestPortletToolbarContributor;
+import com.liferay.portal.kernel.portlet.toolbar.contributor.PortletToolbarContributor;
 import com.liferay.portal.kernel.portlet.toolbar.contributor.locator.PortletToolbarContributorLocator;
 import com.liferay.portal.kernel.servlet.PortletServlet;
 import com.liferay.portal.kernel.servlet.taglib.ui.Menu;
-import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.util.ProxyFactory;
-import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
-import com.liferay.portal.test.rule.SyntheticBundleClassTestRule;
+import com.liferay.portal.tools.ToolDependencies;
+import com.liferay.registry.Registry;
+import com.liferay.registry.RegistryUtil;
+import com.liferay.registry.ServiceRegistration;
 import com.liferay.registry.dependency.ServiceDependencyManager;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 
+import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.ClassRule;
-import org.junit.Rule;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.portlet.MockPortletRequest;
 
 /**
- * @author Philip Jones
+ * @author Leon Chi
  */
 public class PortletToolbarTest {
 
-	@ClassRule
-	@Rule
-	public static final AggregateTestRule aggregateTestRule =
-		new AggregateTestRule(
-			new LiferayIntegrationTestRule(),
-			new SyntheticBundleClassTestRule("bundle.portlettoolbar"));
+	@BeforeClass
+	public static void setUpClass() {
+		ToolDependencies.wireDeployers();
+
+		Registry registry = RegistryUtil.getRegistry();
+
+		_serviceRegistration = registry.registerService(
+			PortletToolbarContributorLocator.class,
+			new TestPortletToolbarContributorLocator());
+	}
+
+	@AfterClass
+	public static void tearDownClass() {
+		_serviceRegistration.unregister();
+	}
 
 	@Test
 	public void testGetPortletTitleMenus() {
@@ -78,6 +89,51 @@ public class PortletToolbarTest {
 			menus.removeIf(
 				menu -> TestPortletToolbarContributor.LABEL.equals(
 					menu.getLabel())));
+	}
+
+	private static ServiceRegistration<PortletToolbarContributorLocator>
+		_serviceRegistration;
+
+	private static class TestPortletToolbarContributor
+		implements PortletToolbarContributor {
+
+		public static final String LABEL = "LABEL";
+
+		@Override
+		public List<Menu> getPortletTitleMenus(
+			PortletRequest portletRequest, PortletResponse portletResponse) {
+
+			List<Menu> portletTitleMenus = new ArrayList<>();
+
+			Menu menu = new Menu();
+
+			menu.setLabel(LABEL);
+
+			portletTitleMenus.add(menu);
+
+			return portletTitleMenus;
+		}
+
+	}
+
+	private static class TestPortletToolbarContributorLocator
+		implements PortletToolbarContributorLocator {
+
+		@Override
+		public List<PortletToolbarContributor> getPortletToolbarContributors(
+			String portletId, PortletRequest portletRequest) {
+
+			List<PortletToolbarContributor> portletToolbarContributors =
+				new ArrayList<>();
+
+			TestPortletToolbarContributor testPortletToolbarContributor =
+				new TestPortletToolbarContributor();
+
+			portletToolbarContributors.add(testPortletToolbarContributor);
+
+			return portletToolbarContributors;
+		}
+
 	}
 
 }
