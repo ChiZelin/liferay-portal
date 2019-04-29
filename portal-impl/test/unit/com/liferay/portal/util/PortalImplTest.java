@@ -50,12 +50,7 @@ public class PortalImplTest {
 
 	@BeforeClass
 	public static void setUpClass() {
-		ToolDependencies.wireDeployers();
-
-		Registry registry = RegistryUtil.getRegistry();
-
-		_serviceRegistration = registry.registerService(
-			AlwaysAllowDoAsUser.class, new TestAlwaysAllowDoAsUser());
+		ToolDependencies.wireBasic();
 
 		_portalImpl = new PortalImpl();
 	}
