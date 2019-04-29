@@ -67,7 +67,7 @@ public class CustomJspBagRegistryUtilTest {
 		Registry registry = RegistryUtil.getRegistry();
 
 		_customJspBagServiceRegistration = registry.registerService(
-			CustomJspBag.class, new TestCustomJspBag(),
+			CustomJspBag.class, new TestCustomJspBag(false),
 			new HashMap<String, Object>() {
 				{
 					put("context.id", "TestCustomJspBag");
@@ -76,7 +76,7 @@ public class CustomJspBagRegistryUtilTest {
 			});
 
 		_globalCustomJspBagServiceRegistration = registry.registerService(
-			CustomJspBag.class, new TestGlobalCustomJspBag(),
+			CustomJspBag.class, new TestCustomJspBag(true),
 			new HashMap<String, Object>() {
 				{
 					put("context.id", "TestGlobalCustomJspBag");
@@ -138,52 +138,14 @@ public class CustomJspBagRegistryUtilTest {
 
 		@Override
 		public boolean isCustomJspGlobal() {
-			return false;
+			return _customJspGlobal;
 		}
 
-		private final List<String> _customJsps = new ArrayList<>();
-
-		private final URLContainer _urlContainer = new URLContainer() {
-
-			@Override
-			public URL getResource(String name) {
-				Class<?> clazz = getClass();
-
-				return clazz.getResource("dependencies/bottom-ext.jsp");
-			}
-
-			@Override
-			public Set<String> getResources(String path) {
-				return Collections.singleton(
-					"/html/common/themes/bottom-ext.jsp");
-			}
-
-		};
-
-	}
-
-	private static class TestGlobalCustomJspBag implements CustomJspBag {
-
-		@Override
-		public String getCustomJspDir() {
-			return StringPool.SLASH;
+		private TestCustomJspBag(boolean customJspGlobal) {
+			_customJspGlobal = customJspGlobal;
 		}
 
-		@Override
-		public List<String> getCustomJsps() {
-			return _customJsps;
-		}
-
-		@Override
-		public URLContainer getURLContainer() {
-			return _urlContainer;
-		}
-
-		@Override
-		public boolean isCustomJspGlobal() {
-			return true;
-		}
-
+		private final boolean _customJspGlobal;
 		private final List<String> _customJsps = new ArrayList<>();
 
 		private final URLContainer _urlContainer = new URLContainer() {
