@@ -24,7 +24,6 @@ import com.liferay.portal.tools.ToolDependencies;
 import com.liferay.registry.Registry;
 import com.liferay.registry.RegistryUtil;
 import com.liferay.registry.ServiceRegistration;
-import com.liferay.registry.dependency.ServiceDependencyManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,14 +63,6 @@ public class PortletToolbarTest {
 	@Test
 	public void testGetPortletTitleMenus() {
 		PortletToolbar portletToolbar = new PortletToolbar();
-
-		ServiceDependencyManager serviceDependencyManager =
-			new ServiceDependencyManager();
-
-		serviceDependencyManager.registerDependencies(
-			PortletToolbarContributorLocator.class);
-
-		serviceDependencyManager.waitForDependencies(1000);
 
 		PortletRequest portletRequest = new MockPortletRequest();
 
