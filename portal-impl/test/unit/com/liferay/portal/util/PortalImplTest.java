@@ -35,7 +35,6 @@ import java.util.Collection;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
-import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -53,11 +52,6 @@ public class PortalImplTest {
 		ToolDependencies.wireBasic();
 
 		_portalImpl = new PortalImpl();
-	}
-
-	@AfterClass
-	public static void tearDownClass() {
-		_serviceRegistration.unregister();
 	}
 
 	@Test
@@ -150,38 +144,53 @@ public class PortalImplTest {
 
 	@Test
 	public void testGetUserId() {
-		MockHttpServletRequest mockHttpServletRequest =
-			new MockHttpServletRequest();
+		Registry registry = RegistryUtil.getRegistry();
 
-		mockHttpServletRequest.setParameter(
-			"_TestAlwaysAllowDoAsUser_actionName",
-			TestAlwaysAllowDoAsUser.ACTION_NAME);
-		mockHttpServletRequest.setParameter(
-			"_TestAlwaysAllowDoAsUser_struts_action",
-			TestAlwaysAllowDoAsUser.STRUTS_ACTION);
-		mockHttpServletRequest.setParameter("doAsUserId", "0");
-		mockHttpServletRequest.setParameter(
-			"p_p_id", "TestAlwaysAllowDoAsUser");
+		ServiceRegistration<AlwaysAllowDoAsUser> serviceRegistration = null;
 
-		long userId = _portalImpl.getUserId(mockHttpServletRequest);
+		try {
+			serviceRegistration =
+				registry.registerService(
+					AlwaysAllowDoAsUser.class, new TestAlwaysAllowDoAsUser());
 
-		Assert.assertEquals(0, userId);
+			MockHttpServletRequest mockHttpServletRequest =
+				new MockHttpServletRequest();
 
-		Assert.assertTrue(_called);
+			mockHttpServletRequest.setParameter(
+				"_TestAlwaysAllowDoAsUser_actionName",
+				TestAlwaysAllowDoAsUser.ACTION_NAME);
+			mockHttpServletRequest.setParameter(
+				"_TestAlwaysAllowDoAsUser_struts_action",
+				TestAlwaysAllowDoAsUser.STRUTS_ACTION);
+			mockHttpServletRequest.setParameter("doAsUserId", "0");
+			mockHttpServletRequest.setParameter(
+				"p_p_id", "TestAlwaysAllowDoAsUser");
 
-		_called = false;
+			long userId = _portalImpl.getUserId(mockHttpServletRequest);
 
-		mockHttpServletRequest = new MockHttpServletRequest();
+			Assert.assertEquals(0, userId);
 
-		mockHttpServletRequest.setParameter("doAsUserId", "0");
-		mockHttpServletRequest.setPathInfo(
-			"/TestAlwaysAllowDoAsUser/" + RandomTestUtil.randomString());
+			Assert.assertTrue(_called);
 
-		userId = _portalImpl.getUserId(mockHttpServletRequest);
+			_called = false;
 
-		Assert.assertEquals(0, userId);
+			mockHttpServletRequest = new MockHttpServletRequest();
 
-		Assert.assertTrue(_called);
+			mockHttpServletRequest.setParameter("doAsUserId", "0");
+			mockHttpServletRequest.setPathInfo(
+				"/TestAlwaysAllowDoAsUser/" + RandomTestUtil.randomString());
+
+			userId = _portalImpl.getUserId(mockHttpServletRequest);
+
+			Assert.assertEquals(0, userId);
+
+			Assert.assertTrue(_called);
+		}
+		finally {
+			if (serviceRegistration != null) {
+				serviceRegistration.unregister();
+			}
+		}
 	}
 
 	@Test
@@ -212,8 +221,6 @@ public class PortalImplTest {
 
 	private static boolean _called;
 	private static PortalImpl _portalImpl;
-	private static ServiceRegistration<AlwaysAllowDoAsUser>
-		_serviceRegistration;
 
 	private static class PersistentHttpServletRequestWrapper1
 		extends PersistentHttpServletRequestWrapper {
