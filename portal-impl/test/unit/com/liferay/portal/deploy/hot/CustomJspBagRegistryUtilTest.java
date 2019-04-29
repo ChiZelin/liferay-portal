@@ -66,7 +66,7 @@ public class CustomJspBagRegistryUtilTest {
 
 		Registry registry = RegistryUtil.getRegistry();
 
-		_serviceRegistration1 = registry.registerService(
+		_customJspBagServiceRegistration = registry.registerService(
 			CustomJspBag.class, new TestCustomJspBag(),
 			new HashMap<String, Object>() {
 				{
@@ -75,7 +75,7 @@ public class CustomJspBagRegistryUtilTest {
 				}
 			});
 
-		_serviceRegistration2 = registry.registerService(
+		_globalCustomJspBagServiceRegistration = registry.registerService(
 			CustomJspBag.class, new TestGlobalCustomJspBag(),
 			new HashMap<String, Object>() {
 				{
@@ -87,18 +87,18 @@ public class CustomJspBagRegistryUtilTest {
 
 	@AfterClass
 	public static void tearDownClass() {
-		_serviceRegistration1.unregister();
-		_serviceRegistration2.unregister();
+		_customJspBagServiceRegistration.unregister();
+		_globalCustomJspBagServiceRegistration.unregister();
 	}
 
 	@Test
 	public void testGetCustomJspBags() {
-		_assertCustomJspBag(_serviceRegistration1);
+		_assertCustomJspBag(_customJspBagServiceRegistration);
 	}
 
 	@Test
 	public void testGetGlobalCustomJspBags() {
-		_assertCustomJspBag(_serviceRegistration2);
+		_assertCustomJspBag(_globalCustomJspBagServiceRegistration);
 	}
 
 	private void _assertCustomJspBag(
@@ -114,8 +114,10 @@ public class CustomJspBagRegistryUtilTest {
 			customJspBags.get(serviceRegistration.getServiceReference()));
 	}
 
-	private static ServiceRegistration<CustomJspBag> _serviceRegistration1;
-	private static ServiceRegistration<CustomJspBag> _serviceRegistration2;
+	private static ServiceRegistration<CustomJspBag>
+		_customJspBagServiceRegistration;
+	private static ServiceRegistration<CustomJspBag>
+		_globalCustomJspBagServiceRegistration;
 
 	private static class TestCustomJspBag implements CustomJspBag {
 
