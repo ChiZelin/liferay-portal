@@ -18,7 +18,6 @@ import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.url.URLContainer;
 import com.liferay.portal.kernel.util.CustomJspRegistryUtil;
 import com.liferay.portal.kernel.util.FileUtil;
-import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.util.CustomJspRegistryImpl;
 import com.liferay.portal.util.FileImpl;
@@ -94,34 +93,25 @@ public class CustomJspBagRegistryUtilTest {
 
 	@Test
 	public void testGetCustomJspBags() {
-		Assert.assertTrue(
-			"TestCustomJspBag not found",
-			_findCustomJspBag("TestCustomJspBag"));
+		_assertCustomJspBag(_serviceRegistration1);
 	}
 
 	@Test
 	public void testGetGlobalCustomJspBags() {
-		Assert.assertTrue(
-			"TestGlobalCustomJspBag not found",
-			_findCustomJspBag("TestGlobalCustomJspBag"));
+		_assertCustomJspBag(_serviceRegistration2);
 	}
 
-	private boolean _findCustomJspBag(String targetContextId) {
+	private void _assertCustomJspBag(
+		ServiceRegistration<CustomJspBag> serviceRegistration) {
+
+		Registry registry = RegistryUtil.getRegistry();
+
 		Map<ServiceReference<CustomJspBag>, CustomJspBag> customJspBags =
 			CustomJspBagRegistryUtil.getCustomJspBags();
 
-		for (ServiceReference<CustomJspBag> serviceReference :
-				customJspBags.keySet()) {
-
-			String contextId = GetterUtil.getString(
-				serviceReference.getProperty("context.id"));
-
-			if (contextId.equals(targetContextId)) {
-				return true;
-			}
-		}
-
-		return false;
+		Assert.assertSame(
+			registry.getService(serviceRegistration.getServiceReference()),
+			customJspBags.get(serviceRegistration.getServiceReference()));
 	}
 
 	private static ServiceRegistration<CustomJspBag> _serviceRegistration1;
