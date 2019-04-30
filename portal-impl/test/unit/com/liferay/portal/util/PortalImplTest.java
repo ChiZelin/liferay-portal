@@ -170,9 +170,9 @@ public class PortalImplTest {
 
 			Assert.assertEquals(0, userId);
 
-			Assert.assertTrue(_called);
+			Assert.assertTrue(_calledAlwaysAllowDoAsUser);
 
-			_called = false;
+			_calledAlwaysAllowDoAsUser = false;
 
 			mockHttpServletRequest = new MockHttpServletRequest();
 
@@ -184,7 +184,7 @@ public class PortalImplTest {
 
 			Assert.assertEquals(0, userId);
 
-			Assert.assertTrue(_called);
+			Assert.assertTrue(_calledAlwaysAllowDoAsUser);
 		}
 		finally {
 			if (serviceRegistration != null) {
@@ -230,7 +230,7 @@ public class PortalImplTest {
 	private static final String _STRUTS_ACTION =
 		"/TestAlwaysAllowDoAsUser/struts/action";
 
-	private static boolean _called;
+	private static boolean _calledAlwaysAllowDoAsUser;
 	private static PortalImpl _portalImpl;
 
 	private static class PersistentHttpServletRequestWrapper1
@@ -260,28 +260,28 @@ public class PortalImplTest {
 
 		@Override
 		public Collection<String> getActionNames() {
-			_called = true;
+			_calledAlwaysAllowDoAsUser = true;
 
 			return Collections.singletonList(_ACTION_NAME);
 		}
 
 		@Override
 		public Collection<String> getMVCRenderCommandNames() {
-			_called = true;
+			_calledAlwaysAllowDoAsUser = true;
 
 			return Collections.singletonList(_MVC_RENDER_COMMMAND_NAME);
 		}
 
 		@Override
 		public Collection<String> getPaths() {
-			_called = true;
+			_calledAlwaysAllowDoAsUser = true;
 
 			return Collections.singletonList(_PATH);
 		}
 
 		@Override
 		public Collection<String> getStrutsActions() {
-			_called = true;
+			_calledAlwaysAllowDoAsUser = true;
 
 			return Collections.singletonList(_STRUTS_ACTION);
 		}
