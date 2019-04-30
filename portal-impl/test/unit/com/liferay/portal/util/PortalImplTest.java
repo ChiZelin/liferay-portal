@@ -50,8 +50,6 @@ public class PortalImplTest {
 	@BeforeClass
 	public static void setUpClass() {
 		ToolDependencies.wireBasic();
-
-		_portalImpl = new PortalImpl();
 	}
 
 	@Test
@@ -229,10 +227,10 @@ public class PortalImplTest {
 	private static final String _STRUTS_ACTION =
 		"/TestAlwaysAllowDoAsUser/struts/action";
 
-	private static boolean _calledAlwaysAllowDoAsUser;
-	private static PortalImpl _portalImpl;
+	private boolean _calledAlwaysAllowDoAsUser;
+	private final PortalImpl _portalImpl = new PortalImpl();
 
-	private static class PersistentHttpServletRequestWrapper1
+	private class PersistentHttpServletRequestWrapper1
 		extends PersistentHttpServletRequestWrapper {
 
 		private PersistentHttpServletRequestWrapper1(
@@ -243,7 +241,7 @@ public class PortalImplTest {
 
 	}
 
-	private static class PersistentHttpServletRequestWrapper2
+	private class PersistentHttpServletRequestWrapper2
 		extends PersistentHttpServletRequestWrapper {
 
 		private PersistentHttpServletRequestWrapper2(
@@ -254,8 +252,7 @@ public class PortalImplTest {
 
 	}
 
-	private static class TestAlwaysAllowDoAsUser
-		implements AlwaysAllowDoAsUser {
+	private class TestAlwaysAllowDoAsUser implements AlwaysAllowDoAsUser {
 
 		@Override
 		public Collection<String> getActionNames() {
