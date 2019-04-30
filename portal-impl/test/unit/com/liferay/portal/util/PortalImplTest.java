@@ -158,10 +158,10 @@ public class PortalImplTest {
 
 			mockHttpServletRequest.setParameter(
 				"_TestAlwaysAllowDoAsUser_actionName",
-				TestAlwaysAllowDoAsUser.ACTION_NAME);
+				_ACTION_NAME);
 			mockHttpServletRequest.setParameter(
 				"_TestAlwaysAllowDoAsUser_struts_action",
-				TestAlwaysAllowDoAsUser.STRUTS_ACTION);
+				_STRUTS_ACTION);
 			mockHttpServletRequest.setParameter("doAsUserId", "0");
 			mockHttpServletRequest.setParameter(
 				"p_p_id", "TestAlwaysAllowDoAsUser");
@@ -178,7 +178,7 @@ public class PortalImplTest {
 
 			mockHttpServletRequest.setParameter("doAsUserId", "0");
 			mockHttpServletRequest.setPathInfo(
-				TestAlwaysAllowDoAsUser.PATH + RandomTestUtil.randomString());
+				_PATH + RandomTestUtil.randomString());
 
 			userId = _portalImpl.getUserId(mockHttpServletRequest);
 
@@ -219,6 +219,17 @@ public class PortalImplTest {
 		return (HttpServletRequest)requestWrapper.getRequest();
 	}
 
+	private static final String _ACTION_NAME =
+		"/TestAlwaysAllowDoAsUser/action/name";
+
+	private static final String _MVC_RENDER_COMMMAND_NAME =
+		"/TestAlwaysAllowDoAsUser/mvc/render/command/name";
+
+	private static final String _PATH = "/TestAlwaysAllowDoAsUser/";
+
+	private static final String _STRUTS_ACTION =
+		"/TestAlwaysAllowDoAsUser/struts/action";
+
 	private static boolean _called;
 	private static PortalImpl _portalImpl;
 
@@ -247,43 +258,32 @@ public class PortalImplTest {
 	private static class TestAlwaysAllowDoAsUser
 		implements AlwaysAllowDoAsUser {
 
-		public static final String ACTION_NAME =
-			"/TestAlwaysAllowDoAsUser/action/name";
-
-		public static final String MVC_RENDER_COMMMAND_NAME =
-			"/TestAlwaysAllowDoAsUser/mvc/render/command/name";
-
-		public static final String PATH = "/TestAlwaysAllowDoAsUser/";
-
-		public static final String STRUTS_ACTION =
-			"/TestAlwaysAllowDoAsUser/struts/action";
-
 		@Override
 		public Collection<String> getActionNames() {
 			_called = true;
 
-			return Collections.singletonList(ACTION_NAME);
+			return Collections.singletonList(_ACTION_NAME);
 		}
 
 		@Override
 		public Collection<String> getMVCRenderCommandNames() {
 			_called = true;
 
-			return Collections.singletonList(MVC_RENDER_COMMMAND_NAME);
+			return Collections.singletonList(_MVC_RENDER_COMMMAND_NAME);
 		}
 
 		@Override
 		public Collection<String> getPaths() {
 			_called = true;
 
-			return Collections.singletonList(PATH);
+			return Collections.singletonList(_PATH);
 		}
 
 		@Override
 		public Collection<String> getStrutsActions() {
 			_called = true;
 
-			return Collections.singletonList(STRUTS_ACTION);
+			return Collections.singletonList(_STRUTS_ACTION);
 		}
 
 	}
