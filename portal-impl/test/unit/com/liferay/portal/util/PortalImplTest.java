@@ -29,8 +29,8 @@ import com.liferay.registry.ServiceRegistration;
 
 import java.io.InputStream;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
@@ -262,44 +262,28 @@ public class PortalImplTest {
 		public Collection<String> getActionNames() {
 			_called = true;
 
-			Collection<String> actionNames = new ArrayList<>();
-
-			actionNames.add(ACTION_NAME);
-
-			return actionNames;
+			return Collections.singletonList(ACTION_NAME);
 		}
 
 		@Override
 		public Collection<String> getMVCRenderCommandNames() {
 			_called = true;
 
-			Collection<String> mvcRenderCommandNames = new ArrayList<>();
-
-			mvcRenderCommandNames.add(MVC_RENDER_COMMMAND_NAME);
-
-			return mvcRenderCommandNames;
+			return Collections.singletonList(MVC_RENDER_COMMMAND_NAME);
 		}
 
 		@Override
 		public Collection<String> getPaths() {
 			_called = true;
 
-			Collection<String> paths = new ArrayList<>();
-
-			paths.add(PATH);
-
-			return paths;
+			return Collections.singletonList(PATH);
 		}
 
 		@Override
 		public Collection<String> getStrutsActions() {
 			_called = true;
 
-			Collection<String> strutsActions = new ArrayList<>();
-
-			strutsActions.add(STRUTS_ACTION);
-
-			return strutsActions;
+			return Collections.singletonList(STRUTS_ACTION);
 		}
 
 	}
