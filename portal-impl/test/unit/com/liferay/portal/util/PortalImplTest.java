@@ -149,19 +149,16 @@ public class PortalImplTest {
 		ServiceRegistration<AlwaysAllowDoAsUser> serviceRegistration = null;
 
 		try {
-			serviceRegistration =
-				registry.registerService(
-					AlwaysAllowDoAsUser.class, new TestAlwaysAllowDoAsUser());
+			serviceRegistration = registry.registerService(
+				AlwaysAllowDoAsUser.class, new TestAlwaysAllowDoAsUser());
 
 			MockHttpServletRequest mockHttpServletRequest1 =
 				new MockHttpServletRequest();
 
 			mockHttpServletRequest1.setParameter(
-				"_TestAlwaysAllowDoAsUser_actionName",
-				_ACTION_NAME);
+				"_TestAlwaysAllowDoAsUser_actionName", _ACTION_NAME);
 			mockHttpServletRequest1.setParameter(
-				"_TestAlwaysAllowDoAsUser_struts_action",
-				_STRUTS_ACTION);
+				"_TestAlwaysAllowDoAsUser_struts_action", _STRUTS_ACTION);
 			mockHttpServletRequest1.setParameter("doAsUserId", "0");
 			mockHttpServletRequest1.setParameter(
 				"p_p_id", "TestAlwaysAllowDoAsUser");
