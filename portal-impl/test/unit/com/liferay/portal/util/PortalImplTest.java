@@ -153,38 +153,29 @@ public class PortalImplTest {
 				registry.registerService(
 					AlwaysAllowDoAsUser.class, new TestAlwaysAllowDoAsUser());
 
-			MockHttpServletRequest mockHttpServletRequest =
+			MockHttpServletRequest mockHttpServletRequest1 =
 				new MockHttpServletRequest();
 
-			mockHttpServletRequest.setParameter(
+			mockHttpServletRequest1.setParameter(
 				"_TestAlwaysAllowDoAsUser_actionName",
 				_ACTION_NAME);
-			mockHttpServletRequest.setParameter(
+			mockHttpServletRequest1.setParameter(
 				"_TestAlwaysAllowDoAsUser_struts_action",
 				_STRUTS_ACTION);
-			mockHttpServletRequest.setParameter("doAsUserId", "0");
-			mockHttpServletRequest.setParameter(
+			mockHttpServletRequest1.setParameter("doAsUserId", "0");
+			mockHttpServletRequest1.setParameter(
 				"p_p_id", "TestAlwaysAllowDoAsUser");
 
-			long userId = _portalImpl.getUserId(mockHttpServletRequest);
+			_testGetUserId(mockHttpServletRequest1);
 
-			Assert.assertEquals(0, userId);
+			MockHttpServletRequest mockHttpServletRequest2 =
+				new MockHttpServletRequest();
 
-			Assert.assertTrue(_calledAlwaysAllowDoAsUser);
-
-			_calledAlwaysAllowDoAsUser = false;
-
-			mockHttpServletRequest = new MockHttpServletRequest();
-
-			mockHttpServletRequest.setParameter("doAsUserId", "0");
-			mockHttpServletRequest.setPathInfo(
+			mockHttpServletRequest2.setParameter("doAsUserId", "0");
+			mockHttpServletRequest2.setPathInfo(
 				_PATH + RandomTestUtil.randomString());
 
-			userId = _portalImpl.getUserId(mockHttpServletRequest);
-
-			Assert.assertEquals(0, userId);
-
-			Assert.assertTrue(_calledAlwaysAllowDoAsUser);
+			_testGetUserId(mockHttpServletRequest2);
 		}
 		finally {
 			if (serviceRegistration != null) {
@@ -217,6 +208,17 @@ public class PortalImplTest {
 			(HttpServletRequestWrapper)requestRequest;
 
 		return (HttpServletRequest)requestWrapper.getRequest();
+	}
+
+	private void _testGetUserId(HttpServletRequest httpServletRequest) {
+		_calledAlwaysAllowDoAsUser = false;
+
+		long userId = _portalImpl.getUserId(httpServletRequest);
+
+		Assert.assertEquals(0, userId);
+
+		Assert.assertTrue(
+			"Mock AlwaysAllowDoAsUser not called", _calledAlwaysAllowDoAsUser);
 	}
 
 	private static final String _ACTION_NAME =
