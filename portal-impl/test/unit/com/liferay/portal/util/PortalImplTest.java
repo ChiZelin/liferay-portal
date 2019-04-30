@@ -178,7 +178,7 @@ public class PortalImplTest {
 
 			mockHttpServletRequest.setParameter("doAsUserId", "0");
 			mockHttpServletRequest.setPathInfo(
-				"/TestAlwaysAllowDoAsUser/" + RandomTestUtil.randomString());
+				TestAlwaysAllowDoAsUser.PATH + RandomTestUtil.randomString());
 
 			userId = _portalImpl.getUserId(mockHttpServletRequest);
 
