@@ -12,38 +12,61 @@
  * details.
  */
 
-package com.liferay.portal.kernel.notification;
+package com.liferay.portal.notification.test;
 
+import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.UserNotificationEvent;
-import com.liferay.portal.kernel.notification.bundle.usernotificationmanagerutil.TestUserNotificationHandler;
 import com.liferay.portal.kernel.notifications.UserNotificationFeedEntry;
 import com.liferay.portal.kernel.notifications.UserNotificationHandler;
 import com.liferay.portal.kernel.notifications.UserNotificationManagerUtil;
-import com.liferay.portal.kernel.test.rule.AggregateTestRule;
+import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.model.impl.UserNotificationEventImpl;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
-import com.liferay.portal.test.rule.SyntheticBundleClassTestRule;
 
 import java.util.Map;
 
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.ServiceRegistration;
 
 /**
- * @author Peter Fellwock
+ * @author Leon Chi
  */
+@RunWith(Arquillian.class)
 public class UserNotificationManagerUtilTest {
 
 	@ClassRule
 	@Rule
-	public static final AggregateTestRule aggregateTestRule =
-		new AggregateTestRule(
-			new LiferayIntegrationTestRule(),
-			new SyntheticBundleClassTestRule(
-				"bundle.usernotificationmanagerutil"));
+	public static final LiferayIntegrationTestRule liferayIntegrationTestRule =
+		new LiferayIntegrationTestRule();
+
+	@BeforeClass
+	public static void setUpClass() {
+		Bundle bundle = FrameworkUtil.getBundle(
+			UserNotificationManagerUtilTest.class);
+
+		BundleContext bundleContext = bundle.getBundleContext();
+
+		_serviceRegistration = bundleContext.registerService(
+			UserNotificationHandler.class, new TestUserNotificationHandler(),
+			MapUtil.singletonDictionary("service.ranking", Integer.MAX_VALUE));
+	}
+
+	@AfterClass
+	public static void tearDownClass() {
+		_serviceRegistration.unregister();
+	}
 
 	@Test
 	public void testGetUserNotificationHandlers() {
@@ -92,15 +115,67 @@ public class UserNotificationManagerUtilTest {
 	@Test
 	public void testIsDeliver() {
 		try {
-			boolean deliver = UserNotificationManagerUtil.isDeliver(
-				1, TestUserNotificationHandler.SELECTOR,
-				TestUserNotificationHandler.PORTLET_ID, 1, 1, 1, null);
-
-			Assert.assertTrue(deliver);
+			Assert.assertTrue(
+				UserNotificationManagerUtil.isDeliver(
+					1, TestUserNotificationHandler.SELECTOR,
+					TestUserNotificationHandler.PORTLET_ID, 1, 1, 1, null));
 		}
 		catch (Exception e) {
 			throw new Error(e);
 		}
+	}
+
+	private static ServiceRegistration<UserNotificationHandler>
+		_serviceRegistration;
+
+	private static class TestUserNotificationHandler
+		implements UserNotificationHandler {
+
+		public static final String LINK = "http://www.liferay.com";
+
+		public static final String PORTLET_ID = "PORTLET_ID";
+
+		public static final String SELECTOR = "SELECTOR";
+
+		@Override
+		public String getPortletId() {
+			return PORTLET_ID;
+		}
+
+		@Override
+		public String getSelector() {
+			return SELECTOR;
+		}
+
+		@Override
+		public UserNotificationFeedEntry interpret(
+			UserNotificationEvent userNotificationEvent,
+			ServiceContext serviceContext) {
+
+			boolean applicable = isApplicable(
+				userNotificationEvent, serviceContext);
+
+			return new UserNotificationFeedEntry(
+				false, "body", LINK, applicable);
+		}
+
+		@Override
+		public boolean isDeliver(
+			long userId, long classNameId, int notificationType,
+			int deliveryType, ServiceContext serviceContext) {
+
+			if (userId == 1) {
+				return true;
+			}
+
+			return false;
+		}
+
+		@Override
+		public boolean isOpenDialog() {
+			return false;
+		}
+
 	}
 
 }
