@@ -15,29 +15,25 @@
 package com.liferay.portlet.invoker.filter.container.impl.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
-import com.liferay.portal.internal.servlet.MainServlet;
 import com.liferay.portal.kernel.model.Portlet;
-import com.liferay.portal.kernel.portlet.PortletContextFactory;
-import com.liferay.portal.kernel.portlet.PortletContextFactoryUtil;
+import com.liferay.portal.kernel.portlet.InvokerFilterContainer;
+import com.liferay.portal.kernel.portlet.PortletInstanceFactory;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
+import com.liferay.portal.kernel.servlet.ServletContextClassLoaderPool;
+import com.liferay.portal.kernel.servlet.ServletContextPool;
+import com.liferay.portal.kernel.util.HashMapDictionary;
+import com.liferay.portal.kernel.util.PortalClassLoaderUtil;
 import com.liferay.portal.model.impl.PortletAppImpl;
 import com.liferay.portal.model.impl.PortletImpl;
+import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
-import com.liferay.portal.test.rule.MainServletClassTestRule;
-import com.liferay.portlet.internal.InvokerFilterContainerImpl;
-import com.liferay.portlet.internal.PortletContextFactoryImpl;
-import com.liferay.registry.Registry;
-import com.liferay.registry.RegistryUtil;
-import com.liferay.registry.ServiceRegistration;
 
-import java.util.HashMap;
 import java.util.List;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.EventRequest;
 import javax.portlet.EventResponse;
-import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
@@ -61,6 +57,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.ServiceRegistration;
+
 /**
  * @author Leon Chi
  */
@@ -73,12 +74,15 @@ public class InvokerFilterContainerImplTest {
 		new LiferayIntegrationTestRule();
 
 	@BeforeClass
-	public static void setUpClass() {
-		Registry registry = RegistryUtil.getRegistry();
+	public static void setUpClass() throws PortletException {
+		Bundle bundle = FrameworkUtil.getBundle(
+			InvokerFilterContainerImplTest.class);
 
-		_serviceRegistration1 = registry.registerService(
+		BundleContext bundleContext = bundle.getBundleContext();
+
+		_actionFilterServiceRegistration = bundleContext.registerService(
 			PortletFilter.class, new TestActionFilter(),
-			new HashMap<String, Object>() {
+			new HashMapDictionary<String, Object>() {
 				{
 					put("javax.portlet.name", "InvokerFilterContainerImplTest");
 					put("preinitialized.filter", "false");
@@ -86,9 +90,9 @@ public class InvokerFilterContainerImplTest {
 				}
 			});
 
-		_serviceRegistration2 = registry.registerService(
+		_eventFilterServiceRegistration = bundleContext.registerService(
 			PortletFilter.class, new TestEventFilter(),
-			new HashMap<String, Object>() {
+			new HashMapDictionary<String, Object>() {
 				{
 					put("javax.portlet.name", "InvokerFilterContainerImplTest");
 					put("preinitialized.filter", "true");
@@ -96,9 +100,9 @@ public class InvokerFilterContainerImplTest {
 				}
 			});
 
-		_serviceRegistration3 = registry.registerService(
+		_renderFilterServiceRegistration = bundleContext.registerService(
 			PortletFilter.class, new TestRenderFilter(),
-			new HashMap<String, Object>() {
+			new HashMapDictionary<String, Object>() {
 				{
 					put("javax.portlet.name", "InvokerFilterContainerImplTest");
 					put("preinitialized.filter", "true");
@@ -106,9 +110,9 @@ public class InvokerFilterContainerImplTest {
 				}
 			});
 
-		_serviceRegistration4 = registry.registerService(
+		_resourceFilterServiceRegistration = bundleContext.registerService(
 			PortletFilter.class, new TestResourceFilter(),
-			new HashMap<String, Object>() {
+			new HashMapDictionary<String, Object>() {
 				{
 					put("javax.portlet.name", "InvokerFilterContainerImplTest");
 					put("preinitialized.filter", "true");
@@ -116,48 +120,36 @@ public class InvokerFilterContainerImplTest {
 				}
 			});
 
-		PortletContextFactory portletContextFactory =
-			new PortletContextFactoryImpl();
+		String servletContextName =
+			ServletContextClassLoaderPool.getServletContextName(
+				PortalClassLoaderUtil.getClassLoader());
 
-		PortletContextFactoryUtil portletContextFactoryUtil =
-			new PortletContextFactoryUtil();
-
-		portletContextFactoryUtil.setPortletContextFactory(
-			portletContextFactory);
-
-		MainServlet mainServlet = MainServletClassTestRule.getMainServlet();
-
-		ServletContext servletContext = mainServlet.getServletContext();
-
-		String servletContextName = servletContext.getServletContextName();
+		ServletContext servletContext = ServletContextPool.get(
+			servletContextName);
 
 		PortletAppImpl portletAppImpl = new PortletAppImpl(servletContextName);
 
 		portletAppImpl.setWARFile(false);
 
-		Portlet portlet = new PortletImpl();
+		_portlet = new PortletImpl();
 
-		portlet.setPortletApp(portletAppImpl);
-		portlet.setPortletClass(MVCPortlet.class.getName());
-		portlet.setPortletId("InvokerFilterContainerImplTest");
+		_portlet.setPortletApp(portletAppImpl);
+		_portlet.setPortletClass(MVCPortlet.class.getName());
+		_portlet.setPortletId("InvokerFilterContainerImplTest");
 
-		PortletContext portletContext = PortletContextFactoryUtil.create(
-			portlet, servletContext);
-
-		try {
-			_invokerFilterContainerImpl = new InvokerFilterContainerImpl(
-				portlet, portletContext);
-		}
-		catch (PortletException pe) {
-		}
+		_invokerFilterContainer =
+			(InvokerFilterContainer)_portletInstanceFactory.create(
+				_portlet, servletContext, true);
 	}
 
 	@AfterClass
 	public static void tearDownClass() {
-		_serviceRegistration1.unregister();
-		_serviceRegistration2.unregister();
-		_serviceRegistration3.unregister();
-		_serviceRegistration4.unregister();
+		_actionFilterServiceRegistration.unregister();
+		_eventFilterServiceRegistration.unregister();
+		_renderFilterServiceRegistration.unregister();
+		_resourceFilterServiceRegistration.unregister();
+
+		_portletInstanceFactory.destroy(_portlet);
 	}
 
 	@Test
@@ -165,7 +157,7 @@ public class InvokerFilterContainerImplTest {
 		boolean found = false;
 
 		List<ActionFilter> actionFilters =
-			_invokerFilterContainerImpl.getActionFilters();
+			_invokerFilterContainer.getActionFilters();
 
 		for (ActionFilter actionFilter : actionFilters) {
 			Class<?> clazz = actionFilter.getClass();
@@ -187,7 +179,7 @@ public class InvokerFilterContainerImplTest {
 		boolean found = false;
 
 		List<EventFilter> eventFilters =
-			_invokerFilterContainerImpl.getEventFilters();
+			_invokerFilterContainer.getEventFilters();
 
 		for (EventFilter eventFilter : eventFilters) {
 			Class<?> clazz = eventFilter.getClass();
@@ -209,7 +201,7 @@ public class InvokerFilterContainerImplTest {
 		boolean found = false;
 
 		List<RenderFilter> renderFilters =
-			_invokerFilterContainerImpl.getRenderFilters();
+			_invokerFilterContainer.getRenderFilters();
 
 		for (RenderFilter renderFilter : renderFilters) {
 			Class<?> clazz = renderFilter.getClass();
@@ -231,7 +223,7 @@ public class InvokerFilterContainerImplTest {
 		boolean found = false;
 
 		List<ResourceFilter> resourceFilters =
-			_invokerFilterContainerImpl.getResourceFilters();
+			_invokerFilterContainer.getResourceFilters();
 
 		for (ResourceFilter resourceFilter : resourceFilters) {
 			Class<?> clazz = resourceFilter.getClass();
@@ -250,15 +242,24 @@ public class InvokerFilterContainerImplTest {
 
 	@Test
 	public void testInit() {
-		Assert.assertTrue(_called);
+		Assert.assertTrue(_calledInit);
 	}
 
-	private static boolean _called;
-	private static InvokerFilterContainerImpl _invokerFilterContainerImpl;
-	private static ServiceRegistration<PortletFilter> _serviceRegistration1;
-	private static ServiceRegistration<PortletFilter> _serviceRegistration2;
-	private static ServiceRegistration<PortletFilter> _serviceRegistration3;
-	private static ServiceRegistration<PortletFilter> _serviceRegistration4;
+	private static ServiceRegistration<PortletFilter>
+		_actionFilterServiceRegistration;
+	private static boolean _calledInit;
+	private static ServiceRegistration<PortletFilter>
+		_eventFilterServiceRegistration;
+	private static InvokerFilterContainer _invokerFilterContainer;
+	private static Portlet _portlet;
+
+	@Inject
+	private static PortletInstanceFactory _portletInstanceFactory;
+
+	private static ServiceRegistration<PortletFilter>
+		_renderFilterServiceRegistration;
+	private static ServiceRegistration<PortletFilter>
+		_resourceFilterServiceRegistration;
 
 	private static class TestActionFilter implements ActionFilter {
 
@@ -274,7 +275,7 @@ public class InvokerFilterContainerImplTest {
 
 		@Override
 		public void init(FilterConfig filterConfig) {
-			_called = true;
+			_calledInit = true;
 		}
 
 	}
