@@ -25,15 +25,11 @@ import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
 import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
+import com.liferay.portal.kernel.util.HashMapDictionary;
 import com.liferay.portal.kernel.util.PortletKeys;
 import com.liferay.portal.service.test.ServiceTestUtil;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.util.test.LayoutTestUtil;
-import com.liferay.registry.Registry;
-import com.liferay.registry.RegistryUtil;
-import com.liferay.registry.ServiceRegistration;
-
-import java.util.HashMap;
 
 import javax.portlet.Portlet;
 
@@ -45,6 +41,11 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.ServiceRegistration;
 
 /**
  * @author Brian Wing Shun Chan
@@ -60,20 +61,22 @@ public class PortletPreferencesFactoryImplGetPreferencesIdsTest {
 
 	@BeforeClass
 	public static void setUpClass() {
-		Registry registry = RegistryUtil.getRegistry();
+		Bundle bundle = FrameworkUtil.getBundle(PortletPreferencesFactoryImplGetPreferencesIdsTest.class);
 
-		_serviceRegistration1 = registry.registerService(
+		BundleContext bundleContext = bundle.getBundleContext();
+
+		_serviceRegistration1 = bundleContext.registerService(
 			Portlet.class, new TestCompanyPortlet(),
-			new HashMap<String, Object>() {
+			new HashMapDictionary<String, Object>() {
 				{
 					put("com.liferay.portlet.preferences-company-wide", "true");
 					put("javax.portlet.name", TestCompanyPortlet.PORTLET_NAME);
 				}
 			});
 
-		_serviceRegistration2 = registry.registerService(
+		_serviceRegistration2 = bundleContext.registerService(
 			Portlet.class, new TestGroupLayoutPortlet(),
-			new HashMap<String, Object>() {
+			new HashMapDictionary<String, Object>() {
 				{
 					put(
 						"com.liferay.portlet.preferences-company-wide",
@@ -90,9 +93,9 @@ public class PortletPreferencesFactoryImplGetPreferencesIdsTest {
 				}
 			});
 
-		_serviceRegistration3 = registry.registerService(
+		_serviceRegistration3 = bundleContext.registerService(
 			Portlet.class, new TestGroupPortlet(),
-			new HashMap<String, Object>() {
+			new HashMapDictionary<String, Object>() {
 				{
 					put(
 						"com.liferay.portlet.preferences-company-wide",
@@ -107,9 +110,9 @@ public class PortletPreferencesFactoryImplGetPreferencesIdsTest {
 				}
 			});
 
-		_serviceRegistration4 = registry.registerService(
+		_serviceRegistration4 = bundleContext.registerService(
 			Portlet.class, new TestUserLayoutPortlet(),
-			new HashMap<String, Object>() {
+			new HashMapDictionary<String, Object>() {
 				{
 					put(
 						"com.liferay.portlet.preferences-company-wide",
@@ -126,9 +129,9 @@ public class PortletPreferencesFactoryImplGetPreferencesIdsTest {
 				}
 			});
 
-		_serviceRegistration5 = registry.registerService(
+		_serviceRegistration5 = bundleContext.registerService(
 			Portlet.class, new TestUserPortlet(),
-			new HashMap<String, Object>() {
+			new HashMapDictionary<String, Object>() {
 				{
 					put(
 						"com.liferay.portlet.preferences-company-wide",
