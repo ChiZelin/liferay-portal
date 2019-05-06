@@ -12,14 +12,17 @@
  * details.
  */
 
-package com.liferay.portlet.ratings.transformer;
+package com.liferay.ratings.transformer.test;
 
-import com.liferay.portal.kernel.test.rule.AggregateTestRule;
+import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
+import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
+import com.liferay.portal.kernel.util.HashMapDictionary;
 import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
-import com.liferay.portal.test.rule.SyntheticBundleClassTestRule;
-import com.liferay.portal.util.test.AtomicState;
 import com.liferay.portlet.PortletPreferencesImpl;
+import com.liferay.ratings.kernel.RatingsType;
+import com.liferay.ratings.kernel.model.RatingsEntry;
+import com.liferay.ratings.kernel.transformer.RatingsDataTransformer;
 import com.liferay.ratings.kernel.transformer.RatingsDataTransformerUtil;
 
 import javax.portlet.PortletPreferences;
@@ -30,34 +33,47 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.ServiceRegistration;
 
 /**
- * @author Peter Fellwock
+ * @author Leon Chi
  */
+@RunWith(Arquillian.class)
 public class RatingsDataTransformerUtilTest {
 
 	@ClassRule
 	@Rule
-	public static final AggregateTestRule aggregateTestRule =
-		new AggregateTestRule(
-			new LiferayIntegrationTestRule(),
-			new SyntheticBundleClassTestRule(
-				"bundle.ratingsdatatransformerutil"));
+	public static final LiferayIntegrationTestRule liferayIntegrationTestRule =
+		new LiferayIntegrationTestRule();
 
 	@BeforeClass
 	public static void setUpClass() {
-		_atomicState = new AtomicState();
+		Bundle bundle = FrameworkUtil.getBundle(
+			RatingsDataTransformerUtilTest.class);
+
+		BundleContext bundleContext = bundle.getBundleContext();
+
+		_serviceRegistration = bundleContext.registerService(
+			RatingsDataTransformer.class, new TestRatingsDataTransformer(),
+			new HashMapDictionary<String, Object>() {
+				{
+					put("service.ranking", Integer.MAX_VALUE);
+				}
+			});
 	}
 
 	@AfterClass
 	public static void tearDownClass() {
-		_atomicState.close();
+		_serviceRegistration.unregister();
 	}
 
 	@Test
 	public void testTransformCompanyRatingsData() throws Exception {
-		_atomicState.reset();
-
 		PortletPreferences oldPortletPreferences = new PortletPreferencesImpl();
 
 		oldPortletPreferences.setValue(
@@ -103,13 +119,11 @@ public class RatingsDataTransformerUtilTest {
 		RatingsDataTransformerUtil.transformCompanyRatingsData(
 			1, oldPortletPreferences, unicodeProperties);
 
-		Assert.assertTrue(_atomicState.isSet());
+		Assert.assertTrue(_called);
 	}
 
 	@Test
 	public void testTransformGroupRatingsData() throws Exception {
-		_atomicState.reset();
-
 		UnicodeProperties oldUnicodeProperties = new UnicodeProperties();
 
 		oldUnicodeProperties.setProperty(
@@ -155,9 +169,26 @@ public class RatingsDataTransformerUtilTest {
 		RatingsDataTransformerUtil.transformGroupRatingsData(
 			1, oldUnicodeProperties, unicodeProperties);
 
-		Assert.assertTrue(_atomicState.isSet());
+		Assert.assertTrue(_called);
 	}
 
-	private static AtomicState _atomicState;
+	private static boolean _called;
+	private static ServiceRegistration<RatingsDataTransformer>
+		_serviceRegistration;
+
+	private static class TestRatingsDataTransformer
+		implements RatingsDataTransformer {
+
+		@Override
+		public ActionableDynamicQuery.PerformActionMethod<RatingsEntry>
+			transformRatingsData(
+				RatingsType fromRatingsType, RatingsType toRatingsType) {
+
+			_called = true;
+
+			return null;
+		}
+
+	}
 
 }
