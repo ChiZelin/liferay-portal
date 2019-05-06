@@ -19,14 +19,13 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.security.permission.BaseModelPermissionChecker;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.service.PermissionService;
-import com.liferay.portal.kernel.service.PermissionServiceUtil;
+import com.liferay.portal.kernel.test.rule.AggregateTestRule;
+import com.liferay.portal.kernel.util.HashMapDictionary;
+import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
-import com.liferay.registry.Registry;
-import com.liferay.registry.RegistryUtil;
-import com.liferay.registry.ServiceRegistration;
+import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
 
-import java.util.HashMap;
-
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -34,6 +33,11 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.ServiceRegistration;
 
 /**
  * @author Philip Jones
@@ -43,17 +47,22 @@ public class PermissionServiceImplTest {
 
 	@ClassRule
 	@Rule
-	public static final LiferayIntegrationTestRule liferayIntegrationTestRule =
-		new LiferayIntegrationTestRule();
+	public static final AggregateTestRule aggregateTestRule =
+		new AggregateTestRule(
+			new LiferayIntegrationTestRule(),
+			PermissionCheckerMethodTestRule.INSTANCE);
 
 	@BeforeClass
 	public static void setUpClass() {
-		Registry registry = RegistryUtil.getRegistry();
+		Bundle bundle = FrameworkUtil.getBundle(
+			PermissionServiceImplTest.class);
 
-		_serviceRegistration = registry.registerService(
+		BundleContext bundleContext = bundle.getBundleContext();
+
+		_serviceRegistration = bundleContext.registerService(
 			BaseModelPermissionChecker.class,
 			new TestBaseModelPermissionChecker(),
-			new HashMap<String, Object>() {
+			new HashMapDictionary<String, Object>() {
 				{
 					put("model.class.name", "PermissionServiceImplTest");
 					put("service.ranking", Integer.MAX_VALUE);
@@ -66,29 +75,33 @@ public class PermissionServiceImplTest {
 		_serviceRegistration.unregister();
 	}
 
+	@After
+	public void tearDown() {
+		_calledCheckBaseModel = false;
+	}
+
 	@Test
 	public void testCheckPermission1() throws PortalException {
-		PermissionService permissionService =
-			PermissionServiceUtil.getService();
+		_permissionService.checkPermission(
+			0, "PermissionServiceImplTest", 0);
 
-		permissionService.checkPermission(0, "PermissionServiceImplTest", 0);
-
-		Assert.assertTrue(_called);
+		Assert.assertTrue(_calledCheckBaseModel);
 	}
 
 	@Test
 	public void testCheckPermission2() throws PortalException {
-		PermissionService permissionService =
-			PermissionServiceUtil.getService();
+		_permissionService.checkPermission(
+			0, "PermissionServiceImplTest", null);
 
-		permissionService.checkPermission(0, "PermissionServiceImplTest", null);
-
-		Assert.assertTrue(_called);
+		Assert.assertTrue(_calledCheckBaseModel);
 	}
 
-	private static boolean _called;
+	private static boolean _calledCheckBaseModel;
 	private static ServiceRegistration<BaseModelPermissionChecker>
 		_serviceRegistration;
+
+	@Inject
+	private PermissionService _permissionService;
 
 	private static class TestBaseModelPermissionChecker
 		implements BaseModelPermissionChecker {
@@ -98,7 +111,7 @@ public class PermissionServiceImplTest {
 			PermissionChecker permissionChecker, long groupId, long primaryKey,
 			String actionId) {
 
-			_called = true;
+			_calledCheckBaseModel = true;
 		}
 
 	}
