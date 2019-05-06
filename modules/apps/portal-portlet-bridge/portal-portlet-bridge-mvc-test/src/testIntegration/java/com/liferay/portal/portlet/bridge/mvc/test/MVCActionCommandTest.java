@@ -21,18 +21,15 @@ import com.liferay.portal.kernel.portlet.LiferayPortletConfig;
 import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
+import com.liferay.portal.kernel.util.HashMapDictionary;
 import com.liferay.portal.kernel.util.JavaConstants;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
-import com.liferay.registry.Registry;
-import com.liferay.registry.RegistryUtil;
-import com.liferay.registry.ServiceRegistration;
 
 import java.io.IOException;
 
 import java.util.Collection;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.portlet.ActionParameters;
@@ -59,6 +56,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.ServiceRegistration;
+
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.portlet.MockActionRequest;
 import org.springframework.mock.web.portlet.MockActionResponse;
@@ -77,11 +79,13 @@ public class MVCActionCommandTest {
 
 	@BeforeClass
 	public static void setUpClass() {
-		Registry registry = RegistryUtil.getRegistry();
+		Bundle bundle = FrameworkUtil.getBundle(MVCActionCommandTest.class);
 
-		_serviceRegistration1 = registry.registerService(
+		BundleContext bundleContext = bundle.getBundleContext();
+
+		_serviceRegistration1 = bundleContext.registerService(
 			javax.portlet.Portlet.class, new TestPortlet(),
-			new HashMap<String, Object>() {
+			new HashMapDictionary<String, Object>() {
 				{
 					put(
 						"javax.portlet.init-param.copy-request-parameters",
@@ -90,9 +94,9 @@ public class MVCActionCommandTest {
 				}
 			});
 
-		_serviceRegistration2 = registry.registerService(
+		_serviceRegistration2 = bundleContext.registerService(
 			MVCActionCommand.class, new TestMVCActionCommand1(),
-			new HashMap<String, Object>() {
+			new HashMapDictionary<String, Object>() {
 				{
 					put("javax.portlet.name", TestPortlet.PORTLET_NAME);
 					put(
@@ -101,9 +105,9 @@ public class MVCActionCommandTest {
 				}
 			});
 
-		_serviceRegistration3 = registry.registerService(
+		_serviceRegistration3 = bundleContext.registerService(
 			MVCActionCommand.class, new TestMVCActionCommand2(),
-			new HashMap<String, Object>() {
+			new HashMapDictionary<String, Object>() {
 				{
 					put("javax.portlet.name", TestPortlet.PORTLET_NAME);
 					put(
