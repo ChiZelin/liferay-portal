@@ -15,17 +15,13 @@
 package com.liferay.portal.deploy.hot.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
-import com.liferay.portal.kernel.bean.PortalBeanLocatorUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.EmailAddress;
 import com.liferay.portal.kernel.service.EmailAddressLocalService;
 import com.liferay.portal.kernel.service.EmailAddressLocalServiceWrapper;
 import com.liferay.portal.kernel.service.ServiceWrapper;
+import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
-import com.liferay.registry.Registry;
-import com.liferay.registry.RegistryUtil;
-import com.liferay.registry.ServiceRegistration;
-import com.liferay.portal.deploy.hot.ServiceWrapperRegistry;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -34,6 +30,11 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.ServiceRegistration;
 
 /**
  * @author Manuel de la Peña
@@ -49,33 +50,32 @@ public class ServiceWrapperRegistryTest {
 
 	@BeforeClass
 	public static void setUpClass() {
-		_serviceWrapperRegistry = new ServiceWrapperRegistry();
+		Bundle bundle = FrameworkUtil.getBundle(
+			ServiceWrapperRegistryTest.class);
 
-		Registry registry = RegistryUtil.getRegistry();
+		BundleContext bundleContext = bundle.getBundleContext();
 
-		_serviceRegistration = registry.registerService(
-			ServiceWrapper.class, new TestEmailLocalServiceWrapper());
+		_serviceRegistration = bundleContext.registerService(
+			ServiceWrapper.class, new TestEmailLocalServiceWrapper(), null);
 	}
 
 	@AfterClass
 	public static void tearDownClass() {
-		_serviceWrapperRegistry.close();
 		_serviceRegistration.unregister();
 	}
 
 	@Test
 	public void testInvokeOverrideMethod() throws PortalException {
-		EmailAddressLocalService emailAddressLocalService =
-			(EmailAddressLocalService)PortalBeanLocatorUtil.locate(
-				EmailAddressLocalService.class.getName());
-
-		EmailAddress emailAddress = emailAddressLocalService.getEmailAddress(1);
+		EmailAddress emailAddress = _emailAddressLocalService.getEmailAddress(
+			1);
 
 		Assert.assertEquals("email@liferay.com", emailAddress.getAddress());
 	}
 
 	private static ServiceRegistration<ServiceWrapper> _serviceRegistration;
-	private static ServiceWrapperRegistry _serviceWrapperRegistry;
+
+	@Inject
+	private EmailAddressLocalService _emailAddressLocalService;
 
 	private static class TestEmailLocalServiceWrapper
 		extends EmailAddressLocalServiceWrapper {
