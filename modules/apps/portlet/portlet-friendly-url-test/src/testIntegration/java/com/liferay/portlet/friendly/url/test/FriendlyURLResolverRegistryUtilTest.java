@@ -12,41 +12,59 @@
  * details.
  */
 
-package com.liferay.portlet;
+package com.liferay.portlet.friendly.url.test;
 
+import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.LayoutFriendlyURLComposite;
 import com.liferay.portal.kernel.portlet.FriendlyURLResolver;
 import com.liferay.portal.kernel.portlet.FriendlyURLResolverRegistryUtil;
-import com.liferay.portal.kernel.test.rule.AggregateTestRule;
+import com.liferay.portal.kernel.util.HashMapDictionary;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
-import com.liferay.portal.test.rule.SyntheticBundleClassTestRule;
-import com.liferay.portlet.bundle.friendlyurlresolverregistryutil.TestFriendlyURLResolver;
-import com.liferay.registry.Registry;
-import com.liferay.registry.RegistryUtil;
-import com.liferay.registry.ServiceRegistration;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.ServiceRegistration;
 
 /**
  * @author Raymond Augé
  */
+@RunWith(Arquillian.class)
 public class FriendlyURLResolverRegistryUtilTest {
 
 	@ClassRule
 	@Rule
-	public static final AggregateTestRule aggregateTestRule =
-		new AggregateTestRule(
-			new LiferayIntegrationTestRule(),
-			new SyntheticBundleClassTestRule(
-				"bundle.friendlyurlresolverregistryutil"));
+	public static final LiferayIntegrationTestRule liferayIntegrationTestRule =
+		new LiferayIntegrationTestRule();
+
+	@BeforeClass
+	public static void setUpClass() {
+		Bundle bundle = FrameworkUtil.getBundle(
+			FriendlyURLResolverRegistryUtilTest.class);
+
+		BundleContext bundleContext = bundle.getBundleContext();
+
+		_serviceRegistration = bundleContext.registerService(
+			FriendlyURLResolver.class, new TestFriendlyURLResolver(),
+			new HashMapDictionary());
+	}
+
+	@AfterClass
+	public static void tearDownClass() {
+		_serviceRegistration.unregister();
+	}
 
 	@Test
 	public void testGetFriendlyURLResolver() throws Exception {
@@ -70,18 +88,22 @@ public class FriendlyURLResolverRegistryUtilTest {
 
 	@Test
 	public void testOverride() throws Exception {
-		Registry registry = RegistryUtil.getRegistry();
+		Bundle bundle = FrameworkUtil.getBundle(
+			FriendlyURLResolverRegistryUtilTest.class);
 
-		Map<String, Object> properties = new HashMap<>();
-
-		properties.put("service.ranking", 25);
+		BundleContext bundleContext = bundle.getBundleContext();
 
 		FriendlyURLResolver friendlyURLResolver1 =
 			new OverrideFriendlyURLResolver();
 
 		ServiceRegistration<FriendlyURLResolver> serviceRegistration1 =
-			registry.registerService(
-				FriendlyURLResolver.class, friendlyURLResolver1, properties);
+			bundleContext.registerService(
+				FriendlyURLResolver.class, friendlyURLResolver1,
+				new HashMapDictionary<String, Object>() {
+					{
+						put("service.ranking", 25);
+					}
+				});
 
 		ServiceRegistration<FriendlyURLResolver> serviceRegistration2 = null;
 
@@ -103,12 +125,13 @@ public class FriendlyURLResolverRegistryUtilTest {
 			FriendlyURLResolver friendlyURLResolver2 =
 				new OverrideFriendlyURLResolver();
 
-			properties = new HashMap<>();
-
-			properties.put("service.ranking", 12);
-
-			serviceRegistration2 = registry.registerService(
-				FriendlyURLResolver.class, friendlyURLResolver2, properties);
+			serviceRegistration2 = bundleContext.registerService(
+				FriendlyURLResolver.class, friendlyURLResolver2,
+				new HashMapDictionary<String, Object>() {
+					{
+						put("service.ranking", 12);
+					}
+				});
 
 			friendlyURLResolver =
 				FriendlyURLResolverRegistryUtil.getFriendlyURLResolver(
@@ -138,6 +161,42 @@ public class FriendlyURLResolverRegistryUtilTest {
 			Assert.assertEquals(
 				TestFriendlyURLResolver.class.getName(), clazz.getName());
 		}
+	}
+
+	private static ServiceRegistration<FriendlyURLResolver>
+		_serviceRegistration;
+
+	private static class TestFriendlyURLResolver
+		implements FriendlyURLResolver {
+
+		public static final String SEPARATOR = "/-foo-";
+
+		@Override
+		public String getActualURL(
+				long companyId, long groupId, boolean privateLayout,
+				String mainPath, String friendlyURL,
+				Map<String, String[]> params,
+				Map<String, Object> requestContext)
+			throws PortalException {
+
+			return null;
+		}
+
+		@Override
+		public LayoutFriendlyURLComposite getLayoutFriendlyURLComposite(
+				long companyId, long groupId, boolean privateLayout,
+				String friendlyURL, Map<String, String[]> params,
+				Map<String, Object> requestContext)
+			throws PortalException {
+
+			return null;
+		}
+
+		@Override
+		public String getURLSeparator() {
+			return SEPARATOR;
+		}
+
 	}
 
 	private class OverrideFriendlyURLResolver implements FriendlyURLResolver {
