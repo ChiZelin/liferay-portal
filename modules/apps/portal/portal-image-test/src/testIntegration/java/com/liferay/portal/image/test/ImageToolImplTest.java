@@ -12,11 +12,12 @@
  * details.
  */
 
-package com.liferay.portal.image;
+package com.liferay.portal.image.test;
 
+import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
+import com.liferay.portal.image.ImageToolImpl;
 import com.liferay.portal.kernel.image.ImageBag;
 import com.liferay.portal.kernel.image.ImageTool;
-import com.liferay.portal.kernel.image.ImageToolUtil;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -29,8 +30,7 @@ import java.awt.image.DataBufferInt;
 import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
 
-import java.io.File;
-import java.io.RandomAccessFile;
+import java.io.InputStream;
 
 import java.util.Arrays;
 
@@ -40,11 +40,12 @@ import org.junit.Assert;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 /**
- * @author Shuyang Zhou
- * @author Sampsa Sohlman
+ * @author Leon Chi
  */
+@RunWith(Arquillian.class)
 public class ImageToolImplTest {
 
 	@ClassRule
@@ -104,12 +105,12 @@ public class ImageToolImplTest {
 
 	@Test
 	public void testRotation90Degrees() throws Exception {
-		ImageBag imageBag = ImageToolUtil.read(
-			getFile("rotation_90_degrees.jpg"));
+		ImageBag imageBag = _imageTool.read(
+			_getInputStream("rotation_90_degrees.jpg"));
 
 		RenderedImage originalImage = imageBag.getRenderedImage();
 
-		RenderedImage rotatedImage = ImageToolUtil.rotate(originalImage, 90);
+		RenderedImage rotatedImage = _imageTool.rotate(originalImage, 90);
 
 		Assert.assertEquals(originalImage.getHeight(), rotatedImage.getWidth());
 		Assert.assertEquals(originalImage.getWidth(), rotatedImage.getHeight());
@@ -119,9 +120,7 @@ public class ImageToolImplTest {
 
 		// Crop bottom right
 
-		File file = getFile(fileName);
-
-		ImageBag imageBag = ImageToolUtil.read(file);
+		ImageBag imageBag = _imageTool.read(_getInputStream(fileName));
 
 		RenderedImage image = imageBag.getRenderedImage();
 
@@ -159,18 +158,8 @@ public class ImageToolImplTest {
 			image.getWidth() - (image.getWidth() / 2), 0, 0);
 	}
 
-	protected File getFile(String fileName) {
-		fileName =
-			"portal-impl/test/integration/com/liferay/portal/image" +
-				"/dependencies/" + fileName;
-
-		return new File(fileName);
-	}
-
 	protected void read(String fileName) throws Exception {
-		File file = getFile(fileName);
-
-		BufferedImage expectedImage = ImageIO.read(file);
+		BufferedImage expectedImage = ImageIO.read(_getInputStream(fileName));
 
 		Assert.assertNotNull(expectedImage);
 
@@ -184,13 +173,7 @@ public class ImageToolImplTest {
 			expectedType = ImageTool.TYPE_JPEG;
 		}
 
-		RandomAccessFile randomAccessFile = new RandomAccessFile(file, "r");
-
-		byte[] bytes = new byte[(int)randomAccessFile.length()];
-
-		randomAccessFile.readFully(bytes);
-
-		ImageBag imageBag = ImageToolUtil.read(bytes);
+		ImageBag imageBag = _imageTool.read(_getInputStream(fileName));
 
 		RenderedImage resultImage = imageBag.getRenderedImage();
 
@@ -236,7 +219,7 @@ public class ImageToolImplTest {
 			RenderedImage renderedImage, int height, int width, int x, int y)
 		throws Exception {
 
-		RenderedImage croppedRenderedImage = ImageToolUtil.crop(
+		RenderedImage croppedRenderedImage = _imageTool.crop(
 			renderedImage, height, width, x, y);
 
 		int maxHeight = renderedImage.getHeight() - Math.abs(y);
@@ -248,5 +231,14 @@ public class ImageToolImplTest {
 		Assert.assertEquals(
 			croppedRenderedImage.getWidth(), Math.min(maxWidth, width));
 	}
+
+	private InputStream _getInputStream(String fileName) {
+		ClassLoader classLoader = ImageToolImplTest.class.getClassLoader();
+
+		return classLoader.getResourceAsStream(
+			"com/liferay/portal/image/test/dependencies/" + fileName);
+	}
+
+	private final ImageTool _imageTool = ImageToolImpl.getInstance();
 
 }
