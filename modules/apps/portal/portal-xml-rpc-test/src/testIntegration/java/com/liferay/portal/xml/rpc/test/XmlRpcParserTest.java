@@ -12,15 +12,18 @@
  * details.
  */
 
-package com.liferay.portal.xmlrpc;
+package com.liferay.portal.xml.rpc.test;
 
+import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.petra.string.StringBundler;
-import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.util.Tuple;
 import com.liferay.portal.kernel.xmlrpc.Fault;
 import com.liferay.portal.kernel.xmlrpc.Response;
 import com.liferay.portal.kernel.xmlrpc.Success;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
+import com.liferay.portal.xmlrpc.FaultImpl;
+import com.liferay.portal.xmlrpc.SuccessImpl;
+import com.liferay.portal.xmlrpc.XmlRpcParser;
 
 import java.util.Arrays;
 
@@ -28,16 +31,18 @@ import org.junit.Assert;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 /**
  * @author Alexander Chow
  * @author Brian Wing Shun Chan
  */
+@RunWith(Arquillian.class)
 public class XmlRpcParserTest {
 
 	@ClassRule
 	@Rule
-	public static final AggregateTestRule aggregateTestRule =
+	public static final LiferayIntegrationTestRule liferayIntegrationTestRule =
 		new LiferayIntegrationTestRule();
 
 	@Test
