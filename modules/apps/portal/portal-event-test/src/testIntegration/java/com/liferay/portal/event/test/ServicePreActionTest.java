@@ -12,8 +12,10 @@
  * details.
  */
 
-package com.liferay.portal.events;
+package com.liferay.portal.events.test;
 
+import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
+import com.liferay.portal.events.ServicePreAction;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.ResourceConstants;
@@ -46,6 +48,7 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -53,7 +56,8 @@ import org.springframework.mock.web.MockHttpServletResponse;
 /**
  * @author Preston Crary
  */
-public class ServicePreActionTest {
+@RunWith(Arquillian.class)
+public class ServicePreActionTest extends ServicePreAction{
 
 	@ClassRule
 	@Rule
@@ -95,12 +99,12 @@ public class ServicePreActionTest {
 				Layout.class, List.class, boolean.class
 			},
 			_request, _user, PermissionCheckerFactoryUtil.create(_user),
-			defaultLayoutComposite.getLayout(),
-			defaultLayoutComposite.getLayouts(), false);
+			ReflectionTestUtil.invoke(defaultLayoutComposite,"getLayout",null,null),
+			ReflectionTestUtil.invoke(defaultLayoutComposite,"getLayouts",null,null), false);
 
-		Layout layout = defaultLayoutComposite.getLayout();
+		Layout layout = ReflectionTestUtil.invoke(defaultLayoutComposite,"getLayout",null,null);;
 
-		List<Layout> layouts = defaultLayoutComposite.getLayouts();
+		List<Layout> layouts = ReflectionTestUtil.invoke(defaultLayoutComposite,"getLayouts",null,null);
 
 		Assert.assertEquals(layout.getPlid(), plid);
 
@@ -118,7 +122,7 @@ public class ServicePreActionTest {
 				_servicePreAction, "_getDefaultUserPersonalSiteLayoutComposite",
 				new Class<?>[] {User.class}, _user);
 
-		Layout layout = defaultLayoutComposite.getLayout();
+		Layout layout = ReflectionTestUtil.invoke(defaultLayoutComposite,"getLayout",null,null);
 
 		Assert.assertEquals(layout.getPlid(), plid);
 	}
@@ -143,7 +147,7 @@ public class ServicePreActionTest {
 					_servicePreAction, "_getDefaultUserSitesLayoutComposite",
 					new Class<?>[] {User.class}, _user);
 
-			Layout layout = defaultLayoutComposite.getLayout();
+			Layout layout = ReflectionTestUtil.invoke(defaultLayoutComposite,"getLayout",null,null);
 
 			Assert.assertEquals(layout.getPlid(), plid);
 		}
@@ -166,7 +170,7 @@ public class ServicePreActionTest {
 				_servicePreAction, "_getGuestSiteLayoutComposite",
 				new Class<?>[] {User.class}, _user);
 
-		Layout layout = defaultLayoutComposite.getLayout();
+		Layout layout = ReflectionTestUtil.invoke(defaultLayoutComposite,"getLayout",null,null);
 
 		Assert.assertEquals(layout.getPlid(), plid);
 	}
@@ -182,7 +186,7 @@ public class ServicePreActionTest {
 				_servicePreAction, "_getDefaultVirtualHostLayoutComposite",
 				new Class<?>[] {HttpServletRequest.class}, _request);
 
-		Layout layout = defaultLayoutComposite.getLayout();
+		Layout layout = ReflectionTestUtil.invoke(defaultLayoutComposite,"getLayout",null,null);
 
 		Assert.assertEquals(layout.getPlid(), plid);
 	}
