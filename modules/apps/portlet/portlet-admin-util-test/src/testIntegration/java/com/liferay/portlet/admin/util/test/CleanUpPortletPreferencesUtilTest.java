@@ -24,11 +24,11 @@ import com.liferay.portal.kernel.model.LayoutSetBranch;
 import com.liferay.portal.kernel.model.LayoutTypePortlet;
 import com.liferay.portal.kernel.model.PortletPreferences;
 import com.liferay.portal.kernel.portlet.PortletIdCodec;
-import com.liferay.portal.kernel.service.LayoutBranchLocalServiceUtil;
-import com.liferay.portal.kernel.service.LayoutLocalServiceUtil;
-import com.liferay.portal.kernel.service.LayoutRevisionLocalServiceUtil;
-import com.liferay.portal.kernel.service.LayoutSetBranchLocalServiceUtil;
-import com.liferay.portal.kernel.service.PortletPreferencesLocalServiceUtil;
+import com.liferay.portal.kernel.service.LayoutBranchLocalService;
+import com.liferay.portal.kernel.service.LayoutLocalService;
+import com.liferay.portal.kernel.service.LayoutRevisionLocalService;
+import com.liferay.portal.kernel.service.LayoutSetBranchLocalService;
+import com.liferay.portal.kernel.service.PortletPreferencesLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
 import com.liferay.portal.kernel.test.util.GroupTestUtil;
@@ -37,6 +37,7 @@ import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.model.impl.PortletImpl;
+import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.util.test.LayoutTestUtil;
 import com.liferay.portlet.admin.util.CleanUpPortletPreferencesUtil;
@@ -72,7 +73,7 @@ public class CleanUpPortletPreferencesUtilTest {
 		LayoutRevision layoutRevision = getLayoutRevision();
 
 		PortletPreferences portletPreferences =
-			PortletPreferencesLocalServiceUtil.addPortletPreferences(
+			_portletPreferencesLocalService.addPortletPreferences(
 				TestPropsValues.getCompanyId(), TestPropsValues.getUserId(), 0,
 				layoutRevision.getLayoutRevisionId(),
 				RandomTestUtil.randomString(), new PortletImpl(),
@@ -83,7 +84,7 @@ public class CleanUpPortletPreferencesUtilTest {
 		CleanUpPortletPreferencesUtil.cleanUpLayoutRevisionPortletPreferences();
 
 		portletPreferences =
-			PortletPreferencesLocalServiceUtil.fetchPortletPreferences(
+			_portletPreferencesLocalService.fetchPortletPreferences(
 				portletPreferences.getPortletPreferencesId());
 
 		Assert.assertNull(portletPreferences);
@@ -100,19 +101,18 @@ public class CleanUpPortletPreferencesUtilTest {
 
 		typeSettingProperties.setProperty("column-1", portletId);
 
-		layoutRevision = LayoutRevisionLocalServiceUtil.updateLayoutRevision(
+		layoutRevision = _layoutRevisionLocalService.updateLayoutRevision(
 			layoutRevision);
 
 		PortletPreferences portletPreferences =
-			PortletPreferencesLocalServiceUtil.addPortletPreferences(
+			_portletPreferencesLocalService.addPortletPreferences(
 				TestPropsValues.getCompanyId(), TestPropsValues.getUserId(), 0,
 				layoutRevision.getLayoutRevisionId(), portletId, null,
 				StringPool.BLANK);
 
 		Assert.assertNotNull(portletPreferences);
 
-		Layout layout = LayoutLocalServiceUtil.getLayout(
-			layoutRevision.getPlid());
+		Layout layout = _layoutLocalService.getLayout(layoutRevision.getPlid());
 
 		LayoutTypePortlet layoutTypePortlet =
 			(LayoutTypePortlet)layout.getLayoutType();
@@ -124,7 +124,7 @@ public class CleanUpPortletPreferencesUtilTest {
 		CleanUpPortletPreferencesUtil.cleanUpLayoutRevisionPortletPreferences();
 
 		portletPreferences =
-			PortletPreferencesLocalServiceUtil.fetchPortletPreferences(
+			_portletPreferencesLocalService.fetchPortletPreferences(
 				portletPreferences.getPortletPreferencesId());
 
 		Assert.assertNotNull(portletPreferences);
@@ -137,21 +137,36 @@ public class CleanUpPortletPreferencesUtilTest {
 			ServiceContextTestUtil.getServiceContext();
 
 		LayoutSetBranch layoutSetBranch =
-			LayoutSetBranchLocalServiceUtil.addLayoutSetBranch(
+			_layoutSetBranchLocalService.addLayoutSetBranch(
 				TestPropsValues.getUserId(), _group.getGroupId(), false,
 				RandomTestUtil.randomString(), RandomTestUtil.randomString(),
 				true, 0, serviceContext);
 
 		LayoutBranch layoutBranch =
-			LayoutBranchLocalServiceUtil.getMasterLayoutBranch(
+			_layoutBranchLocalService.getMasterLayoutBranch(
 				layoutSetBranch.getLayoutSetBranchId(), layout.getPlid());
 
-		return LayoutRevisionLocalServiceUtil.getLayoutRevision(
+		return _layoutRevisionLocalService.getLayoutRevision(
 			layoutSetBranch.getLayoutSetBranchId(),
 			layoutBranch.getLayoutBranchId(), layout.getPlid());
 	}
 
 	@DeleteAfterTestRun
 	private Group _group;
+
+	@Inject
+	private LayoutBranchLocalService _layoutBranchLocalService;
+
+	@Inject
+	private LayoutLocalService _layoutLocalService;
+
+	@Inject
+	private LayoutRevisionLocalService _layoutRevisionLocalService;
+
+	@Inject
+	private LayoutSetBranchLocalService _layoutSetBranchLocalService;
+
+	@Inject
+	private PortletPreferencesLocalService _portletPreferencesLocalService;
 
 }
