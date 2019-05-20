@@ -17,14 +17,10 @@ package com.liferay.frontend.theme.service.test;
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.LayoutSet;
-import com.liferay.portal.kernel.model.Theme;
 import com.liferay.portal.kernel.service.ThemeLocalServiceUtil;
-import com.liferay.portal.kernel.test.rule.AggregateTestRule;
-import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
 import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
-import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -40,25 +36,18 @@ public class ThemeServiceTest {
 
 	@ClassRule
 	@Rule
-	public static final AggregateTestRule aggregateTestRule =
+	public static final LiferayIntegrationTestRule liferayIntegrationTestRule =
 		new LiferayIntegrationTestRule();
-
-	@Before
-	public void setUp() throws Exception {
-		_group = GroupTestUtil.addGroup();
-	}
 
 	@Test
 	public void testGetTheme() throws Exception {
-		LayoutSet layoutSet = _group.getPublicLayoutSet();
+		Group group = GroupTestUtil.addGroup();
 
-		Theme theme = ThemeLocalServiceUtil.getTheme(
-			_group.getCompanyId(), layoutSet.getThemeId());
+		LayoutSet layoutSet = group.getPublicLayoutSet();
 
-		Assert.notNull(theme);
+		Assert.notNull(
+			ThemeLocalServiceUtil.getTheme(
+				group.getCompanyId(), layoutSet.getThemeId()));
 	}
-
-	@DeleteAfterTestRun
-	private Group _group;
 
 }
