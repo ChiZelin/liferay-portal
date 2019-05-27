@@ -12,21 +12,20 @@
  * details.
  */
 
-package com.liferay.portal.service;
+package com.liferay.portal.security.permission.test;
 
-import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.portal.kernel.model.BaseModel;
 import com.liferay.portal.kernel.model.ResourceAction;
 import com.liferay.portal.kernel.model.ResourcePermission;
 import com.liferay.portal.kernel.model.Role;
 import com.liferay.portal.kernel.model.RoleConstants;
-import com.liferay.portal.kernel.service.ResourceActionLocalServiceUtil;
-import com.liferay.portal.kernel.service.ResourcePermissionLocalServiceUtil;
-import com.liferay.portal.kernel.service.RoleLocalServiceUtil;
+import com.liferay.portal.kernel.service.ResourceActionLocalService;
+import com.liferay.portal.kernel.service.ResourcePermissionLocalService;
+import com.liferay.portal.kernel.service.RoleLocalService;
 import com.liferay.portal.kernel.service.persistence.ResourcePermissionPersistence;
 import com.liferay.portal.kernel.test.ReflectionTestUtil;
 import com.liferay.portal.kernel.test.randomizerbumpers.UniqueStringRandomizerBumper;
-import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
@@ -41,6 +40,7 @@ import com.liferay.portal.test.rule.ExpectedLog;
 import com.liferay.portal.test.rule.ExpectedLogs;
 import com.liferay.portal.test.rule.ExpectedMultipleLogs;
 import com.liferay.portal.test.rule.ExpectedType;
+import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.util.PropsValues;
 
@@ -60,17 +60,19 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 /**
  * @author Matthew Tambara
  * @author William Newbury
  * @author Shuyang Zhou
  */
+@RunWith(Arquillian.class)
 public class ResourcePermissionLocalServiceConcurrentTest {
 
 	@ClassRule
 	@Rule
-	public static final AggregateTestRule aggregateTestRule =
+	public static final LiferayIntegrationTestRule liferayIntegrationTestRule =
 		new LiferayIntegrationTestRule();
 
 	@Before
@@ -90,15 +92,14 @@ public class ResourcePermissionLocalServiceConcurrentTest {
 		_name = RandomTestUtil.randomString(
 			UniqueStringRandomizerBumper.INSTANCE);
 
-		_resourceAction = ResourceActionLocalServiceUtil.addResourceAction(
+		_resourceAction = _resourceActionLocalService.addResourceAction(
 			_name, _actionId, RandomTestUtil.randomLong());
 
-		ResourceActionLocalServiceUtil.checkResourceActions();
+		_resourceActionLocalService.checkResourceActions();
 
 		AopInvocationHandler aopInvocationHandler =
 			ProxyUtil.fetchInvocationHandler(
-				ResourcePermissionLocalServiceUtil.getService(),
-				AopInvocationHandler.class);
+				_resourcePermissionLocalService, AopInvocationHandler.class);
 
 		final ResourcePermissionLocalServiceImpl
 			resourcePermissionLocalServiceImpl =
@@ -203,27 +204,18 @@ public class ResourcePermissionLocalServiceConcurrentTest {
 			final String primKey = RandomTestUtil.randomString(
 				UniqueStringRandomizerBumper.INSTANCE);
 
-			Callable<ResourcePermission> callable =
-				new Callable<ResourcePermission>() {
+			Callable<ResourcePermission> callable = () -> {
+				Role role = _roleLocalService.getRole(
+					TestPropsValues.getCompanyId(), RoleConstants.GUEST);
 
-					@Override
-					public ResourcePermission call() throws PortalException {
-						Role role = RoleLocalServiceUtil.getRole(
-							TestPropsValues.getCompanyId(),
-							RoleConstants.GUEST);
+				_resourcePermissionLocalService.addResourcePermission(
+					TestPropsValues.getCompanyId(), _name, 0, primKey,
+					role.getRoleId(), _actionId);
 
-						ResourcePermissionLocalServiceUtil.
-							addResourcePermission(
-								TestPropsValues.getCompanyId(), _name, 0,
-								primKey, role.getRoleId(), _actionId);
-
-						return ResourcePermissionLocalServiceUtil.
-							fetchResourcePermission(
-								TestPropsValues.getCompanyId(), _name, 0,
-								primKey, role.getRoleId());
-					}
-
-				};
+				return _resourcePermissionLocalService.fetchResourcePermission(
+					TestPropsValues.getCompanyId(), _name, 0, primKey,
+					role.getRoleId());
+			};
 
 			List<FutureTask<ResourcePermission>> futureTasks =
 				new ArrayList<>();
@@ -271,8 +263,17 @@ public class ResourcePermissionLocalServiceConcurrentTest {
 	@DeleteAfterTestRun
 	private ResourceAction _resourceAction;
 
+	@Inject
+	private ResourceActionLocalService _resourceActionLocalService;
+
 	@DeleteAfterTestRun
 	private ResourcePermission _resourcePermission;
+
+	@Inject
+	private ResourcePermissionLocalService _resourcePermissionLocalService;
+
+	@Inject
+	private RoleLocalService _roleLocalService;
 
 	private int _threadCount;
 

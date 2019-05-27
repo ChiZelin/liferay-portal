@@ -12,74 +12,75 @@
  * details.
  */
 
-package com.liferay.portal.service;
+package com.liferay.portal.security.permission.test;
 
+import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Resource;
 import com.liferay.portal.kernel.model.ResourceConstants;
 import com.liferay.portal.kernel.model.Role;
 import com.liferay.portal.kernel.model.RoleConstants;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
-import com.liferay.portal.kernel.service.ResourcePermissionLocalServiceUtil;
-import com.liferay.portal.kernel.service.RoleLocalServiceUtil;
-import com.liferay.portal.kernel.test.rule.AggregateTestRule;
+import com.liferay.portal.kernel.service.ResourcePermissionLocalService;
+import com.liferay.portal.kernel.service.RoleLocalService;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
 import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.model.impl.ResourceImpl;
+import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 /**
  * @author Manuel de la Peña
  */
+@RunWith(Arquillian.class)
 public class ResourcePermissionLocalServiceTest {
 
 	@ClassRule
 	@Rule
-	public static final AggregateTestRule aggregateTestRule =
+	public static final LiferayIntegrationTestRule liferayIntegrationTestRule =
 		new LiferayIntegrationTestRule();
 
 	@Before
 	public void setUp() throws Exception {
 		_group = GroupTestUtil.addGroup();
+
+		Role guestRole = _roleLocalService.getRole(
+			_group.getCompanyId(), RoleConstants.GUEST);
+
+		_roleIds[0] = guestRole.getRoleId();
 	}
 
 	@Test
 	public void testShouldFailIfFirstResourceIsNotIndividual()
 		throws Exception {
 
-		List<Resource> resources = new ArrayList<>();
-
 		Resource firstResource = new ResourceImpl();
 
 		firstResource.setScope(ResourceConstants.SCOPE_GROUP);
-
-		resources.add(firstResource);
 
 		Resource lastResource = new ResourceImpl();
 
 		lastResource.setScope(ResourceConstants.SCOPE_COMPANY);
 
-		resources.add(lastResource);
-
-		long[] roleIds = new long[1];
-
-		Role guestRole = RoleLocalServiceUtil.getRole(
-			_group.getCompanyId(), RoleConstants.GUEST);
-
-		roleIds[0] = guestRole.getRoleId();
-
 		try {
-			ResourcePermissionLocalServiceUtil.hasResourcePermission(
-				resources, roleIds, ActionKeys.VIEW);
+			_resourcePermissionLocalService.hasResourcePermission(
+				new ArrayList<Resource>() {
+					{
+						add(firstResource);
+						add(lastResource);
+					}
+				},
+				_roleIds, ActionKeys.VIEW);
 		}
 		catch (IllegalArgumentException iae) {
 			Assert.assertEquals(
@@ -90,30 +91,23 @@ public class ResourcePermissionLocalServiceTest {
 
 	@Test
 	public void testShouldFailIfLastResourceIsNotCompany() throws Exception {
-		List<Resource> resources = new ArrayList<>();
-
 		Resource firstResource = new ResourceImpl();
 
 		firstResource.setScope(ResourceConstants.SCOPE_INDIVIDUAL);
-
-		resources.add(firstResource);
 
 		Resource lastResource = new ResourceImpl();
 
 		lastResource.setScope(ResourceConstants.SCOPE_GROUP);
 
-		resources.add(lastResource);
-
-		long[] roleIds = new long[1];
-
-		Role guestRole = RoleLocalServiceUtil.getRole(
-			_group.getCompanyId(), RoleConstants.GUEST);
-
-		roleIds[0] = guestRole.getRoleId();
-
 		try {
-			ResourcePermissionLocalServiceUtil.hasResourcePermission(
-				resources, roleIds, ActionKeys.VIEW);
+			_resourcePermissionLocalService.hasResourcePermission(
+				new ArrayList<Resource>() {
+					{
+						add(firstResource);
+						add(lastResource);
+					}
+				},
+				_roleIds, ActionKeys.VIEW);
 		}
 		catch (IllegalArgumentException iae) {
 			Assert.assertEquals(
@@ -123,20 +117,10 @@ public class ResourcePermissionLocalServiceTest {
 
 	@Test
 	public void testShouldFailIfResourcesIsLessThanTwo() throws Exception {
-		List<Resource> resources = new ArrayList<>();
-
-		resources.add(new ResourceImpl());
-
-		long[] roleIds = new long[1];
-
-		Role guestRole = RoleLocalServiceUtil.getRole(
-			_group.getCompanyId(), RoleConstants.GUEST);
-
-		roleIds[0] = guestRole.getRoleId();
-
 		try {
-			ResourcePermissionLocalServiceUtil.hasResourcePermission(
-				resources, roleIds, ActionKeys.VIEW);
+			_resourcePermissionLocalService.hasResourcePermission(
+				Collections.singletonList(new ResourceImpl()), _roleIds,
+				ActionKeys.VIEW);
 		}
 		catch (IllegalArgumentException iae) {
 			Assert.assertEquals(
@@ -147,5 +131,13 @@ public class ResourcePermissionLocalServiceTest {
 
 	@DeleteAfterTestRun
 	private Group _group;
+
+	@Inject
+	private ResourcePermissionLocalService _resourcePermissionLocalService;
+
+	private final long[] _roleIds = new long[1];
+
+	@Inject
+	private RoleLocalService _roleLocalService;
 
 }
