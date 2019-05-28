@@ -24,6 +24,8 @@ import com.liferay.portal.kernel.model.LayoutSetBranch;
 import com.liferay.portal.kernel.model.LayoutTypePortlet;
 import com.liferay.portal.kernel.model.PortletPreferences;
 import com.liferay.portal.kernel.portlet.PortletIdCodec;
+import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
+import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.service.LayoutBranchLocalService;
 import com.liferay.portal.kernel.service.LayoutLocalService;
 import com.liferay.portal.kernel.service.LayoutRevisionLocalService;
@@ -35,7 +37,11 @@ import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
+import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.Constants;
+import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.UnicodeProperties;
+import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.model.impl.PortletImpl;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
@@ -43,12 +49,18 @@ import com.liferay.portal.util.test.LayoutTestUtil;
 import com.liferay.portlet.util.test.PortletKeys;
 
 import java.util.List;
+import java.util.Objects;
+
+import javax.portlet.PortletException;
 
 import org.junit.Assert;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import org.springframework.mock.web.portlet.MockActionRequest;
+import org.springframework.mock.web.portlet.MockActionResponse;
 
 /**
  * @author Andrew Betts
@@ -74,7 +86,7 @@ public class CleanUpPortletPreferencesUtilTest {
 
 		Assert.assertNotNull(portletPreferences);
 
-		CleanUpPortletPreferencesUtil.cleanUpLayoutRevisionPortletPreferences();
+		_callCleanUpLayoutRevisionPortletPreferences();
 
 		Assert.assertNull(
 			_portletPreferencesLocalService.fetchPortletPreferences(
@@ -112,11 +124,49 @@ public class CleanUpPortletPreferencesUtilTest {
 
 		Assert.assertTrue(portletIds.isEmpty());
 
-		CleanUpPortletPreferencesUtil.cleanUpLayoutRevisionPortletPreferences();
+		_callCleanUpLayoutRevisionPortletPreferences();
 
 		Assert.assertNotNull(
 			_portletPreferencesLocalService.fetchPortletPreferences(
 				portletPreferences.getPortletPreferencesId()));
+	}
+
+	private void _callCleanUpLayoutRevisionPortletPreferences()
+		throws PortletException {
+
+		ThemeDisplay themeDisplay = new ThemeDisplay();
+
+		themeDisplay.setPermissionChecker(
+			(PermissionChecker)ProxyUtil.newProxyInstance(
+				PermissionChecker.class.getClassLoader(),
+				new Class<?>[] {PermissionChecker.class},
+				(proxy, method, args) -> {
+					if (Objects.equals(method.getName(), "isOmniadmin")) {
+						return true;
+					}
+
+					return null;
+				}));
+
+		MockActionRequest mockActionRequest = new MockActionRequest();
+
+		mockActionRequest.setAttribute(WebKeys.THEME_DISPLAY, themeDisplay);
+		mockActionRequest.setParameter(
+			Constants.CMD, "cleanUpPortletPreferences");
+
+		try {
+			_mvcActionCommand.processAction(
+				mockActionRequest, new MockActionResponse());
+		}
+		catch (Exception e) {
+			if (!("java.lang.RuntimeException: Unable to unwrap the portlet " +
+					"request from class org.springframework.mock.web.portlet." +
+						"MockActionRequest").equals(
+							e.getMessage())) {
+
+				throw e;
+			}
+		}
 	}
 
 	private LayoutRevision _getLayoutRevision() throws Exception {
@@ -156,6 +206,9 @@ public class CleanUpPortletPreferencesUtilTest {
 
 	@Inject
 	private LayoutSetBranchLocalService _layoutSetBranchLocalService;
+
+	@Inject(filter = "mvc.command.name=/server_admin/edit_server")
+	private MVCActionCommand _mvcActionCommand;
 
 	@Inject
 	private PortletPreferencesLocalService _portletPreferencesLocalService;
