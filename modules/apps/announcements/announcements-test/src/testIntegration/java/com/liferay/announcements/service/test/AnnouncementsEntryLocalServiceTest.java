@@ -380,13 +380,13 @@ public class AnnouncementsEntryLocalServiceTest {
 	private AnnouncementsEntry _entry;
 
 	@Inject
-	Portal _portal;
-
-	@Inject
 	private GroupLocalService _groupLocalService;
 
 	@Inject
 	private OrganizationLocalService _organizationLocalService;
+
+	@Inject
+	private Portal _portal;
 
 	@Inject
 	private RoleLocalService _roleLocalService;
