@@ -105,8 +105,8 @@ public class ProcessResourceImpl extends BaseProcessResourceImpl {
 
 			return latestCTProcessOptional.map(
 				Collections::singletonList
-			).orElse(
-				Collections.emptyList()
+			).orElseGet(
+				Collections::emptyList
 			);
 		}
 

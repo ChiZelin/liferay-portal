@@ -123,13 +123,13 @@ public class DocumentFolderResourceImpl
 			documentFolderId, documentFolder.getCustomFields(),
 			Optional.ofNullable(
 				documentFolder.getDescription()
-			).orElse(
-				existingFolder.getDescription()
+			).orElseGet(
+				existingFolder::getDescription
 			),
 			Optional.ofNullable(
 				documentFolder.getName()
-			).orElse(
-				existingFolder.getName()
+			).orElseGet(
+				existingFolder::getName
 			));
 	}
 

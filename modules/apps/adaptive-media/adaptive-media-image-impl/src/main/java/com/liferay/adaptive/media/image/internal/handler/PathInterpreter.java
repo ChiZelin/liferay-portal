@@ -83,8 +83,8 @@ public class PathInterpreter {
 
 						return curProperties;
 					}
-				).orElse(
-					new HashMap<>()
+				).orElseGet(
+					HashMap::new
 				);
 
 			return Optional.of(Tuple.of(fileVersion, properties));

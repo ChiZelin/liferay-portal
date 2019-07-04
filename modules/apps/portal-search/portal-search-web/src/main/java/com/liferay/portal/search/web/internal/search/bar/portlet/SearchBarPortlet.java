@@ -154,8 +154,8 @@ public class SearchBarPortlet extends MVCPortlet {
 
 		Optional<String> optional = searchSettings.getKeywordsParameterName();
 
-		return optional.orElse(
-			searchBarPortletPreferences.getKeywordsParameterName());
+		return optional.orElseGet(
+			searchBarPortletPreferences::getKeywordsParameterName);
 	}
 
 	protected String getPaginationStartParameterName(

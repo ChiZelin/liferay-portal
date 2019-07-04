@@ -165,8 +165,8 @@ public class AMImageEntryProcessor implements DLProcessor, ImageProcessor {
 
 		return adaptiveMediaOptional.map(
 			AdaptiveMedia::getInputStream
-		).orElse(
-			new ByteArrayInputStream(new byte[0])
+		).orElseGet(
+			() -> new ByteArrayInputStream(new byte[0])
 		);
 	}
 

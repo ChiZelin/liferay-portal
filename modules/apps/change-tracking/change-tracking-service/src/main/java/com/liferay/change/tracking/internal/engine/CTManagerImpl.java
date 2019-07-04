@@ -392,8 +392,8 @@ public class CTManagerImpl implements CTManager {
 
 		List<CTEntry> ctEntries = ctEntryAggregateOptional.map(
 			CTEntryAggregate::getRelatedCTEntries
-		).orElse(
-			new ArrayList<>()
+		).orElseGet(
+			ArrayList::new
 		);
 
 		ctEntries.removeIf(ctEntry::equals);

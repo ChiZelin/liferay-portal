@@ -35,6 +35,7 @@ import com.liferay.headless.delivery.internal.dto.v1_0.util.RatingUtil;
 import com.liferay.headless.delivery.internal.odata.entity.v1_0.DocumentEntityModel;
 import com.liferay.headless.delivery.resource.v1_0.DocumentResource;
 import com.liferay.petra.function.UnsafeConsumer;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.repository.model.Folder;
@@ -173,12 +174,23 @@ public class DocumentResourceImpl
 
 		BinaryFile binaryFile = Optional.ofNullable(
 			multipartBody.getBinaryFile("file")
-		).orElse(
-			new BinaryFile(
-				existingFileEntry.getMimeType(),
-				existingFileEntry.getFileName(),
-				existingFileEntry.getContentStream(),
-				existingFileEntry.getSize())
+		).orElseGet(
+			() -> {
+				BinaryFile result = null;
+
+				try {
+					result = new BinaryFile(
+						existingFileEntry.getMimeType(),
+						existingFileEntry.getFileName(),
+						existingFileEntry.getContentStream(),
+						existingFileEntry.getSize());
+				}
+				catch (PortalException pe) {
+					pe.printStackTrace();
+				}
+
+				return result;
+			}
 		);
 
 		Optional<Document> documentOptional =
@@ -206,13 +218,13 @@ public class DocumentResourceImpl
 				binaryFile.getContentType(),
 				documentOptional.map(
 					Document::getTitle
-				).orElse(
-					existingFileEntry.getTitle()
+				).orElseGet(
+					existingFileEntry::getTitle
 				),
 				documentOptional.map(
 					Document::getDescription
-				).orElse(
-					existingFileEntry.getDescription()
+				).orElseGet(
+					existingFileEntry::getDescription
 				),
 				null, DLVersionNumberIncrease.AUTOMATIC,
 				binaryFile.getInputStream(), binaryFile.getSize(),
@@ -275,12 +287,23 @@ public class DocumentResourceImpl
 
 		BinaryFile binaryFile = Optional.ofNullable(
 			multipartBody.getBinaryFile("file")
-		).orElse(
-			new BinaryFile(
-				existingFileEntry.getMimeType(),
-				existingFileEntry.getFileName(),
-				existingFileEntry.getContentStream(),
-				existingFileEntry.getSize())
+		).orElseGet(
+			() -> {
+				BinaryFile result = null;
+
+				try {
+					result = new BinaryFile(
+						existingFileEntry.getMimeType(),
+						existingFileEntry.getFileName(),
+						existingFileEntry.getContentStream(),
+						existingFileEntry.getSize());
+				}
+				catch (PortalException pe) {
+					pe.printStackTrace();
+				}
+
+				return result;
+			}
 		);
 
 		return _toDocument(
@@ -289,8 +312,8 @@ public class DocumentResourceImpl
 				binaryFile.getContentType(),
 				documentOptional.map(
 					Document::getTitle
-				).orElse(
-					existingFileEntry.getTitle()
+				).orElseGet(
+					existingFileEntry::getTitle
 				),
 				documentOptional.map(
 					Document::getDescription
@@ -302,20 +325,20 @@ public class DocumentResourceImpl
 				ServiceContextUtil.createServiceContext(
 					documentOptional.map(
 						Document::getTaxonomyCategoryIds
-					).orElse(
-						new Long[0]
+					).orElseGet(
+						() -> new Long[0]
 					),
 					documentOptional.map(
 						Document::getKeywords
-					).orElse(
-						new String[0]
+					).orElseGet(
+						() -> new String[0]
 					),
 					_getExpandoBridgeAttributes1(documentOptional),
 					existingFileEntry.getGroupId(),
 					documentOptional.map(
 						Document::getViewableByAsString
-					).orElse(
-						Document.ViewableBy.OWNER.getValue()
+					).orElseGet(
+						Document.ViewableBy.OWNER::getValue
 					))));
 	}
 
@@ -350,8 +373,8 @@ public class DocumentResourceImpl
 				binaryFile.getContentType(),
 				documentOptional.map(
 					Document::getTitle
-				).orElse(
-					binaryFile.getFileName()
+				).orElseGet(
+					binaryFile::getFileName
 				),
 				documentOptional.map(
 					Document::getDescription
@@ -373,8 +396,8 @@ public class DocumentResourceImpl
 					_getExpandoBridgeAttributes1(documentOptional), groupId,
 					documentOptional.map(
 						Document::getViewableByAsString
-					).orElse(
-						Document.ViewableBy.OWNER.getValue()
+					).orElseGet(
+						Document.ViewableBy.OWNER::getValue
 					))));
 	}
 

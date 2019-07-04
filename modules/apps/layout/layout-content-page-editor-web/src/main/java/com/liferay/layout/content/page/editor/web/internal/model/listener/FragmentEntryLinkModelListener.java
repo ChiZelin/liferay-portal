@@ -148,8 +148,8 @@ public class FragmentEntryLinkModelListener
 
 		ServiceContext serviceContext = Optional.ofNullable(
 			ServiceContextThreadLocal.getServiceContext()
-		).orElse(
-			new ServiceContext()
+		).orElseGet(
+			ServiceContext::new
 		);
 
 		_assetEntryUsageLocalService.addAssetEntryUsage(

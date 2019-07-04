@@ -38,8 +38,8 @@ public class AssetInfoDisplayContributorFieldUtil {
 		List<InfoDisplayContributorField> infoDisplayContributorFields =
 			Optional.ofNullable(
 				ListUtil.copy(_serviceTrackerMap.getService(className))
-			).orElse(
-				new ArrayList<>()
+			).orElseGet(
+				ArrayList::new
 			);
 
 		infoDisplayContributorFields.addAll(

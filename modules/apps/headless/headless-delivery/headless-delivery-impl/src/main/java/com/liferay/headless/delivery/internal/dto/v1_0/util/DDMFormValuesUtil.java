@@ -58,8 +58,8 @@ public class DDMFormValuesUtil {
 			contentFields
 		).map(
 			fields -> _toContentFieldsMap(Stream.of(fields))
-		).orElse(
-			new HashMap<>()
+		).orElseGet(
+			HashMap::new
 		);
 
 		return new DDMFormValues(ddmForm) {

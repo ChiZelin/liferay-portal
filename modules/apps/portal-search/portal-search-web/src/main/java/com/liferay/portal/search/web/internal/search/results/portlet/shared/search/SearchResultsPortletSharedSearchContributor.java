@@ -96,8 +96,8 @@ public class SearchResultsPortletSharedSearchContributor
 		Optional<Integer> paginationDeltaOptional =
 			paginationDeltaParameterValueOptional.map(Integer::valueOf);
 
-		int paginationDelta = paginationDeltaOptional.orElse(
-			searchResultsPortletPreferences.getPaginationDelta());
+		int paginationDelta = paginationDeltaOptional.orElseGet(
+			searchResultsPortletPreferences::getPaginationDelta);
 
 		portletSharedSearchSettings.setPaginationDelta(paginationDelta);
 	}

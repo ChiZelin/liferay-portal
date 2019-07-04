@@ -253,8 +253,8 @@ public class MessageBoardThreadResourceImpl
 					null,
 					Optional.ofNullable(
 						messageBoardThread.getKeywords()
-					).orElse(
-						new String[0]
+					).orElseGet(
+						() -> new String[0]
 					),
 					_getExpandoBridgeAttributes(messageBoardThread),
 					mbThread.getGroupId(),

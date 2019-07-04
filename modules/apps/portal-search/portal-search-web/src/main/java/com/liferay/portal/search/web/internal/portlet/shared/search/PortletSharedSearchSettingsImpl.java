@@ -111,7 +111,7 @@ public class PortletSharedSearchSettingsImpl
 			_portletSharedRequestHelper.getParameterValues(
 				name, _renderRequest);
 
-		return optional.orElse(new String[0]);
+		return optional.orElseGet(() -> new String[0]);
 	}
 
 	@Override

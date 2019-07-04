@@ -45,8 +45,8 @@ public class FieldTypeTrackerImpl implements FieldTypeTracker {
 	public Map<String, Object> getFieldTypeProperties(String name) {
 		return Optional.ofNullable(
 			_fieldTypesProperties.get(name)
-		).orElse(
-			Collections.emptyMap()
+		).orElseGet(
+			Collections::emptyMap
 		);
 	}
 

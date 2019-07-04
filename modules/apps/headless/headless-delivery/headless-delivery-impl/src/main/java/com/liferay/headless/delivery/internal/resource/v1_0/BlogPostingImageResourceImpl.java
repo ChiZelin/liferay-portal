@@ -124,16 +124,16 @@ public class BlogPostingImageResourceImpl
 			binaryFile.getContentType(),
 			blogPostingImageOptional.map(
 				BlogPostingImage::getTitle
-			).orElse(
-				binaryFile.getFileName()
+			).orElseGet(
+				binaryFile::getFileName
 			),
 			null, null, binaryFile.getInputStream(), binaryFile.getSize(),
 			ServiceContextUtil.createServiceContext(
 				siteId,
 				blogPostingImageOptional.map(
 					BlogPostingImage::getViewableByAsString
-				).orElse(
-					BlogPostingImage.ViewableBy.ANYONE.getValue()
+				).orElseGet(
+					BlogPostingImage.ViewableBy.ANYONE::getValue
 				)));
 
 		return _toBlogPostingImage(fileEntry);

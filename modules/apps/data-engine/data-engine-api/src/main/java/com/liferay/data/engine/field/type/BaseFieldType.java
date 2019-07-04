@@ -65,8 +65,8 @@ public abstract class BaseFieldType implements FieldType {
 			LocalizedValueUtil.toLocalizedValues(
 				Optional.ofNullable(
 					jsonObject.getJSONObject("label")
-				).orElse(
-					JSONFactoryUtil.createJSONObject()
+				).orElseGet(
+					JSONFactoryUtil::createJSONObject
 				)));
 		spiDataDefinitionField.setLocalizable(
 			jsonObject.getBoolean("localizable", false));
@@ -77,8 +77,8 @@ public abstract class BaseFieldType implements FieldType {
 			LocalizedValueUtil.toLocalizedValues(
 				Optional.ofNullable(
 					jsonObject.getJSONObject("tip")
-				).orElse(
-					JSONFactoryUtil.createJSONObject()
+				).orElseGet(
+					JSONFactoryUtil::createJSONObject
 				)));
 
 		return spiDataDefinitionField;

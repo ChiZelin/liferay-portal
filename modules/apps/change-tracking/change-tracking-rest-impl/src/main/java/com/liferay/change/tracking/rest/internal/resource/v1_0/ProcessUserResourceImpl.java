@@ -62,8 +62,8 @@ public class ProcessUserResourceImpl extends BaseProcessUserResourceImpl {
 
 			ctProcesses = latestCTProcessOptional.map(
 				Collections::singletonList
-			).orElse(
-				Collections.emptyList()
+			).orElseGet(
+				Collections::emptyList
 			);
 		}
 		else {

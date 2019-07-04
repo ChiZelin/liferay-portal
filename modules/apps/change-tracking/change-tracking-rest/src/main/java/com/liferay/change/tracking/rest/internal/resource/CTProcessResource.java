@@ -94,8 +94,8 @@ public class CTProcessResource {
 			_ctProcessLocalService.fetchCTProcess(ctProcessId)
 		).map(
 			this::_getCTProcessModel
-		).orElse(
-			CTProcessModel.emptyCTProcessModel()
+		).orElseGet(
+			CTProcessModel::emptyCTProcessModel
 		);
 	}
 
@@ -197,8 +197,8 @@ public class CTProcessResource {
 
 			ctProcesses = latestCTProcessOptional.map(
 				Collections::singletonList
-			).orElse(
-				Collections.emptyList()
+			).orElseGet(
+				Collections::emptyList
 			);
 		}
 		else {

@@ -49,8 +49,8 @@ public class SearcherImpl implements Searcher {
 		return stream.reduce(
 			(beforeFunction, afterFunction) -> beforeFunction.andThen(
 				afterFunction)
-		).orElse(
-			Function.identity()
+		).orElseGet(
+			Function::identity
 		).apply(
 			t
 		);

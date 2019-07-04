@@ -216,8 +216,8 @@ public class EntityModelSchemaBasedEdmProvider extends SchemaBasedEdmProvider {
 					_createPrimitiveCsdlProperty(
 						entityField, fullQualifiedName));
 			}
-		).orElse(
-			Optional.empty()
+		).orElseGet(
+			Optional::empty
 		);
 	}
 

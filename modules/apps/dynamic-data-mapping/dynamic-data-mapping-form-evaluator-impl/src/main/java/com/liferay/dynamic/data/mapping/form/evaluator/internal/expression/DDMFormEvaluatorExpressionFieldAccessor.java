@@ -119,8 +119,8 @@ public class DDMFormEvaluatorExpressionFieldAccessor
 			ddmFormFieldValue,
 			Optional.ofNullable(
 				_locale
-			).orElse(
-				ddmFormFieldValueValue.getDefaultLocale()
+			).orElseGet(
+				ddmFormFieldValueValue::getDefaultLocale
 			));
 	}
 

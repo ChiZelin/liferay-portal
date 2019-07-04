@@ -121,8 +121,8 @@ public class LayoutCopyHelperImpl implements LayoutCopyHelper {
 
 		ServiceContext serviceContext = Optional.ofNullable(
 			ServiceContextThreadLocal.getServiceContext()
-		).orElse(
-			new ServiceContext()
+		).orElseGet(
+			ServiceContext::new
 		);
 
 		List<FragmentEntryLink> fragmentEntryLinks =

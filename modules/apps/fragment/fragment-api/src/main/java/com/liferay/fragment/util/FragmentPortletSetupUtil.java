@@ -38,8 +38,8 @@ public class FragmentPortletSetupUtil {
 
 		JSONObject advancedDataJSONObject = Optional.ofNullable(
 			jsonObject.getJSONObject("advancedData")
-		).orElse(
-			JSONFactoryUtil.createJSONObject()
+		).orElseGet(
+			JSONFactoryUtil::createJSONObject
 		);
 
 		String customCSSClassNames = advancedDataJSONObject.getString(

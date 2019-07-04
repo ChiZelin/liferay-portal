@@ -39,8 +39,8 @@ public class SearchStringUtil {
 	public static String[] splitAndUnquote(Optional<String> optional) {
 		return optional.map(
 			SearchStringUtil::splitAndUnquote
-		).orElse(
-			new String[0]
+		).orElseGet(
+			() -> new String[0]
 		);
 	}
 

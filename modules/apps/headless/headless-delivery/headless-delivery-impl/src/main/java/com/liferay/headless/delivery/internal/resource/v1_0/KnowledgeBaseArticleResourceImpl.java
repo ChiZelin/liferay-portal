@@ -261,13 +261,13 @@ public class KnowledgeBaseArticleResourceImpl
 				ServiceContextUtil.createServiceContext(
 					Optional.ofNullable(
 						knowledgeBaseArticle.getTaxonomyCategoryIds()
-					).orElse(
-						new Long[0]
+					).orElseGet(
+						() -> new Long[0]
 					),
 					Optional.ofNullable(
 						knowledgeBaseArticle.getKeywords()
-					).orElse(
-						new String[0]
+					).orElseGet(
+						() -> new String[0]
 					),
 					_getExpandoBridgeAttributes(knowledgeBaseArticle),
 					knowledgeBaseArticle.getSiteId(),

@@ -43,8 +43,8 @@ public class DSSignatureServiceImpl implements DSSignatureService {
 
 		Optional<DSSignatureResponse> optional = validateDSSignatureAdapter();
 
-		return optional.orElse(
-			_dsSignatureAdapter.execute(packageDSSignatureRequest));
+		return optional.orElseGet(
+			() -> _dsSignatureAdapter.execute(packageDSSignatureRequest));
 	}
 
 	protected void setDSSignatureAdapter(

@@ -383,8 +383,8 @@ public class TaxonomyVocabularyResourceImpl
 
 		String className = assetRendererFactoryOptional.map(
 			AssetRendererFactory::getClassName
-		).orElse(
-			_assetTypeTypeToClassNames.get(assetTypeType)
+		).orElseGet(
+			() -> _assetTypeTypeToClassNames.get(assetTypeType)
 		);
 
 		if (className == null) {

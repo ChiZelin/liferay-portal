@@ -327,8 +327,8 @@ public class IndividualSegmentsChecker {
 		).findFirst(
 		).map(
 			Individual.DataSourceIndividualPK::getIndividualPKs
-		).orElse(
-			Collections.emptyList()
+		).orElseGet(
+			Collections::emptyList
 		);
 
 		if (ListUtil.isEmpty(individualUuids)) {

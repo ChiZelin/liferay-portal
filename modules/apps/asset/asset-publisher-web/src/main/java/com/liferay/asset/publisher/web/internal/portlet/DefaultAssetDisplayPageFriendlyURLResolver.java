@@ -221,10 +221,21 @@ public class DefaultAssetDisplayPageFriendlyURLResolver
 		AssetEntry assetEntry = Optional.ofNullable(
 			_assetEntryLocalService.fetchEntry(
 				JournalArticle.class.getName(), journalArticle.getPrimaryKey())
-		).orElse(
-			assetRendererFactory.getAssetEntry(
-				JournalArticle.class.getName(),
-				journalArticle.getResourcePrimKey())
+		).orElseGet(
+			() -> {
+				AssetEntry result = null;
+
+				try {
+					result = assetRendererFactory.getAssetEntry(
+						JournalArticle.class.getName(),
+						journalArticle.getResourcePrimKey());
+				}
+				catch (PortalException pe) {
+					pe.printStackTrace();
+				}
+
+				return result;
+			}
 		);
 
 		actualParams.put(

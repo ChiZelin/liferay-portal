@@ -39,8 +39,8 @@ public class ContentLanguageUtil {
 		).filter(
 			locale -> LocaleUtil.equals(locale, requestedLocale)
 		).findFirst(
-		).orElse(
-			LocaleUtil.fromLanguageId(defaultLocaleId)
+		).orElseGet(
+			() -> LocaleUtil.fromLanguageId(defaultLocaleId)
 		);
 
 		httpServletResponse.addHeader(
