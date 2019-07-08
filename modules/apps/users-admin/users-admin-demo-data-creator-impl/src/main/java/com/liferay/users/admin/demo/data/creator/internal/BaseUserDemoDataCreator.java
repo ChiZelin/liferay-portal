@@ -15,6 +15,7 @@
 package com.liferay.users.admin.demo.data.creator.internal;
 
 import com.liferay.petra.string.CharPool;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.NoSuchUserException;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -273,8 +274,8 @@ public abstract class BaseUserDemoDataCreator implements UserDemoDataCreator {
 				normalizedEmailAddress = StringUtil.randomString();
 			}
 
-			emailAddress = String.format(
-				"%s@%s", normalizedEmailAddress, emailAddressParts[1]);
+			emailAddress = StringBundler.concat(
+				normalizedEmailAddress, "@", emailAddressParts[1]);
 		}
 
 		return emailAddress;

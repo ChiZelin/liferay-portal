@@ -38,10 +38,8 @@ public class OAuth2AuthorizationException extends AuthorizationException {
 
 		public AccessDenied(String description) {
 			super(
-				String.format(
-					"The client is not authorized to request an " +
-						"authorization code using method: %s",
-					description));
+				"The client is not authorized to request an authorization " +
+					"code using method: ".concat(description));
 		}
 
 	}
@@ -50,11 +48,10 @@ public class OAuth2AuthorizationException extends AuthorizationException {
 
 		public InvalidRequest(String description) {
 			super(
-				String.format(
-					"The request is missing a required parameter, includes " +
-						"an invalid parameter value, includes a parameter " +
-							"more than once, or is otherwise malformed: %s",
-					description));
+				("The request is missing a required parameter, includes an " +
+					"invalid parameter value, includes a parameter more than " +
+						"once, or is otherwise malformed: ").concat(
+							description));
 		}
 
 	}
@@ -63,9 +60,8 @@ public class OAuth2AuthorizationException extends AuthorizationException {
 
 		public InvalidScope(String description) {
 			super(
-				String.format(
-					"The requested scope is invalid, unknown, or malformed: %s",
-					description));
+				"The requested scope is invalid, unknown, or malformed: ".
+					concat(description));
 		}
 
 	}
@@ -74,8 +70,7 @@ public class OAuth2AuthorizationException extends AuthorizationException {
 
 		public InvalidState(String state) {
 			super(
-				String.format(
-					"The resource owner returned an invalid state value: %s",
+				"The resource owner returned an invalid state value: ".concat(
 					state));
 		}
 
@@ -85,11 +80,9 @@ public class OAuth2AuthorizationException extends AuthorizationException {
 
 		public ServerError(String description) {
 			super(
-				String.format(
-					"The authorization server encountered an unexpected " +
-						"condition that prevented it from fulfilling the " +
-							"request: %s",
-					description));
+				"The authorization server encountered an unexpected " +
+					"condition that prevented it from fulfilling the " +
+						"request: ".concat(description));
 		}
 
 	}
@@ -99,11 +92,9 @@ public class OAuth2AuthorizationException extends AuthorizationException {
 
 		public TemporarilyUnavailable(String description) {
 			super(
-				String.format(
-					"The authorization server is currently unable to handle " +
-						"the request due to a temporary overloading or " +
-							"maintenance of the server: %s",
-					description));
+				"The authorization server is currently unable to handle the " +
+					"request due to a temporary overloading or maintenance " +
+						"of the server: ".concat(description));
 		}
 
 	}
@@ -113,10 +104,8 @@ public class OAuth2AuthorizationException extends AuthorizationException {
 
 		public UnauthorizedClient(String description) {
 			super(
-				String.format(
-					"The resource owner or authorization server denied the " +
-						"request: %s",
-					description));
+				"The resource owner or authorization server denied the " +
+					"request: ".concat(description));
 		}
 
 	}
@@ -126,10 +115,9 @@ public class OAuth2AuthorizationException extends AuthorizationException {
 
 		public UnsupportedResponseType(String description) {
 			super(
-				String.format(
-					"The authorization server does not support obtaining an" +
-						"authorization code using this method: %s",
-					description));
+				("The authorization server does not support obtaining an" +
+					"authorization code using this method: ").concat(
+						description));
 		}
 
 	}

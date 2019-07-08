@@ -14,6 +14,7 @@
 
 package com.liferay.talend.runtime.client;
 
+import com.liferay.petra.string.StringBundler;
 import com.liferay.talend.common.exception.MalformedURLException;
 import com.liferay.talend.common.util.URIUtil;
 import com.liferay.talend.connection.LiferayConnectionProperties;
@@ -133,7 +134,7 @@ public class RESTClient {
 
 	@Override
 	public String toString() {
-		return String.format("REST API Client [%s].", _getTarget());
+		return StringBundler.concat("REST API Client [", _getTarget(), "].");
 	}
 
 	private JsonObject _asJsonObject(Response response) {
@@ -190,9 +191,9 @@ public class RESTClient {
 		}
 
 		throw TalendRuntimeException.createUnexpectedException(
-			String.format(
-				"Request failed with HTTP status %d and response %s",
-				response.getStatus(), responseBody));
+			StringBundler.concat(
+				"Request failed with HTTP status ", response.getStatus(),
+				" and response ", responseBody));
 	}
 
 	private Response _executeAccessTokenPostRequest(
@@ -437,19 +438,19 @@ public class RESTClient {
 
 		if (response.getStatus() != 200) {
 			throw new OAuth2Exception(
-				String.format(
-					"OAuth 2.0 check failed with response status {%s}",
-					response.getStatus()));
+				StringBundler.concat(
+					"OAuth 2.0 check failed with response status {",
+					response.getStatus(), "}"));
 		}
 
 		if (!_isApplicationJsonContentType(response)) {
 			List<String> contentTypeValues = _getContentType(response);
 
 			throw new OAuth2Exception(
-				String.format(
-					"OAuth 2.0 check failed with response status and {%s} " +
-						"content type {%s}",
-					response.getStatus(), contentTypeValues.get(0)));
+				StringBundler.concat(
+					"OAuth 2.0 check failed with response status and {",
+					response.getStatus(), "} content type {",
+					contentTypeValues.get(0), "}"));
 		}
 
 		return _asJsonObject(response);

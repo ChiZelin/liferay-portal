@@ -1962,10 +1962,10 @@ public class KBArticleLocalServiceImpl extends KBArticleLocalServiceBaseImpl {
 					kbArticle.getResourcePrimKey())) {
 
 				throw new KBArticleParentException(
-					String.format(
-						"Cannot move KBArticle %s inside its descendant " +
-							"KBArticle %s",
+					StringBundler.concat(
+						"Cannot move KBArticle ",
 						kbArticle.getResourcePrimKey(),
+						" inside its descendant KBArticle ",
 						parentKBArticle.getResourcePrimKey()));
 			}
 		}
@@ -1984,10 +1984,10 @@ public class KBArticleLocalServiceImpl extends KBArticleLocalServiceBaseImpl {
 			(resourceClassNameId != kbFolderClassNameId)) {
 
 			throw new KBArticleParentException(
-				String.format(
-					"Invalid parent with resource class name ID %s and " +
-						"resource primary key %s",
-					resourceClassNameId, resourcePrimKey));
+				StringBundler.concat(
+					"Invalid parent with resource class name ID ",
+					resourceClassNameId, " and resource primary key ",
+					resourcePrimKey));
 		}
 	}
 

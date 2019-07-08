@@ -16,6 +16,7 @@ package com.liferay.reading.time.taglib.servlet.internal.servlet.reading.time;
 
 import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMap;
 import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMapFactory;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.reading.time.message.ReadingTimeMessageProvider;
@@ -40,9 +41,9 @@ public class ReadingTimeUtil {
 		if (readingTimeMessageProvider == null) {
 			if (_log.isWarnEnabled()) {
 				_log.warn(
-					String.format(
-						"Reading time provider \"%s\" is not available",
-						displayStyle));
+					StringBundler.concat(
+						"Reading time provider \"", displayStyle,
+						"\" is not available"));
 			}
 		}
 

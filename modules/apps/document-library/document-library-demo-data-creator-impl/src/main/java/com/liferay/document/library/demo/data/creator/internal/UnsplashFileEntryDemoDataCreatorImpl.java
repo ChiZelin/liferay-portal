@@ -17,6 +17,7 @@ package com.liferay.document.library.demo.data.creator.internal;
 import com.liferay.document.library.demo.data.creator.FileEntryDemoDataCreator;
 import com.liferay.document.library.kernel.exception.NoSuchFileEntryException;
 import com.liferay.document.library.kernel.service.DLAppLocalService;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -107,8 +108,8 @@ public class UnsplashFileEntryDemoDataCreatorImpl
 				_log.warn(ioe, ioe);
 			}
 
-			String fileName = String.format(
-				"dependencies/%d.jpg", RandomUtil.nextInt(5));
+			String fileName = StringBundler.concat(
+				"dependencies/", RandomUtil.nextInt(5), ".jpg");
 
 			try {
 				return FileUtil.getBytes(getClass(), fileName);
@@ -131,9 +132,9 @@ public class UnsplashFileEntryDemoDataCreatorImpl
 			_categoryIndex = 0;
 		}
 
-		String urlString = String.format(
-			"https://source.unsplash.com/category/%s/1920x1080",
-			_categories.get(_categoryIndex));
+		String urlString = StringBundler.concat(
+			"https://source.unsplash.com/category/",
+			_categories.get(_categoryIndex), "/1920x1080");
 
 		return new URL(urlString);
 	}

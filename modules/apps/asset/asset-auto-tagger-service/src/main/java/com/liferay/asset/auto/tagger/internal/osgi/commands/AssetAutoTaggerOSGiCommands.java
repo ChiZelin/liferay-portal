@@ -23,6 +23,7 @@ import com.liferay.asset.auto.tagger.service.AssetAutoTaggerEntryLocalService;
 import com.liferay.asset.kernel.model.AssetEntry;
 import com.liferay.asset.kernel.service.AssetEntryLocalService;
 import com.liferay.petra.function.UnsafeConsumer;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.Criterion;
 import com.liferay.portal.kernel.dao.orm.Property;
@@ -73,9 +74,9 @@ public class AssetAutoTaggerOSGiCommands {
 
 				if (!assetAutoTaggerEntries.isEmpty()) {
 					System.out.println(
-						String.format(
-							"Commited %d auto tags for asset entry %s",
-							assetAutoTaggerEntries.size(),
+						StringBundler.concat(
+							"Commited ", assetAutoTaggerEntries.size(),
+							" auto tags for asset entry ",
 							assetEntry.getTitle()));
 				}
 			});
@@ -116,10 +117,10 @@ public class AssetAutoTaggerOSGiCommands {
 
 				if (oldAssetTagNames.length != newAssetTagNames.length) {
 					System.out.println(
-						String.format(
-							"Added %d tags to asset entry %s",
+						StringBundler.concat(
+							"Added ",
 							newAssetTagNames.length - oldAssetTagNames.length,
-							assetEntry.getTitle()));
+							" tags to asset entry ", assetEntry.getTitle()));
 				}
 			});
 	}
@@ -136,10 +137,10 @@ public class AssetAutoTaggerOSGiCommands {
 
 				if (oldAssetTagNames.length != newAssetTagNames.length) {
 					System.out.println(
-						String.format(
-							"Deleted %d tags to asset entry %s",
+						StringBundler.concat(
+							"Deleted ",
 							oldAssetTagNames.length - newAssetTagNames.length,
-							assetEntry.getTitle()));
+							" tags to asset entry ", assetEntry.getTitle()));
 				}
 			});
 	}

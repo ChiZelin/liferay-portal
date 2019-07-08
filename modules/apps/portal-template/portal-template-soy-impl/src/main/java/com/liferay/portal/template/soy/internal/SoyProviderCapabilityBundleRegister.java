@@ -48,7 +48,7 @@ public class SoyProviderCapabilityBundleRegister {
 				sb.append(StringPool.COMMA_AND_SPACE);
 			}
 
-			_log.error(String.format("Registred bundles %s", sb.toString()));
+			_log.error("Registred bundles ".concat(sb.toString()));
 
 			throw new IllegalStateException(
 				"There are no bundles providing " + templateId);

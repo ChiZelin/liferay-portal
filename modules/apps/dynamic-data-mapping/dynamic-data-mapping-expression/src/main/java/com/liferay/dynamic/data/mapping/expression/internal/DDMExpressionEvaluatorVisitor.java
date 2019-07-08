@@ -48,6 +48,7 @@ import com.liferay.dynamic.data.mapping.expression.internal.parser.DDMExpression
 import com.liferay.dynamic.data.mapping.expression.internal.parser.DDMExpressionParser.NumericVariableContext;
 import com.liferay.dynamic.data.mapping.expression.internal.parser.DDMExpressionParser.SubtractionExpressionContext;
 import com.liferay.dynamic.data.mapping.expression.internal.parser.DDMExpressionParser.ToFloatingPointArrayContext;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.util.StringUtil;
 
 import java.math.BigDecimal;
@@ -316,7 +317,8 @@ public class DDMExpressionEvaluatorVisitor
 
 		if (variableValue == null) {
 			throw new IllegalStateException(
-				String.format("Variable \"%s\" not defined", variable));
+				StringBundler.concat(
+					"Variable \"", variable, "\" not defined"));
 		}
 
 		return variableValue;
@@ -389,7 +391,7 @@ public class DDMExpressionEvaluatorVisitor
 
 		if (variableValue == null) {
 			throw new IllegalStateException(
-				String.format("variable %s not defined", variable));
+				StringBundler.concat("variable ", variable, " not defined"));
 		}
 
 		return variableValue;

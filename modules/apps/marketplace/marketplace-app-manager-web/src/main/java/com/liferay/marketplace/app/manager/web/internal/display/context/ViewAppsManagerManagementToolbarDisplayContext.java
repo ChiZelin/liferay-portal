@@ -23,6 +23,7 @@ import com.liferay.marketplace.app.manager.web.internal.util.AppDisplay;
 import com.liferay.marketplace.app.manager.web.internal.util.AppDisplayFactoryUtil;
 import com.liferay.marketplace.app.manager.web.internal.util.BundleManagerUtil;
 import com.liferay.marketplace.app.manager.web.internal.util.comparator.AppDisplayComparator;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.dao.search.SearchContainer;
 import com.liferay.portal.kernel.language.LanguageUtil;
@@ -113,8 +114,8 @@ public class ViewAppsManagerManagementToolbarDisplayContext
 
 							labelItem.setCloseable(true);
 
-							String label = String.format(
-								"%s: %s", LanguageUtil.get(request, "category"),
+							String label = StringBundler.concat(
+								LanguageUtil.get(request, "category"), ": ",
 								LanguageUtil.get(request, category));
 
 							labelItem.setLabel(label);
@@ -135,8 +136,8 @@ public class ViewAppsManagerManagementToolbarDisplayContext
 
 							labelItem.setCloseable(true);
 
-							String label = String.format(
-								"%s: %s", LanguageUtil.get(request, "state"),
+							String label = StringBundler.concat(
+								LanguageUtil.get(request, "state"), ": ",
 								LanguageUtil.get(request, state));
 
 							labelItem.setLabel(label);

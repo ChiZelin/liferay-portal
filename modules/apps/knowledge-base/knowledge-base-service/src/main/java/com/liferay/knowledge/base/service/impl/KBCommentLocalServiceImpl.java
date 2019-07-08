@@ -366,7 +366,7 @@ public class KBCommentLocalServiceImpl extends KBCommentLocalServiceBaseImpl {
 		}
 		else {
 			throw new IllegalArgumentException(
-				String.format("Unknown suggestion status %s", status));
+				"Unknown suggestion status ".concat(String.valueOf(status)));
 		}
 	}
 
@@ -387,7 +387,7 @@ public class KBCommentLocalServiceImpl extends KBCommentLocalServiceBaseImpl {
 		}
 		else {
 			throw new IllegalArgumentException(
-				String.format("Unknown suggestion status %s", status));
+				"Unknown suggestion status ".concat(String.valueOf(status)));
 		}
 	}
 

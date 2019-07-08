@@ -14,6 +14,7 @@
 
 package com.liferay.dynamic.data.mapping.exception;
 
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.exception.PortalException;
 
 /**
@@ -41,10 +42,10 @@ public class RequiredTemplateException extends PortalException {
 
 		public MustNotDeleteTemplateReferencedByTemplateLinks(long templateId) {
 			super(
-				String.format(
-					"Template %s cannot be deleted because it is referenced " +
-						"by one or more template links",
-					templateId));
+				StringBundler.concat(
+					"Template ", templateId,
+					" cannot be deleted because it is referenced by one or " +
+						"more template links"));
 		}
 
 	}

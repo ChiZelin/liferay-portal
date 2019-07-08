@@ -46,9 +46,8 @@ public class FormInstanceFieldSettingsException extends PortalException {
 			Map<String, Set<String>> fieldNamePropertiesMap) {
 
 			super(
-				String.format(
-					"Invalid value set for the properties of field %s",
-					fieldNamePropertiesMap.keySet()));
+				"Invalid value set for the properties of field ".concat(
+					String.valueOf(fieldNamePropertiesMap.keySet())));
 
 			_fieldNamePropertiesMap = fieldNamePropertiesMap;
 		}

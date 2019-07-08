@@ -19,6 +19,7 @@ import com.liferay.document.library.kernel.model.DLFileShortcut;
 import com.liferay.document.library.kernel.model.DLFileShortcutConstants;
 import com.liferay.document.library.kernel.model.DLFileVersion;
 import com.liferay.document.library.kernel.model.DLFolder;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.repository.model.FileShortcut;
 import com.liferay.portal.kernel.repository.model.FileVersion;
@@ -143,13 +144,13 @@ public class RepositoryModelUtil {
 			}
 			else {
 				throw new IllegalArgumentException(
-					String.format(
-						"Expected an instance of one of: %s; got %s",
+					StringBundler.concat(
+						"Expected an instance of one of: ",
 						Arrays.asList(
 							DLFileEntry.class.getName(),
 							DLFolder.class.getName(),
 							DLFileShortcutConstants.getClassName()),
-						object));
+						"; got ", object));
 			}
 		}
 

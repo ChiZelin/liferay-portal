@@ -18,6 +18,7 @@ import com.liferay.frontend.taglib.form.navigator.constants.FormNavigatorContext
 import com.liferay.frontend.taglib.form.navigator.context.FormNavigatorContextProvider;
 import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMap;
 import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMapFactory;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -124,10 +125,9 @@ public class FormNavigatorEntryConfigurationHelperImpl
 
 		if ((formNavigatorEntry == null) && _log.isWarnEnabled()) {
 			_log.warn(
-				String.format(
-					"There is no form navigator entry for the form '%s' with " +
-						"key '%'",
-					formNavigatorId, key));
+				StringBundler.concat(
+					"There is no form navigator entry for the form '",
+					formNavigatorId, "' with key ", key));
 		}
 
 		return formNavigatorEntry;

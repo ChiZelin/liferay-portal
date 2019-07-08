@@ -15,6 +15,7 @@
 package com.liferay.change.tracking.rest.internal.jaxrs.container.request.filter;
 
 import com.liferay.change.tracking.configuration.CTConfiguration;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.kernel.model.Role;
 import com.liferay.portal.kernel.security.auth.PrincipalException;
@@ -98,9 +99,9 @@ public class AdministratorCheckContainerRequestFilter
 		}
 
 		throw new PrincipalException(
-			String.format(
-				"User %s must have administrator role",
-				permissionChecker.getUserId()));
+			StringBundler.concat(
+				"User ", permissionChecker.getUserId(),
+				" must have administrator role"));
 	}
 
 	private CTConfiguration _ctConfiguration;

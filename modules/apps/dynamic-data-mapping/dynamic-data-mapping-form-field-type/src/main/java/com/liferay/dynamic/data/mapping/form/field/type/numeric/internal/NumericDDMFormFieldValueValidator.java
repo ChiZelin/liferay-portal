@@ -18,6 +18,7 @@ import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldValueValidat
 import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldValueValidator;
 import com.liferay.dynamic.data.mapping.model.DDMFormField;
 import com.liferay.dynamic.data.mapping.model.Value;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.util.Validator;
 
 import java.text.NumberFormat;
@@ -48,8 +49,8 @@ public class NumericDDMFormFieldValueValidator
 				!isNumber(valueString, availableLocale)) {
 
 				throw new DDMFormFieldValueValidationException(
-					String.format(
-						"\"%s\" is not a %s", valueString,
+					StringBundler.concat(
+						"\"", ddmFormField.getDataType(), "\" is not a ",
 						ddmFormField.getDataType()));
 			}
 		}
