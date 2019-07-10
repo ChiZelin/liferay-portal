@@ -7,4 +7,5 @@ dependencies {
 	compileOnly project(":apps:analytics:analytics-api")
 	compileOnly project(":apps:petra:petra-json-web-service-client")
 	compileOnly project(":apps:static:portal-configuration:portal-configuration-metatype-api")
+	compileOnly project(":core:petra:petra-string")
 }
