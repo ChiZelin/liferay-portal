@@ -31,6 +31,7 @@ import com.liferay.dynamic.data.mapping.model.DDMFormSuccessPageSettings;
 import com.liferay.dynamic.data.mapping.model.LocalizedValue;
 import com.liferay.dynamic.data.mapping.model.UnlocalizedValue;
 import com.liferay.dynamic.data.mapping.storage.DDMFormFieldValue;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONException;
@@ -390,10 +391,10 @@ public class DDMFormContextToDDMForm
 					}
 					catch (PortalException pe) {
 						_log.error(
-							String.format(
-								"Unable to set the property \"%s\" of the " +
-									"field \"%s\"",
-								propertyName, ddmFormField.getName()),
+							StringBundler.concat(
+								"Unable to set the property \"", propertyName,
+								"\" of the field \"", ddmFormField.getName(),
+								"\""),
 							pe);
 					}
 				}

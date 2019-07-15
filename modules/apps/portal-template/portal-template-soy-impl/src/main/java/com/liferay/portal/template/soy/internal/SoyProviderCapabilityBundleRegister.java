@@ -41,14 +41,16 @@ public class SoyProviderCapabilityBundleRegister {
 		if (bundle == null) {
 			Collection<Bundle> bundles = _bundles.values();
 
-			StringBundler sb = new StringBundler(bundles.size() * 2);
+			StringBundler sb = new StringBundler(bundles.size() * 2 + 1);
+
+			sb.append("Registred bundles ");
 
 			for (Bundle registredBundle : _bundles.values()) {
 				sb.append(registredBundle.getSymbolicName());
 				sb.append(StringPool.COMMA_AND_SPACE);
 			}
 
-			_log.error(String.format("Registred bundles %s", sb.toString()));
+			_log.error(sb.toString());
 
 			throw new IllegalStateException(
 				"There are no bundles providing " + templateId);

@@ -14,6 +14,7 @@
 
 package com.liferay.segments.exception;
 
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.exception.PortalException;
 
 import org.osgi.annotation.versioning.ProviderType;
@@ -47,10 +48,10 @@ public class RequiredSegmentsEntryException extends PortalException {
 			long segmentsEntryId) {
 
 			super(
-				String.format(
-					"Segments entry %s cannot be deleted because it is " +
-						"referenced by one or more segments experiences",
-					segmentsEntryId));
+				StringBundler.concat(
+					"Segments entry ", segmentsEntryId,
+					" cannot be deleted because it is referenced by one or " +
+						"more segments experiences"));
 		}
 
 	}

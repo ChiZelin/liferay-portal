@@ -197,9 +197,9 @@ public class WikiSocialActivityHelper {
 				if ((socialActivityWikiPage != null) &&
 					socialActivityWikiPage.isMinorEdit()) {
 
-					title += String.format(
-						" (%s)",
-						LanguageUtil.get(resourceBundle, "minor-edit"));
+					title += StringBundler.concat(
+						" (", LanguageUtil.get(resourceBundle, "minor-edit"),
+						")");
 				}
 
 				String titleURL = getLink(title, url);

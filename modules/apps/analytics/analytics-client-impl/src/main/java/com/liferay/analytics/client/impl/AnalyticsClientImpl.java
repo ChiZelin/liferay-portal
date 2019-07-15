@@ -20,6 +20,7 @@ import com.liferay.analytics.data.binding.internal.AnalyticsEventsMessageJSONObj
 import com.liferay.analytics.model.AnalyticsEventsMessage;
 import com.liferay.petra.json.web.service.client.JSONWebServiceClient;
 import com.liferay.petra.json.web.service.client.internal.JSONWebServiceClientImpl;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
@@ -38,11 +39,11 @@ public class AnalyticsClientImpl implements AnalyticsClient {
 
 		if (_log.isDebugEnabled()) {
 			_log.debug(
-				String.format(
-					"Sending analytics message %s to destination %s//%s:%s%s",
-					jsonAnalyticsEventsMessage,
-					_SYSTEM_PROPERTY_VALUE_ANALYTICS_GATEWAY_PROTOCOL,
-					_SYSTEM_PROPERTY_VALUE_ANALYTICS_GATEWAY_HOST,
+				StringBundler.concat(
+					"Sending analytics message ", jsonAnalyticsEventsMessage,
+					" to destination ",
+					_SYSTEM_PROPERTY_VALUE_ANALYTICS_GATEWAY_PROTOCOL, "//",
+					_SYSTEM_PROPERTY_VALUE_ANALYTICS_GATEWAY_HOST, ":",
 					_SYSTEM_PROPERTY_VALUE_ANALYTICS_GATEWAY_PORT,
 					_SYSTEM_PROPERTY_VALUE_ANALYTICS_GATEWAY_PATH));
 		}

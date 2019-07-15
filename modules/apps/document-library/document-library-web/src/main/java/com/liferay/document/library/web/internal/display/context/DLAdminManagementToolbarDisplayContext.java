@@ -38,6 +38,7 @@ import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItemList;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.LabelItem;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.LabelItemList;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.ViewTypeItemList;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.dao.search.SearchContainer;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
@@ -444,11 +445,10 @@ public class DLAdminManagementToolbarDisplayContext {
 									_httpServletRequest.getLocale());
 							}
 
-							String label = String.format(
-								"%s: %s",
+							String label = StringBundler.concat(
 								LanguageUtil.get(
 									_httpServletRequest, "document-type"),
-								fileEntryTypeName);
+								": ", fileEntryTypeName);
 
 							labelItem.setLabel(label);
 						});
@@ -472,10 +472,9 @@ public class DLAdminManagementToolbarDisplayContext {
 
 							User user = _themeDisplay.getUser();
 
-							String label = String.format(
-								"%s: %s",
+							String label = StringBundler.concat(
 								LanguageUtil.get(_httpServletRequest, "owner"),
-								user.getFullName());
+								": ", user.getFullName());
 
 							labelItem.setLabel(label);
 						});

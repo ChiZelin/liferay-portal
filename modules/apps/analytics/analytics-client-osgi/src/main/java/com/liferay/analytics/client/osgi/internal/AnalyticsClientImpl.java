@@ -21,6 +21,7 @@ import com.liferay.analytics.data.binding.JSONObjectMapper;
 import com.liferay.analytics.model.AnalyticsEventsMessage;
 import com.liferay.analytics.model.IdentityContextMessage;
 import com.liferay.petra.json.web.service.client.JSONWebServiceClient;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -76,12 +77,12 @@ public class AnalyticsClientImpl implements AnalyticsClient {
 
 		if (_log.isDebugEnabled()) {
 			_log.debug(
-				String.format(
-					"Sending analytics message %s to destination %s//%s:%s%s",
-					jsonAnalyticsEventsMessage,
+				StringBundler.concat(
+					"Sending analytics message ", jsonAnalyticsEventsMessage,
+					" to destination ",
 					_analyticsClientConfiguration.analyticsGatewayProtocol(),
-					_analyticsClientConfiguration.analyticsGatewayHost(),
-					_analyticsClientConfiguration.analyticsGatewayPort(),
+					"//", _analyticsClientConfiguration.analyticsGatewayHost(),
+					":", _analyticsClientConfiguration.analyticsGatewayPort(),
 					_analyticsClientConfiguration.analyticsGatewayPath()));
 		}
 

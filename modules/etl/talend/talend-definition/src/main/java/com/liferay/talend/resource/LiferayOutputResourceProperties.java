@@ -14,6 +14,7 @@
 
 package com.liferay.talend.resource;
 
+import com.liferay.petra.string.StringBundler;
 import com.liferay.talend.LiferayBaseComponentDefinition;
 import com.liferay.talend.common.oas.constants.OASConstants;
 import com.liferay.talend.common.schema.SchemaUtils;
@@ -275,7 +276,7 @@ public class LiferayOutputResourceProperties
 		).findFirst(
 		).orElseThrow(
 			() -> new UnsupportedOperationException(
-				String.format("Unsupported operation: %s.", method))
+				StringBundler.concat("Unsupported operation: ", method, "."))
 		);
 	}
 

@@ -48,11 +48,9 @@ public class InceptionImageLabelerUtil {
 
 			if ((resultTensor.numDimensions() != 2) || (shape[0] != 1)) {
 				throw new RuntimeException(
-					String.format(
-						"Expected model to produce a [1 N] shaped tensor " +
-							"where N is the number of labels, instead it " +
-								"produced one with shape %s",
-						Arrays.toString(shape)));
+					"Expected model to produce a [1 N] shaped tensor where N " +
+						"is the number of labels, instead it produced one " +
+							"with shape ".concat(Arrays.toString(shape)));
 			}
 
 			int numberOfLabels = (int)shape[1];

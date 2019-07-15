@@ -45,10 +45,9 @@ public class LayoutPageTemplateEntryNameException extends PortalException {
 
 		public MustNotBeDuplicate(long groupId, String name) {
 			super(
-				String.format(
-					StringBundler.concat(
-						"Duplicate layout page template for group ", groupId,
-						" with name ", name)));
+				StringBundler.concat(
+					"Duplicate layout page template for group ", groupId,
+					" with name ", name));
 		}
 
 	}

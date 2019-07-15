@@ -14,6 +14,7 @@
 
 package com.liferay.dynamic.data.mapping.expression;
 
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.util.StringUtil;
 
@@ -43,9 +44,10 @@ public class DDMExpressionException extends PortalException {
 
 		public FunctionNotDefined(Set<String> undefinedFunctionNames) {
 			super(
-				String.format(
-					"The functions \"%s\" were not defined",
-					StringUtil.merge(undefinedFunctionNames)));
+				StringBundler.concat(
+					"The functions \"",
+					StringUtil.merge(undefinedFunctionNames),
+					"\" were not defined"));
 
 			_undefinedFunctionNames = undefinedFunctionNames;
 		}

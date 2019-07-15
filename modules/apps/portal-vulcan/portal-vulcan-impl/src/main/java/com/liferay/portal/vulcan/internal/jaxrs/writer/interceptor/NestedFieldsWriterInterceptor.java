@@ -14,6 +14,7 @@
 
 package com.liferay.portal.vulcan.internal.jaxrs.writer.interceptor;
 
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.vulcan.fields.NestedField;
@@ -187,8 +188,8 @@ public class NestedFieldsWriterInterceptor implements WriterInterceptor {
 		}
 		else {
 			throw new IllegalArgumentException(
-				String.format(
-					"value %s cannot be converted to %s", value, type));
+				StringBundler.concat(
+					"value ", value, " cannot be converted to ", type));
 		}
 	}
 

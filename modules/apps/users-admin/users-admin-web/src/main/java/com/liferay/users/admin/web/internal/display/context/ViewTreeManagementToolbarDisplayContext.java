@@ -302,9 +302,9 @@ public class ViewTreeManagementToolbarDisplayContext {
 
 							labelItem.setCloseable(true);
 
-							String label = String.format(
-								"%s: %s",
+							String label = StringBundler.concat(
 								LanguageUtil.get(_httpServletRequest, "status"),
+								": ",
 								LanguageUtil.get(
 									_httpServletRequest, navigation));
 
