@@ -14,6 +14,7 @@
 
 package com.liferay.talend.runtime.client;
 
+import com.liferay.petra.string.StringBundler;
 import com.liferay.talend.common.exception.MalformedURLException;
 import com.liferay.talend.connection.LiferayConnectionProperties;
 import com.liferay.talend.runtime.client.exception.ClientException;
@@ -128,7 +129,7 @@ public class RESTClient {
 
 	@Override
 	public String toString() {
-		return String.format("REST API Client [%s].", _getTarget());
+		return StringBundler.concat("REST API Client [", _getTarget(), "].");
 	}
 
 	private Invocation.Builder _createBuilder(URI targetURI)
@@ -172,10 +173,9 @@ public class RESTClient {
 		}
 
 		throw new RemoteExecutionClientException(
-			String.format(
-				"Request failed with HTTP status %d and response %s",
-				response.getStatus(), responseBody),
-			response.getStatus());
+			StringBundler.concat(
+				"Request failed with HTTP status ", response.getStatus(),
+				" and response ", responseBody));
 	}
 
 	private Response _executeAccessTokenPostRequest(
@@ -369,10 +369,9 @@ public class RESTClient {
 
 		if (response.getStatus() != 200) {
 			throw new OAuth2AuthorizationClientException(
-				String.format(
-					"OAuth 2.0 check failed with response status {%s}",
-					response.getStatus()),
-				response.getStatus());
+				StringBundler.concat(
+					"OAuth 2.0 check failed with response status {",
+					response.getStatus(), "}"));
 		}
 
 		if (_isApplicationJsonContentType(response)) {
