@@ -19,6 +19,7 @@ import com.liferay.analytics.client.osgi.internal.configuration.IdentifyClientCo
 import com.liferay.analytics.data.binding.JSONObjectMapper;
 import com.liferay.analytics.model.IdentityContextMessage;
 import com.liferay.petra.json.web.service.client.JSONWebServiceClient;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -50,18 +51,18 @@ public class IdentityClientImpl implements IdentityClient {
 		String jsonIdentityContextMessage = _jsonObjectMapper.map(
 			identityContextMessage);
 
-		String identityPath = String.format(
-			"/%s%s", identityContextMessage.getDataSourceId(),
+		String identityPath = StringBundler.concat(
+			"/", identityContextMessage.getDataSourceId(),
 			_identifyClientConfiguration.identifyGatewayPath());
 
 		if (_log.isDebugEnabled()) {
 			_log.debug(
-				String.format(
-					"Sending identity request %s to destination %s//%s:%s%s",
-					jsonIdentityContextMessage,
+				StringBundler.concat(
+					"Sending identity request ", jsonIdentityContextMessage,
+					" to destination ",
 					_identifyClientConfiguration.identifyGatewayProtocol(),
-					_identifyClientConfiguration.identifyGatewayHost(),
-					_identifyClientConfiguration.identifyGatewayPort(),
+					"//", _identifyClientConfiguration.identifyGatewayHost(),
+					":", _identifyClientConfiguration.identifyGatewayPort(),
 					identityPath));
 		}
 

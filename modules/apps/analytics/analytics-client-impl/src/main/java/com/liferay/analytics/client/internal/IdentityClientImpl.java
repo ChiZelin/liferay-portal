@@ -20,6 +20,7 @@ import com.liferay.analytics.data.binding.internal.IdentityContextMessageJSONObj
 import com.liferay.analytics.model.IdentityContextMessage;
 import com.liferay.petra.json.web.service.client.JSONWebServiceClient;
 import com.liferay.petra.json.web.service.client.internal.JSONWebServiceClientImpl;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.util.GetterUtil;
 
 import org.slf4j.Logger;
@@ -37,8 +38,8 @@ public class IdentityClientImpl implements IdentityClient {
 		String jsonIdentityContextMessage = _jsonObjectMapper.map(
 			identityContextMessage);
 
-		String identityPath = String.format(
-			"/%s%s", identityContextMessage.getDataSourceId(),
+		String identityPath = StringBundler.concat(
+			"/", identityContextMessage.getDataSourceId(),
 			_SYSTEM_PROPERTY_VALUE_IDENTITY_GATEWAY_PATH);
 
 		if (_logger.isDebugEnabled()) {
