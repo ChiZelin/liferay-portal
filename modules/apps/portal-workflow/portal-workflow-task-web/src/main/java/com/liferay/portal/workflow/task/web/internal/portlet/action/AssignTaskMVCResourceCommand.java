@@ -14,6 +14,7 @@
 
 package com.liferay.portal.workflow.task.web.internal.portlet.action;
 
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCResourceCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCResourceCommand;
 import com.liferay.portal.kernel.security.auth.PrincipalException;
@@ -61,9 +62,10 @@ public class AssignTaskMVCResourceCommand extends BaseMVCResourceCommand {
 				groupId, workflowTask, themeDisplay.getPermissionChecker())) {
 
 			throw new PrincipalException(
-				String.format(
-					"User %d does not have permission to assign task %d",
-					themeDisplay.getUserId(), workflowTaskId));
+				StringBundler.concat(
+					"User ", themeDisplay.getUserId(),
+					" does not have permission to assign task ",
+					workflowTaskId));
 		}
 	}
 
