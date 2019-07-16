@@ -14,6 +14,7 @@
 
 package com.liferay.portal.security.sso.openid.exception;
 
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.exception.PortalException;
 
 /**
@@ -22,7 +23,9 @@ import com.liferay.portal.kernel.exception.PortalException;
 public class StrangersNotAllowedException extends PortalException {
 
 	public StrangersNotAllowedException(long companyId) {
-		super(String.format("Company %s does not allow strangers", companyId));
+		super(
+			StringBundler.concat(
+				"Company ", companyId, " does not allow strangers"));
 
 		this.companyId = companyId;
 	}

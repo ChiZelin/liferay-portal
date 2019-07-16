@@ -14,6 +14,7 @@
 
 package com.liferay.portal.security.sso.facebook.connect.exception;
 
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.exception.PortalException;
 
 /**
@@ -23,9 +24,9 @@ public class MustVerifyEmailAddressException extends PortalException {
 
 	public MustVerifyEmailAddressException(long companyId) {
 		super(
-			String.format(
-				"Company %s requires strangers to verify their email address",
-				companyId));
+			StringBundler.concat(
+				"Company ", companyId,
+				" requires strangers to verify their email address"));
 
 		this.companyId = companyId;
 	}
