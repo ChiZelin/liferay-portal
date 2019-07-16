@@ -1270,10 +1270,9 @@ public class DDMFormAdminDisplayContext {
 		}
 		catch (JSONException jsone) {
 			_log.error(
-				String.format(
-					"Unable to deserialize JSON localized property \"%s\" " +
-						"from request",
-					propertyName),
+				StringBundler.concat(
+					"Unable to deserialize JSON localized property \"",
+					propertyName, "\" from request", propertyName),
 				jsone);
 		}
 
