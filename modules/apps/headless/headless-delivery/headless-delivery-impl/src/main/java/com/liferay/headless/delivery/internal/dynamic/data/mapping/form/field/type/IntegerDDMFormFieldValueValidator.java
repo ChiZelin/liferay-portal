@@ -18,6 +18,7 @@ import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldValueValidat
 import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldValueValidator;
 import com.liferay.dynamic.data.mapping.model.DDMFormField;
 import com.liferay.dynamic.data.mapping.model.Value;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.util.Validator;
 
 import java.util.Locale;
@@ -45,8 +46,8 @@ public class IntegerDDMFormFieldValueValidator
 				!Validator.isNumber(valueString)) {
 
 				throw new DDMFormFieldValueValidationException(
-					String.format(
-						"\"%s\" is not a valid integer", valueString));
+					StringBundler.concat(
+						"\"", valueString, "\" is not a valid integer"));
 			}
 		}
 	}
