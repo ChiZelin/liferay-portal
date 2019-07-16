@@ -22,6 +22,7 @@ import com.liferay.knowledge.base.exception.NoSuchFolderException;
 import com.liferay.knowledge.base.model.KBFolder;
 import com.liferay.knowledge.base.service.base.KBFolderLocalServiceBaseImpl;
 import com.liferay.knowledge.base.util.KnowledgeBaseUtil;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.dao.orm.QueryDefinition;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
@@ -323,7 +324,8 @@ public class KBFolderLocalServiceImpl extends KBFolderLocalServiceBaseImpl {
 
 		if (kbFolder != null) {
 			throw new DuplicateKBFolderNameException(
-				String.format("A KB folder with name %s already exists", name));
+				StringBundler.concat(
+					"A KB folder with name ", name, " already exists"));
 		}
 	}
 
@@ -332,9 +334,10 @@ public class KBFolderLocalServiceImpl extends KBFolderLocalServiceBaseImpl {
 
 		if (kbFolder.getGroupId() != parentKBFolder.getGroupId()) {
 			throw new NoSuchFolderException(
-				String.format(
-					"No KB folder with KB folder ID %s found in group %s",
-					parentKBFolder.getKbFolderId(), kbFolder.getGroupId()));
+				StringBundler.concat(
+					"No KB folder with KB folder ID ",
+					parentKBFolder.getKbFolderId(), " found in group ",
+					kbFolder.getGroupId()));
 		}
 
 		List<Long> ancestorKBFolderIds =
@@ -342,9 +345,10 @@ public class KBFolderLocalServiceImpl extends KBFolderLocalServiceBaseImpl {
 
 		if (ancestorKBFolderIds.contains(kbFolder.getKbFolderId())) {
 			throw new KBFolderParentException(
-				String.format(
-					"Cannot move KBFolder %s inside its descendant KBFolder %s",
-					kbFolder.getKbFolderId(), parentKBFolder.getKbFolderId()));
+				StringBundler.concat(
+					"Cannot move KBFolder ", kbFolder.getKbFolderId(),
+					" inside its descendant KBFolder ",
+					parentKBFolder.getKbFolderId()));
 		}
 	}
 
@@ -370,9 +374,8 @@ public class KBFolderLocalServiceImpl extends KBFolderLocalServiceBaseImpl {
 
 		if (parentKBFolder == null) {
 			throw new NoSuchFolderException(
-				String.format(
-					"No KB folder found with KB folder ID %",
-					parentResourcePrimKey));
+				"No KB folder found with KB folder ID ".concat(
+					String.valueOf(parentResourcePrimKey)));
 		}
 	}
 
