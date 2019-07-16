@@ -345,7 +345,7 @@ public class KBUtil {
 		}
 		else {
 			throw new IllegalArgumentException(
-				String.format("Invalid suggestion status %s", status));
+				"Invalid suggestion status ".concat(String.valueOf(status)));
 		}
 	}
 
@@ -361,7 +361,7 @@ public class KBUtil {
 		}
 		else {
 			throw new IllegalArgumentException(
-				String.format("Invalid suggestion status %s", status));
+				"Invalid suggestion status ".concat(String.valueOf(status)));
 		}
 	}
 
