@@ -14,6 +14,7 @@
 
 package com.liferay.portal.template.soy.internal.util;
 
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.template.TemplateConstants;
@@ -28,9 +29,9 @@ public class SoyTemplateUtil {
 
 		if (pos == -1) {
 			if (_log.isDebugEnabled()) {
-				String message = String.format(
-					"The template ID \"%s\" does not map to a Soy template",
-					templateId);
+				String message = StringBundler.concat(
+					"The template ID \"", templateId,
+					"\" does not map to a Soy template");
 
 				_log.debug(message);
 			}
