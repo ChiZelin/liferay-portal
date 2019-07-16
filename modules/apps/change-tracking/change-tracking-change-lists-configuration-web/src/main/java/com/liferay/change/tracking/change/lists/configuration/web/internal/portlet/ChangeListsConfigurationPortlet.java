@@ -16,6 +16,7 @@ package com.liferay.change.tracking.change.lists.configuration.web.internal.port
 
 import com.liferay.change.tracking.configuration.CTConfiguration;
 import com.liferay.change.tracking.constants.CTPortletKeys;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.kernel.model.Role;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
@@ -117,9 +118,9 @@ public class ChangeListsConfigurationPortlet extends MVCPortlet {
 		}
 
 		throw new PrincipalException(
-			String.format(
-				"User %s must have administrator role",
-				permissionChecker.getUserId()));
+			StringBundler.concat(
+				"User ", permissionChecker.getUserId(),
+				" must have administrator role"));
 	}
 
 	private CTConfiguration _ctConfiguration;

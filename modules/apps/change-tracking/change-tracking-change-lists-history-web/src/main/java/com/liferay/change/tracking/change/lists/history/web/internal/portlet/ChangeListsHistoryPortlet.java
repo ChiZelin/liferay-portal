@@ -18,6 +18,7 @@ import com.liferay.change.tracking.configuration.CTConfiguration;
 import com.liferay.change.tracking.constants.CTPortletKeys;
 import com.liferay.change.tracking.constants.CTWebKeys;
 import com.liferay.change.tracking.service.CTCollectionLocalService;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.Role;
@@ -135,9 +136,10 @@ public class ChangeListsHistoryPortlet extends MVCPortlet {
 		}
 
 		throw new PrincipalException(
-			String.format(
-				"User %s must have administrator role to access %s",
-				permissionChecker.getUserId(), getClass().getSimpleName()));
+			StringBundler.concat(
+				"User ", permissionChecker.getUserId(),
+				" must have administrator role to access ",
+				getClass().getSimpleName()));
 	}
 
 	@Reference
