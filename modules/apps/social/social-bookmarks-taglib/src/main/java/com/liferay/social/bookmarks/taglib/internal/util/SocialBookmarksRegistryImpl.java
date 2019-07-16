@@ -19,6 +19,7 @@ import com.liferay.osgi.service.tracker.collections.list.ServiceTrackerListFacto
 import com.liferay.osgi.service.tracker.collections.map.PropertyServiceReferenceComparator;
 import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMap;
 import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMapFactory;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.configuration.Filter;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -57,7 +58,8 @@ public class SocialBookmarksRegistryImpl implements SocialBookmarksRegistry {
 		if (socialBookmark == null) {
 			if (_log.isWarnEnabled()) {
 				_log.warn(
-					String.format("Social bookmark %s is not available", type));
+					StringBundler.concat(
+						"Social bookmark ", type, " is not available"));
 			}
 		}
 
