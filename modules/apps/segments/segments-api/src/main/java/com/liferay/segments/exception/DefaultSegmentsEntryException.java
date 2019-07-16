@@ -14,6 +14,7 @@
 
 package com.liferay.segments.exception;
 
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.exception.PortalException;
 
 import org.osgi.annotation.versioning.ProviderType;
@@ -44,9 +45,9 @@ public class DefaultSegmentsEntryException extends PortalException {
 
 		public MustNotDeleteDefaultSegmentsEntry(long segmentsEntryId) {
 			super(
-				String.format(
-					"The default segments entry %s cannot be deleted",
-					segmentsEntryId));
+				StringBundler.concat(
+					"The default segments entry ", segmentsEntryId,
+					" cannot be deleted"));
 		}
 
 	}
@@ -56,9 +57,9 @@ public class DefaultSegmentsEntryException extends PortalException {
 
 		public MustNotUpdateDefaultSegmentsEntry(long segmentsEntryId) {
 			super(
-				String.format(
-					"The default segments entry %s cannot be updated",
-					segmentsEntryId));
+				StringBundler.concat(
+					"The default segments entry ", segmentsEntryId,
+					" cannot be updated"));
 		}
 
 	}
