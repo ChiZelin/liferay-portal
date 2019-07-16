@@ -14,6 +14,8 @@
 
 package com.liferay.dynamic.data.mapping.expression.model;
 
+import com.liferay.petra.string.StringBundler;
+
 import org.osgi.annotation.versioning.ProviderType;
 
 /**
@@ -45,8 +47,8 @@ public abstract class BinaryExpression extends Expression {
 
 	@Override
 	public String toString() {
-		return String.format(
-			"%s %s %s", _leftOperandExpression, _operator,
+		return StringBundler.concat(
+			_leftOperandExpression, " ", _operator, " ",
 			_rightOperandExpression);
 	}
 

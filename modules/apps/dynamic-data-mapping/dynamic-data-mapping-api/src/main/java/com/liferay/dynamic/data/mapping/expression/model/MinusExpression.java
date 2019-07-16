@@ -33,7 +33,7 @@ public class MinusExpression extends UnaryExpression {
 
 	@Override
 	public String toString() {
-		return String.format("-%s", getOperandExpression());
+		return "-".concat(String.valueOf(getOperandExpression()));
 	}
 
 }

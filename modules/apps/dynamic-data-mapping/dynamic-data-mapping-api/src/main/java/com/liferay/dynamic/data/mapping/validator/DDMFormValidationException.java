@@ -14,6 +14,7 @@
 
 package com.liferay.dynamic.data.mapping.validator;
 
+import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
 
@@ -49,9 +50,9 @@ public class DDMFormValidationException extends PortalException {
 
 		public MustNotDuplicateFieldName(String fieldName) {
 			super(
-				String.format(
-					"The field name %s cannot be defined more than once",
-					fieldName));
+				StringBundler.concat(
+					"The field name ", fieldName,
+					" cannot be defined more than once"));
 
 			_fieldName = fieldName;
 		}
@@ -88,10 +89,9 @@ public class DDMFormValidationException extends PortalException {
 
 		public MustSetDefaultLocaleAsAvailableLocale(Locale defaultLocale) {
 			super(
-				String.format(
-					"The default locale %s must be set to a valid available " +
-						"locale",
-					defaultLocale));
+				StringBundler.concat(
+					"The default locale ", defaultLocale,
+					" must be set to a valid available locale"));
 
 			_defaultLocale = defaultLocale;
 		}
@@ -117,10 +117,8 @@ public class DDMFormValidationException extends PortalException {
 
 		public MustSetFieldType(String fieldName) {
 			super(
-				String.format(
-					"The field type was never set for the DDM form field " +
-						"with the field name %s",
-					fieldName));
+				"The field type was never set for the DDM form field " +
+					"with the field name ".concat(fieldName));
 
 			_fieldName = fieldName;
 		}
@@ -138,8 +136,7 @@ public class DDMFormValidationException extends PortalException {
 
 		public MustSetOptionsForField(String fieldName) {
 			super(
-				String.format(
-					"At least one option must be set for field %s", fieldName));
+				"At least one option must be set for field ".concat(fieldName));
 
 			_fieldName = fieldName;
 		}
@@ -159,10 +156,9 @@ public class DDMFormValidationException extends PortalException {
 			String fieldName, String property) {
 
 			super(
-				String.format(
-					"Invalid available locales set for the property '%s' of " +
-						"field name %s",
-					property, fieldName));
+				StringBundler.concat(
+					"Invalid available locales set for the property '",
+					property, "' of field name ", fieldName));
 
 			_fieldName = fieldName;
 			_property = property;
@@ -186,8 +182,7 @@ public class DDMFormValidationException extends PortalException {
 
 		public MustSetValidCharactersForFieldName(String fieldName) {
 			super(
-				String.format(
-					"Invalid characters entered for field name %s", fieldName));
+				"Invalid characters entered for field name ".concat(fieldName));
 
 			_fieldName = fieldName;
 		}
@@ -205,8 +200,7 @@ public class DDMFormValidationException extends PortalException {
 
 		public MustSetValidCharactersForFieldType(String fieldType) {
 			super(
-				String.format(
-					"Invalid characters entered for field type %s", fieldType));
+				"Invalid characters entered for field type ".concat(fieldType));
 
 			_fieldType = fieldType;
 		}
@@ -226,10 +220,9 @@ public class DDMFormValidationException extends PortalException {
 			String fieldName, String property) {
 
 			super(
-				String.format(
-					"Invalid default locale set for the property '%s' of " +
-						"field name %s",
-					property, fieldName));
+				StringBundler.concat(
+					"Invalid default locale set for the property '", property,
+					"' of field name ", fieldName));
 
 			_fieldName = fieldName;
 			_property = property;
@@ -255,9 +248,9 @@ public class DDMFormValidationException extends PortalException {
 			String expressionType, String expression, Throwable cause) {
 
 			super(
-				String.format(
-					"Invalid form rule %s expression set: \"%s\"",
-					expressionType, expression),
+				StringBundler.concat(
+					"Invalid form rule ", expressionType, " expression set: \"",
+					expression, "\""),
 				cause);
 
 			_expression = expression;
@@ -275,9 +268,7 @@ public class DDMFormValidationException extends PortalException {
 		extends DDMFormValidationException {
 
 		public MustSetValidIndexType(String fieldName) {
-			super(
-				String.format(
-					"Invalid index type set for field %s", fieldName));
+			super("Invalid index type set for field ".concat(fieldName));
 
 			_fieldName = fieldName;
 		}
@@ -340,9 +331,9 @@ public class DDMFormValidationException extends PortalException {
 			String fieldName, String expressionType, String expression) {
 
 			super(
-				String.format(
-					"Invalid %s expression set for field %s: %s",
-					expressionType, fieldName, expression));
+				StringBundler.concat(
+					"Invalid ", expressionType, " expression set for field ",
+					fieldName, ": ", expression));
 
 			this.fieldName = fieldName;
 			this.expression = expression;
