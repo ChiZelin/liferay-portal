@@ -19,6 +19,7 @@ import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldValueValidat
 import com.liferay.dynamic.data.mapping.model.DDMFormField;
 import com.liferay.dynamic.data.mapping.model.DDMFormFieldOptions;
 import com.liferay.dynamic.data.mapping.model.Value;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.log.Log;
@@ -77,9 +78,9 @@ public class SelectDDMFormFieldValueValidator
 
 		if (ddmFormFieldOptions == null) {
 			throw new DDMFormFieldValueValidationException(
-				String.format(
-					"Options must be set for select field \"%s\"",
-					ddmFormField.getName()));
+				StringBundler.concat(
+					"Options must be set for select field \"",
+					ddmFormField.getName(), "\""));
 		}
 
 		Set<String> optionValues = ddmFormFieldOptions.getOptionsValues();
@@ -112,9 +113,9 @@ public class SelectDDMFormFieldValueValidator
 
 			if (!optionValues.contains(jsonArray.getString(i))) {
 				throw new DDMFormFieldValueValidationException(
-					String.format(
-						"The selected option \"%s\" is not a valid alternative",
-						jsonArray.getString(i)));
+					StringBundler.concat(
+						"The selected option \"", jsonArray.getString(i),
+						"\" is not a valid alternative"));
 			}
 		}
 	}
