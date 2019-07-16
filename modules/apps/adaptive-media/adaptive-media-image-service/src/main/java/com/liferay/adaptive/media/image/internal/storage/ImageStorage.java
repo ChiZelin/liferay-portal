@@ -76,7 +76,7 @@ public class ImageStorage {
 	}
 
 	protected String getConfigurationEntryPath(String configurationUuid) {
-		return String.format("adaptive/%s", configurationUuid);
+		return "adaptive/".concat(configurationUuid);
 	}
 
 }
