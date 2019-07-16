@@ -140,16 +140,14 @@ public class AssetAutoTaggerImpl implements AssetAutoTagger {
 						catch (AssetTagException ate) {
 							if (_log.isWarnEnabled()) {
 								_log.warn(
-									String.format(
-										"Unable to add auto tag: %s",
+									"Unable to add auto tag: ".concat(
 										assetTagName),
 									ate);
 							}
 						}
 						catch (PortalException pe) {
 							_log.error(
-								String.format(
-									"Unable to add auto tag: %s", assetTagName),
+								"Unable to add auto tag: ".concat(assetTagName),
 								pe);
 						}
 					}
