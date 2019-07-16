@@ -23,6 +23,7 @@ import com.liferay.frontend.taglib.clay.servlet.taglib.util.LabelItem;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.LabelItemList;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.ViewTypeItem;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.ViewTypeItemList;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.dao.search.SearchContainer;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.LanguageUtil;
@@ -179,8 +180,8 @@ public class BlogEntriesManagementToolbarDisplayContext
 
 						User user = _themeDisplay.getUser();
 
-						String label = String.format(
-							"%s: %s", LanguageUtil.get(request, "owner"),
+						String label = StringBundler.concat(
+							LanguageUtil.get(request, "owner"), ": ",
 							user.getFullName());
 
 						labelItem.setLabel(label);
