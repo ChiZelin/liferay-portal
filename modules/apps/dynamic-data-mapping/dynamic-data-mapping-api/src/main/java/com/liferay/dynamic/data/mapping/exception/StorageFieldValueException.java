@@ -37,7 +37,7 @@ public class StorageFieldValueException extends StorageException {
 	public static class RequiredValue extends StorageFieldValueException {
 
 		public RequiredValue(String fieldName) {
-			super(String.format("No value defined for field %s", fieldName));
+			super("No value defined for field ".concat(fieldName));
 
 			_fieldName = fieldName;
 		}

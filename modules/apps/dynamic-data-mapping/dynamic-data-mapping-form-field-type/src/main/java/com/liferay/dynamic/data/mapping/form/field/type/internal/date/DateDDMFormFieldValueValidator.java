@@ -19,6 +19,7 @@ import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldValueValidat
 import com.liferay.dynamic.data.mapping.model.DDMForm;
 import com.liferay.dynamic.data.mapping.model.DDMFormField;
 import com.liferay.dynamic.data.mapping.model.Value;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -70,16 +71,16 @@ public class DateDDMFormFieldValueValidator
 				}
 
 				throw new DDMFormFieldValueValidationException(
-					String.format(
-						"Invalid date input for date field \"%s\"",
-						ddmFormField.getName()));
+					StringBundler.concat(
+						"Invalid date input for date field \"",
+						ddmFormField.getName(), "\""));
 			}
 		}
 		else if (ddmFormField.isRequired()) {
 			throw new DDMFormFieldValueValidationException(
-				String.format(
-					"Date input cannot be null \"%s\"",
-					ddmFormField.getName()));
+				StringBundler.concat(
+					"Date input cannot be null \"", ddmFormField.getName(),
+					"\""));
 		}
 	}
 

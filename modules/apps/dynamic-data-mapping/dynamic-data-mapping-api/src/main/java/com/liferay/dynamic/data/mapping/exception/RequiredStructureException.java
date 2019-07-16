@@ -14,6 +14,7 @@
 
 package com.liferay.dynamic.data.mapping.exception;
 
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.exception.PortalException;
 
 /**
@@ -63,10 +64,10 @@ public class RequiredStructureException extends PortalException {
 			long structureId) {
 
 			super(
-				String.format(
-					"Structure %s cannot be deleted because it is referenced " +
-						"by one or more structure links",
-					structureId),
+				StringBundler.concat(
+					"Structure ", structureId,
+					" cannot be deleted because it is referenced by one or " +
+						"more structure links"),
 				REFERENCED_STRUCTURE_LINK);
 
 			this.structureId = structureId;
@@ -81,10 +82,10 @@ public class RequiredStructureException extends PortalException {
 
 		public MustNotDeleteStructureReferencedByTemplates(long structureId) {
 			super(
-				String.format(
-					"Structure %s cannot be deleted because it is referenced " +
-						"by one or more templates",
-					structureId),
+				StringBundler.concat(
+					"Structure ", structureId,
+					" cannot be deleted because it is referenced by one or " +
+						"more templates"),
 				REFERENCED_TEMPLATE);
 
 			this.structureId = structureId;
@@ -99,10 +100,9 @@ public class RequiredStructureException extends PortalException {
 
 		public MustNotDeleteStructureThatHasChild(long structureId) {
 			super(
-				String.format(
-					"Structure %s cannot be deleted because it has child " +
-						"structures",
-					structureId),
+				StringBundler.concat(
+					"Structure ", structureId,
+					" cannot be deleted because it has child structures"),
 				REFERENCED_STRUCTURE);
 
 			this.structureId = structureId;

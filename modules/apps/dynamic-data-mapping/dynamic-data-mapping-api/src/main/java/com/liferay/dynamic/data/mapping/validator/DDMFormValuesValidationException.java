@@ -15,6 +15,7 @@
 package com.liferay.dynamic.data.mapping.validator;
 
 import com.liferay.dynamic.data.mapping.exception.StorageException;
+import com.liferay.petra.string.StringBundler;
 
 import org.osgi.annotation.versioning.ProviderType;
 
@@ -44,8 +45,7 @@ public class DDMFormValuesValidationException extends StorageException {
 
 		public MustNotSetValue(String fieldName) {
 			super(
-				String.format(
-					"Value should not be set for transient field name %s",
+				"Value should not be set for transient field name ".concat(
 					fieldName));
 
 			_fieldName = fieldName;
@@ -64,8 +64,7 @@ public class DDMFormValuesValidationException extends StorageException {
 
 		public MustSetValidAvailableLocales(String fieldName) {
 			super(
-				String.format(
-					"Invalid available locales set for field name %s",
+				"Invalid available locales set for field name ".concat(
 					fieldName));
 
 			_fieldName = fieldName;
@@ -84,8 +83,7 @@ public class DDMFormValuesValidationException extends StorageException {
 
 		public MustSetValidDefaultLocale(String fieldName) {
 			super(
-				String.format(
-					"Invalid default locale set for field name %s", fieldName));
+				"Invalid default locale set for field name ".concat(fieldName));
 
 			_fieldName = fieldName;
 		}
@@ -103,8 +101,8 @@ public class DDMFormValuesValidationException extends StorageException {
 
 		public MustSetValidField(String fieldName) {
 			super(
-				String.format(
-					"There is no field name %s defined on form", fieldName));
+				StringBundler.concat(
+					"There is no field name ", fieldName, " defined on form"));
 
 			_fieldName = fieldName;
 		}
@@ -121,17 +119,13 @@ public class DDMFormValuesValidationException extends StorageException {
 		extends DDMFormValuesValidationException {
 
 		public MustSetValidValue(String fieldName) {
-			super(
-				String.format(
-					"Invalid value set for field name %s", fieldName));
+			super("Invalid value set for field name ".concat(fieldName));
 
 			_fieldName = fieldName;
 		}
 
 		public MustSetValidValue(String fieldName, Throwable cause) {
-			super(
-				String.format("Invalid value set for field name %s", fieldName),
-				cause);
+			super("Invalid value set for field name ".concat(fieldName), cause);
 
 			_fieldName = fieldName;
 		}
@@ -149,8 +143,7 @@ public class DDMFormValuesValidationException extends StorageException {
 
 		public MustSetValidValuesSize(String fieldName) {
 			super(
-				String.format(
-					"Incorrect number of values set for field name %s",
+				"Incorrect number of values set for field name ".concat(
 					fieldName));
 
 			_fieldName = fieldName;
@@ -167,8 +160,7 @@ public class DDMFormValuesValidationException extends StorageException {
 	public static class RequiredValue extends DDMFormValuesValidationException {
 
 		public RequiredValue(String fieldName) {
-			super(
-				String.format("No value defined for field name %s", fieldName));
+			super("No value defined for field name ".concat(fieldName));
 
 			_fieldName = fieldName;
 		}

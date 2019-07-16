@@ -92,10 +92,9 @@ public class UpgradeDDMStructure extends UpgradeProcess {
 		}
 		catch (DDMExpressionException ddmee) {
 			_log.error(
-				String.format(
-					"Unable to upgrade the visibility expression \"%s\" to a " +
-						"form rule",
-					visibilityExpression),
+				StringBundler.concat(
+					"Unable to upgrade the visibility expression \"",
+					visibilityExpression, "\" to a form rule"),
 				ddmee);
 
 			throw ddmee;

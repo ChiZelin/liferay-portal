@@ -98,15 +98,16 @@ public class DDMFormRuleConverter {
 			ddmFormRuleCondition.getOperands();
 
 		if (functionName == null) {
-			return String.format(
-				_COMPARISON_EXPRESSION_FORMAT, convertOperand(operands.get(0)),
-				_operatorMap.get(operator), convertOperand(operands.get(1)));
+			return StringBundler.concat(
+				convertOperand(operands.get(0)), " ",
+				_operatorMap.get(operator), " ",
+				convertOperand(operands.get(1)));
 		}
 
 		String condition = createCondition(functionName, operands);
 
 		if (operator.startsWith("not")) {
-			return String.format(_NOT_EXPRESSION_FORMAT, condition);
+			return StringBundler.concat("not(", condition, ")");
 		}
 
 		return condition;
@@ -138,9 +139,8 @@ public class DDMFormRuleConverter {
 
 	protected String convertOperand(DDMFormRuleCondition.Operand operand) {
 		if (Objects.equals("field", operand.getType())) {
-			return String.format(
-				_FUNCTION_CALL_UNARY_EXPRESSION_FORMAT, "getValue",
-				StringUtil.quote(operand.getValue()));
+			return StringBundler.concat(
+				"getValue(", StringUtil.quote(operand.getValue()), ")");
 		}
 
 		String value = operand.getValue();
@@ -218,9 +218,8 @@ public class DDMFormRuleConverter {
 			operands.remove(0);
 		}
 
-		return String.format(
-			_FUNCTION_CALL_UNARY_EXPRESSION_FORMAT, functionName,
-			convertOperands(operands));
+		return StringBundler.concat(
+			functionName, "(", convertOperands(operands), ")");
 	}
 
 	protected Expression createExpression(String expressionString) {
@@ -237,8 +236,8 @@ public class DDMFormRuleConverter {
 		}
 		catch (DDMExpressionException ddmee) {
 			throw new IllegalStateException(
-				String.format(
-					"Unable to parse expression \"%s\"", expressionString),
+				StringBundler.concat(
+					"Unable to parse expression \"", expressionString, "\""),
 				ddmee);
 		}
 	}
@@ -294,13 +293,6 @@ public class DDMFormRuleConverter {
 
 	@Reference
 	protected DDMExpressionFactory ddmExpressionFactory;
-
-	private static final String _COMPARISON_EXPRESSION_FORMAT = "%s %s %s";
-
-	private static final String _FUNCTION_CALL_UNARY_EXPRESSION_FORMAT =
-		"%s(%s)";
-
-	private static final String _NOT_EXPRESSION_FORMAT = "not(%s)";
 
 	private static final Map<String, String> _operatorFunctionNameMap =
 		new HashMap<String, String>() {

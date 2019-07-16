@@ -14,6 +14,8 @@
 
 package com.liferay.dynamic.data.mapping.expression.model;
 
+import com.liferay.petra.string.StringBundler;
+
 import org.osgi.annotation.versioning.ProviderType;
 
 /**
@@ -33,7 +35,7 @@ public class Parenthesis extends UnaryExpression {
 
 	@Override
 	public String toString() {
-		return String.format("(%s)", getOperandExpression());
+		return StringBundler.concat("(", getOperandExpression(), ")");
 	}
 
 }

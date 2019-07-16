@@ -14,6 +14,7 @@
 
 package com.liferay.dynamic.data.mapping.exception;
 
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.exception.PortalException;
 
 /**
@@ -29,11 +30,10 @@ public class RequiredDataProviderInstanceException extends PortalException {
 			long dataProviderInstanceId) {
 
 			super(
-				String.format(
-					"Data provider instance %s cannot be deleted because it " +
-						"is referenced by one or more data provider instance " +
-							"links",
-					dataProviderInstanceId));
+				StringBundler.concat(
+					"Data provider instance ", dataProviderInstanceId,
+					" cannot be deleted because it is referenced by one or " +
+						"more data provider instance links"));
 
 			this.dataProviderInstanceId = dataProviderInstanceId;
 		}

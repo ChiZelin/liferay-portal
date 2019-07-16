@@ -20,6 +20,7 @@ import com.liferay.dynamic.data.mapping.model.DDMForm;
 import com.liferay.dynamic.data.mapping.model.DDMFormField;
 import com.liferay.dynamic.data.mapping.model.DDMFormFieldOptions;
 import com.liferay.dynamic.data.mapping.model.Value;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.json.JSONObject;
@@ -53,9 +54,9 @@ public class GridDDMFormFieldValueValidator
 
 		if ((rows == null) || (columns == null)) {
 			throw new DDMFormFieldValueValidationException(
-				String.format(
-					"Rows and columns must be set for grid field \"%s\"",
-					ddmFormField.getName()));
+				StringBundler.concat(
+					"Rows and columns must be set for grid field \"",
+					ddmFormField.getName(), "\""));
 		}
 
 		Set<String> rowValues = rows.getOptionsValues();
@@ -87,8 +88,8 @@ public class GridDDMFormFieldValueValidator
 			}
 
 			throw new IllegalStateException(
-				String.format(
-					"Invalid data stored for grid field \"%s\"", fieldName));
+				StringBundler.concat(
+					"Invalid data stored for grid field \"", fieldName, "\""));
 		}
 	}
 
@@ -111,9 +112,9 @@ public class GridDDMFormFieldValueValidator
 
 			if (!rowValues.contains(key) || !columnValues.contains(value)) {
 				throw new DDMFormFieldValueValidationException(
-					String.format(
-						"The selected option \"%s\" is not a valid choice",
-						value));
+					StringBundler.concat(
+						"The selected option \"", value,
+						"\" is not a valid choice"));
 			}
 		}
 	}

@@ -14,6 +14,7 @@
 
 package com.liferay.dynamic.data.mapping.validator;
 
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.exception.PortalException;
 
 import java.util.Set;
@@ -68,9 +69,9 @@ public class DDMFormLayoutValidationException extends PortalException {
 
 		public MustNotDuplicateFieldName(Set<String> duplicatedFieldNames) {
 			super(
-				String.format(
-					"Field names %s were defined more than once",
-					duplicatedFieldNames));
+				StringBundler.concat(
+					"Field names ", duplicatedFieldNames,
+					" were defined more than once"));
 
 			_duplicatedFieldNames = duplicatedFieldNames;
 		}
