@@ -1401,9 +1401,9 @@ public class DLFolderLocalServiceImpl extends DLFolderLocalServiceBaseImpl {
 
 		if (parentDLFolder.getGroupId() != groupId) {
 			throw new NoSuchFolderException(
-				String.format(
-					"No folder exists with the primary key %s in group %s",
-					parentFolderId, groupId));
+				StringBundler.concat(
+					"No folder exists with the primary key ", parentFolderId,
+					" in group ", groupId));
 		}
 
 		if ((parentDLFolder.getRepositoryId() != repositoryId) &&
@@ -1414,10 +1414,9 @@ public class DLFolderLocalServiceImpl extends DLFolderLocalServiceBaseImpl {
 
 			if (repository.getGroupId() != parentDLFolder.getGroupId()) {
 				throw new NoSuchFolderException(
-					String.format(
-						"No folder exists with the primary key %s in " +
-							"repository %s",
-						parentFolderId, repositoryId));
+					StringBundler.concat(
+						"No folder exists with the primary key ",
+						parentFolderId, " in repository ", repositoryId));
 			}
 		}
 

@@ -30,6 +30,7 @@ import com.liferay.document.library.kernel.service.DLFolderService;
 import com.liferay.dynamic.data.mapping.kernel.DDMFormValues;
 import com.liferay.dynamic.data.mapping.kernel.DDMStructure;
 import com.liferay.dynamic.data.mapping.kernel.StorageEngineManagerUtil;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.repository.capabilities.Capability;
@@ -88,9 +89,9 @@ public abstract class LiferayRepositoryBase implements CapabilityProvider {
 	@Override
 	public <T extends Capability> T getCapability(Class<T> capabilityClass) {
 		throw new IllegalArgumentException(
-			String.format(
-				"Capability %s is not supported by repository %s",
-				capabilityClass.getName(), getRepositoryId()));
+			StringBundler.concat(
+				"Capability ", capabilityClass.getName(),
+				" is not supported by repository ", getRepositoryId()));
 	}
 
 	public long getRepositoryId() {
