@@ -28,6 +28,7 @@ import com.liferay.dynamic.data.mapping.data.provider.DDMDataProviderResponseSta
 import com.liferay.dynamic.data.mapping.model.DDMDataProviderInstance;
 import com.liferay.dynamic.data.mapping.service.DDMDataProviderInstanceService;
 import com.liferay.petra.string.CharPool;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.cache.MultiVMPool;
 import com.liferay.portal.kernel.cache.PortalCache;
@@ -123,7 +124,7 @@ public class DDMRESTDataProvider implements DDMDataProvider {
 				pathParameters.entrySet()) {
 
 			url = StringUtil.replaceFirst(
-				url, String.format("{%s}", pathParameter.getKey()),
+				url, StringBundler.concat("{", pathParameter.getKey(), "}"),
 				HtmlUtil.escapeURL(pathParameter.getValue()));
 		}
 
