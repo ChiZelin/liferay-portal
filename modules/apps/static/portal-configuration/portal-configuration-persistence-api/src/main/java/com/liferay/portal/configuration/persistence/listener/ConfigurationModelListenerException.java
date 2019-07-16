@@ -14,6 +14,8 @@
 
 package com.liferay.portal.configuration.persistence.listener;
 
+import com.liferay.petra.string.StringBundler;
+
 import java.io.IOException;
 
 import java.util.Dictionary;
@@ -28,9 +30,10 @@ public class ConfigurationModelListenerException extends IOException {
 		Class<?> listenerClass, Dictionary properties) {
 
 		super(
-			String.format(
-				"The listener %s was unable to save configuration %s.",
-				listenerClass.getName(), configurationClass.getName()));
+			StringBundler.concat(
+				"The listener ", listenerClass.getName(),
+				" was unable to save configuration ",
+				configurationClass.getName()));
 
 		this.causeMessage = causeMessage;
 		this.configurationClass = configurationClass;
