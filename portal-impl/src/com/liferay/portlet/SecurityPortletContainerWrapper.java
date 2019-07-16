@@ -15,6 +15,7 @@
 package com.liferay.portlet;
 
 import com.liferay.petra.string.CharPool;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -415,11 +416,10 @@ public class SecurityPortletContainerWrapper implements PortletContainer {
 			String url = getOriginalURL(httpServletRequest);
 
 			_log.warn(
-				String.format(
-					"User %s is not allowed to access URL %s and portlet %s: " +
-						"%s",
-					PortalUtil.getUserId(httpServletRequest), url,
-					portlet.getPortletId(), pe.getMessage()));
+				StringBundler.concat(
+					"User ", PortalUtil.getUserId(httpServletRequest),
+					" is not allowed to access URL ", url, " and portlet ",
+					portlet.getPortletId(), ": ", pe.getMessage()));
 		}
 
 		httpServletResponse.setStatus(HttpServletResponse.SC_FORBIDDEN);
@@ -475,10 +475,10 @@ public class SecurityPortletContainerWrapper implements PortletContainer {
 			String url = getOriginalURL(httpServletRequest);
 
 			_log.warn(
-				String.format(
-					"User %s is not allowed to serve resource for %s on %s: %s",
-					PortalUtil.getUserId(httpServletRequest), url,
-					portlet.getPortletId(), pe.getMessage()));
+				StringBundler.concat(
+					"User ", PortalUtil.getUserId(httpServletRequest),
+					" is not allowed to serve resource for ", url, " on ",
+					portlet.getPortletId(), ": ", pe.getMessage()));
 		}
 	}
 

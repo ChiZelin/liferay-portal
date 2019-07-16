@@ -1688,7 +1688,7 @@ public class DLAppHelperLocalServiceImpl
 		}
 		else {
 			throw new IllegalArgumentException(
-				String.format("Unsupported sync event %s", syncEvent));
+				"Unsupported sync event ".concat(syncEvent));
 		}
 	}
 

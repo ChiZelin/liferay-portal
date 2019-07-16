@@ -288,11 +288,10 @@ public class UpgradeDocumentLibrary extends UpgradeProcess {
 
 				if (rs.next()) {
 					throw new IllegalStateException(
-						String.format(
-							"Found more than one row in table " +
-								"DLFileEntryType with groupId %s and " +
-									"fileEntryTypeKey %s",
-							groupId, dlFileEntryTypeKey));
+						StringBundler.concat(
+							"Found more than one row in table DLFileEntryType ",
+							"with groupId ", groupId, " and fileEntryTypeKey ",
+							dlFileEntryTypeKey));
 				}
 
 				updateFileEntryTypeNamesAndDescriptions(
@@ -367,10 +366,10 @@ public class UpgradeDocumentLibrary extends UpgradeProcess {
 
 			if (rowCount != 1) {
 				throw new IllegalStateException(
-					String.format(
-						"Updated %s rows in table DLFileEntryType with " +
-							"fileEntryTypeId %s",
-						rowCount, fileEntryTypeId));
+					StringBundler.concat(
+						"Updated ", rowCount,
+						" rows in table DLFileEntryType with ",
+						fileEntryTypeId));
 			}
 		}
 	}
