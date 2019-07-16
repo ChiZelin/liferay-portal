@@ -30,6 +30,7 @@ import com.liferay.dynamic.data.mapping.service.DDMDataProviderInstanceService;
 import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
 import com.liferay.dynamic.data.mapping.util.DDMFormFactory;
 import com.liferay.dynamic.data.mapping.util.DDMFormInstanceFactory;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.ClassUtil;
@@ -100,10 +101,10 @@ public class DDMDataProviderInstanceOutputParametersDataProvider
 		}
 		catch (Exception e) {
 			_log.error(
-				String.format(
+				StringBundler.concat(
 					"Unable to get the output parameters for data provider " +
-						"instance with id '%d'",
-					dataProviderInstanceId),
+						"instance with id '",
+					dataProviderInstanceId, "'"),
 				e);
 		}
 
