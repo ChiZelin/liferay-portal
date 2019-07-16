@@ -14,6 +14,7 @@
 
 package com.liferay.portal.workflow.task.web.internal.portlet;
 
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
@@ -132,9 +133,9 @@ public class MyWorkflowTaskPortlet extends MVCPortlet {
 				groupId, workflowTask, themeDisplay.getPermissionChecker())) {
 
 			throw new PrincipalException(
-				String.format(
-					"User %d does not have permission to view task %d",
-					themeDisplay.getUserId(),
+				StringBundler.concat(
+					"User ", themeDisplay.getUserId(),
+					" does not have permission to view task ",
 					workflowTask.getWorkflowTaskId()));
 		}
 	}
