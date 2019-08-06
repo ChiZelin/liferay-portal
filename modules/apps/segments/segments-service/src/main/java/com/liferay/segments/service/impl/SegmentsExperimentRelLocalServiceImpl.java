@@ -22,12 +22,14 @@ import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.systemevent.SystemEvent;
 import com.liferay.segments.model.SegmentsExperience;
 import com.liferay.segments.model.SegmentsExperimentRel;
+import com.liferay.segments.service.SegmentsExperienceLocalService;
 import com.liferay.segments.service.base.SegmentsExperimentRelLocalServiceBaseImpl;
 
 import java.util.Date;
 import java.util.List;
 
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The implementation of the segments experiment rel local service.
@@ -101,7 +103,7 @@ public class SegmentsExperimentRelLocalServiceImpl
 		// Segments experience
 
 		if (!segmentsExperimentRel.isControl()) {
-			segmentsExperienceLocalService.deleteSegmentsExperience(
+			_segmentsExperienceLocalService.deleteSegmentsExperience(
 				segmentsExperimentRel.getSegmentsExperienceId());
 		}
 
@@ -153,16 +155,19 @@ public class SegmentsExperimentRelLocalServiceImpl
 
 		if (!segmentsExperimentRel.isControl()) {
 			SegmentsExperience segmentsExperience =
-				segmentsExperienceLocalService.getSegmentsExperience(
+				_segmentsExperienceLocalService.getSegmentsExperience(
 					segmentsExperimentRel.getSegmentsExperienceId());
 
 			segmentsExperience.setName(name, serviceContext.getLocale());
 
-			segmentsExperienceLocalService.updateSegmentsExperience(
+			_segmentsExperienceLocalService.updateSegmentsExperience(
 				segmentsExperience);
 		}
 
 		return segmentsExperimentRelPersistence.update(segmentsExperimentRel);
 	}
+
+	@Reference
+	private SegmentsExperienceLocalService _segmentsExperienceLocalService;
 
 }
