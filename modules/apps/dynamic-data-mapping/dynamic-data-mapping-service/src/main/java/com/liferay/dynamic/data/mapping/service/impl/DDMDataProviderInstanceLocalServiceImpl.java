@@ -25,6 +25,7 @@ import com.liferay.dynamic.data.mapping.model.DDMDataProviderInstance;
 import com.liferay.dynamic.data.mapping.service.base.DDMDataProviderInstanceLocalServiceBaseImpl;
 import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
 import com.liferay.dynamic.data.mapping.validator.DDMFormValuesValidator;
+import com.liferay.portal.aop.AopService;
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.Property;
 import com.liferay.portal.kernel.dao.orm.PropertyFactoryUtil;
@@ -37,15 +38,21 @@ import com.liferay.portal.kernel.util.GroupThreadLocal;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.Validator;
-import com.liferay.portal.spring.extender.service.ServiceReference;
 
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+
 /**
  * @author Leonardo Barros
  */
+@Component(
+	property = "model.class.name=com.liferay.dynamic.data.mapping.model.DDMDataProviderInstance",
+	service = AopService.class
+)
 public class DDMDataProviderInstanceLocalServiceImpl
 	extends DDMDataProviderInstanceLocalServiceBaseImpl {
 
@@ -349,10 +356,10 @@ public class DDMDataProviderInstanceLocalServiceImpl
 		ddmFormValuesValidator.validate(ddmFormValues);
 	}
 
-	@ServiceReference(type = DDMFormValuesSerializerTracker.class)
+	@Reference
 	protected DDMFormValuesSerializerTracker ddmFormValuesSerializerTracker;
 
-	@ServiceReference(type = DDMFormValuesValidator.class)
+	@Reference
 	protected DDMFormValuesValidator ddmFormValuesValidator;
 
 }
