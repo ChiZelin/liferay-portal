@@ -27,7 +27,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * @author Brian Wing Shun Chan
+ * @author Brian Wing
  */
 public class KaleoActionLocalServiceImpl
 	extends KaleoActionLocalServiceBaseImpl {
