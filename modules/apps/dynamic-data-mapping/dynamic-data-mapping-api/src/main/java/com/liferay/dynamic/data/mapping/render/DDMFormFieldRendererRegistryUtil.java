@@ -14,9 +14,13 @@
 
 package com.liferay.dynamic.data.mapping.render;
 
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+
 /**
  * @author Pablo Carvalho
  */
+@Component(immediate = true, service = {})
 public class DDMFormFieldRendererRegistryUtil {
 
 	public static DDMFormFieldRenderer getDDMFormFieldRenderer(
@@ -32,6 +36,7 @@ public class DDMFormFieldRendererRegistryUtil {
 		return _ddmFormFieldRendererRegistry;
 	}
 
+	@Reference(unbind = "-")
 	public void setDDMFormFieldRendererRegistry(
 		DDMFormFieldRendererRegistry ddmFormFieldRendererRegistry) {
 

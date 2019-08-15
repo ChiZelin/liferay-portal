@@ -243,14 +243,6 @@ public class DLServiceVerifyProcess extends VerifyProcess {
 		updateFolderAssets();
 	}
 
-	@Reference(
-		target = "(org.springframework.context.service.name=com.liferay.dynamic.data.mapping.service)",
-		unbind = "-"
-	)
-	protected void setApplicationContext(
-		ApplicationContext applicationContext) {
-	}
-
 	@Reference(unbind = "-")
 	protected void setDLAppHelperLocalService(
 		DLAppHelperLocalService dlAppHelperLocalService) {
