@@ -29,12 +29,15 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
 /**
  * @author Pablo Carvalho
  */
+@Component(immediate = true, service = DDMFormFieldRendererRegistry.class)
 public class DDMFormFieldRendererRegistryImpl
 	implements DDMFormFieldRendererRegistry {
 
@@ -67,6 +70,7 @@ public class DDMFormFieldRendererRegistryImpl
 		return ddmFormFieldRenders.get(ddmFormFieldRenders.size() - 1);
 	}
 
+	@Reference(unbind = "-")
 	public void setDefaultDDMFormFieldRenderer(
 		DDMFormFieldRenderer ddmFormFieldRenderer) {
 
