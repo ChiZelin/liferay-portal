@@ -28,12 +28,14 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
+import org.osgi.service.component.annotations.Component;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
 /**
  * @author Marcellus Tavares
  */
+@Component(immediate = true, service = DDMFormFieldValueRendererRegistry.class)
 public class DDMFormFieldValueRendererRegistryImpl
 	implements DDMFormFieldValueRendererRegistry {
 
