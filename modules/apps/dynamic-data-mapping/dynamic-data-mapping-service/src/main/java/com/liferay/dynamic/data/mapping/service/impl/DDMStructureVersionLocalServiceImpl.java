@@ -23,18 +23,25 @@ import com.liferay.dynamic.data.mapping.model.DDMForm;
 import com.liferay.dynamic.data.mapping.model.DDMStructureVersion;
 import com.liferay.dynamic.data.mapping.service.base.DDMStructureVersionLocalServiceBaseImpl;
 import com.liferay.dynamic.data.mapping.util.comparator.StructureVersionVersionComparator;
+import com.liferay.portal.aop.AopService;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.transaction.Transactional;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
-import com.liferay.portal.spring.extender.service.ServiceReference;
 
 import java.util.Collections;
 import java.util.List;
 
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+
 /**
  * @author Pablo Carvalho
  */
+@Component(
+	property = "model.class.name=com.liferay.dynamic.data.mapping.model.DDMStructureVersion",
+	service = AopService.class
+)
 public class DDMStructureVersionLocalServiceImpl
 	extends DDMStructureVersionLocalServiceBaseImpl {
 
@@ -113,7 +120,7 @@ public class DDMStructureVersionLocalServiceImpl
 		return ddmStructureVersionPersistence.countByStructureId(structureId);
 	}
 
-	@ServiceReference(type = DDMFormDeserializerTracker.class)
+	@Reference
 	protected DDMFormDeserializerTracker ddmFormDeserializerTracker;
 
 }
