@@ -35,7 +35,6 @@ import com.liferay.message.boards.service.MBStatsUserLocalService;
 import com.liferay.message.boards.service.base.MBThreadLocalServiceBaseImpl;
 import com.liferay.message.boards.service.persistence.MBCategoryPersistence;
 import com.liferay.portal.aop.AopService;
-import com.liferay.portal.kernel.bean.BeanReference;
 import com.liferay.portal.kernel.dao.orm.QueryDefinition;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.increment.BufferedIncrement;
@@ -219,7 +218,7 @@ public class MBThreadLocalServiceImpl extends MBThreadLocalServiceBaseImpl {
 			// Statistics
 
 			if (!message.isDiscussion()) {
-				mbStatsUserLocalService.updateStatsUser(
+				_mbStatsUserLocalService.updateStatsUser(
 					message.getGroupId(), message.getUserId());
 			}
 
@@ -606,7 +605,7 @@ public class MBThreadLocalServiceImpl extends MBThreadLocalServiceBaseImpl {
 		// Statistics
 
 		for (long userId : userIds) {
-			mbStatsUserLocalService.updateStatsUser(groupId, userId);
+			_mbStatsUserLocalService.updateStatsUser(groupId, userId);
 		}
 	}
 
@@ -866,7 +865,7 @@ public class MBThreadLocalServiceImpl extends MBThreadLocalServiceBaseImpl {
 		// Statistics
 
 		for (long userId : userIds) {
-			mbStatsUserLocalService.updateStatsUser(groupId, userId);
+			_mbStatsUserLocalService.updateStatsUser(groupId, userId);
 		}
 	}
 
@@ -1230,9 +1229,6 @@ public class MBThreadLocalServiceImpl extends MBThreadLocalServiceBaseImpl {
 			moveChildrenMessages(message, category, oldThreadId);
 		}
 	}
-
-	@BeanReference(type = MBStatsUserLocalService.class)
-	protected MBStatsUserLocalService mbStatsUserLocalService;
 
 	private MBCategory _getCategory(long categoryId) throws PortalException {
 		MBCategory category = null;
