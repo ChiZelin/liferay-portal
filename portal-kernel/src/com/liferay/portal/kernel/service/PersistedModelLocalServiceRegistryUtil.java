@@ -17,7 +17,7 @@ package com.liferay.portal.kernel.service;
 import java.util.List;
 
 /**
- * @author Brian Wing Shun Chan
+ * @author Brian Wing
  * @author Connor McKay
  */
 public class PersistedModelLocalServiceRegistryUtil {
