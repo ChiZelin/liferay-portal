@@ -52,6 +52,7 @@ import com.liferay.message.boards.util.comparator.MessageThreadComparator;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.aop.AopService;
+import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.kernel.comment.Comment;
 import com.liferay.portal.kernel.dao.orm.QueryDefinition;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
@@ -70,8 +71,6 @@ import com.liferay.portal.kernel.model.ModelHintsUtil;
 import com.liferay.portal.kernel.model.ResourceConstants;
 import com.liferay.portal.kernel.model.SystemEventConstants;
 import com.liferay.portal.kernel.model.User;
-import com.liferay.portal.kernel.module.configuration.ConfigurationException;
-import com.liferay.portal.kernel.module.configuration.ConfigurationProvider;
 import com.liferay.portal.kernel.notifications.UserNotificationDefinition;
 import com.liferay.portal.kernel.parsers.bbcode.BBCodeTranslatorUtil;
 import com.liferay.portal.kernel.portlet.PortletProvider;
@@ -89,7 +88,6 @@ import com.liferay.portal.kernel.security.auth.PrincipalException;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.permission.ModelPermissions;
-import com.liferay.portal.kernel.settings.GroupServiceSettingsLocator;
 import com.liferay.portal.kernel.settings.LocalizedValuesMap;
 import com.liferay.portal.kernel.social.SocialActivityManagerUtil;
 import com.liferay.portal.kernel.systemevent.SystemEvent;
@@ -145,7 +143,9 @@ import javax.servlet.http.HttpServletRequest;
 import net.htmlparser.jericho.Source;
 import net.htmlparser.jericho.StartTag;
 
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 
 /**
@@ -157,6 +157,7 @@ import org.osgi.service.component.annotations.Reference;
  * @author Shuyang Zhou
  */
 @Component(
+	configurationPid = "com.liferay.comment.configuration.CommentGroupServiceConfiguration",
 	property = "model.class.name=com.liferay.message.boards.model.MBMessage",
 	service = AopService.class
 )
@@ -1953,6 +1954,13 @@ public class MBMessageLocalServiceImpl extends MBMessageLocalServiceBaseImpl {
 		}
 	}
 
+	@Activate
+	@Modified
+	protected void activate(Map<String, Object> properties) {
+		_commentGroupServiceConfiguration = ConfigurableUtil.createConfigurable(
+			CommentGroupServiceConfiguration.class, properties);
+	}
+
 	protected String getBody(String subject, String body, String format) {
 		if (!Validator.isBlank(body)) {
 			return body;
@@ -2149,9 +2157,6 @@ public class MBMessageLocalServiceImpl extends MBMessageLocalServiceBaseImpl {
 			long userId, MBMessage message, ServiceContext serviceContext)
 		throws PortalException {
 
-		CommentGroupServiceConfiguration commentGroupServiceConfiguration =
-			_getCommentGroupServiceConfiguration(message.getGroupId());
-
 		MBDiscussion mbDiscussion =
 			_mbDiscussionLocalService.getThreadDiscussion(
 				message.getThreadId());
@@ -2173,7 +2178,8 @@ public class MBMessageLocalServiceImpl extends MBMessageLocalServiceBaseImpl {
 		}
 
 		SubscriptionSender subscriptionSender =
-			new MBDiscussionSubcriptionSender(commentGroupServiceConfiguration);
+			new MBDiscussionSubcriptionSender(
+				_commentGroupServiceConfiguration);
 
 		subscriptionSender.setCompanyId(message.getCompanyId());
 		subscriptionSender.setClassName(MBDiscussion.class.getName());
@@ -2188,19 +2194,19 @@ public class MBMessageLocalServiceImpl extends MBMessageLocalServiceBaseImpl {
 		subscriptionSender.setEntryTitle(message.getBody());
 		subscriptionSender.setEntryURL(contentURL);
 		subscriptionSender.setFrom(
-			commentGroupServiceConfiguration.emailFromAddress(),
-			commentGroupServiceConfiguration.emailFromName());
+			_commentGroupServiceConfiguration.emailFromAddress(),
+			_commentGroupServiceConfiguration.emailFromName());
 		subscriptionSender.setHtmlFormat(true);
 
 		Map<Locale, String> localizedBodyMap = LocalizationUtil.getMap(
-			commentGroupServiceConfiguration.discussionEmailBody());
+			_commentGroupServiceConfiguration.discussionEmailBody());
 
 		if (localizedBodyMap != null) {
 			subscriptionSender.setLocalizedBodyMap(localizedBodyMap);
 		}
 
 		Map<Locale, String> localizedSubjectMap = LocalizationUtil.getMap(
-			commentGroupServiceConfiguration.discussionEmailSubject());
+			_commentGroupServiceConfiguration.discussionEmailSubject());
 
 		if (localizedSubjectMap != null) {
 			subscriptionSender.setLocalizedSubjectMap(localizedSubjectMap);
@@ -2850,15 +2856,6 @@ public class MBMessageLocalServiceImpl extends MBMessageLocalServiceBaseImpl {
 		return category;
 	}
 
-	private CommentGroupServiceConfiguration
-			_getCommentGroupServiceConfiguration(long groupId)
-		throws ConfigurationException {
-
-		return _configurationProvider.getConfiguration(
-			CommentGroupServiceConfiguration.class,
-			new GroupServiceSettingsLocator(groupId, MBConstants.SERVICE_NAME));
-	}
-
 	private long _getFileEntryMessageId(long fileEntryId)
 		throws PortalException {
 
@@ -3116,8 +3113,8 @@ public class MBMessageLocalServiceImpl extends MBMessageLocalServiceBaseImpl {
 	private static final Log _log = LogFactoryUtil.getLog(
 		MBMessageLocalServiceImpl.class);
 
-	@Reference
-	private ConfigurationProvider _configurationProvider;
+	private volatile CommentGroupServiceConfiguration
+		_commentGroupServiceConfiguration;
 
 	@Reference
 	private Http _http;
