@@ -71,18 +71,6 @@ public class DDMFormFieldValueRendererRegistryImpl
 			ddmFormFieldValueRenderers.size() - 1);
 	}
 
-	public void setDefaultDDMFormFieldValueRenderers(
-		List<DDMFormFieldValueRenderer> ddmFormFieldValueRenderers) {
-
-		for (DDMFormFieldValueRenderer ddmFormFieldValueRenderer :
-				ddmFormFieldValueRenderers) {
-
-			_bundleContext.registerService(
-				DDMFormFieldValueRenderer.class, ddmFormFieldValueRenderer,
-				null);
-		}
-	}
-
 	private final BundleContext _bundleContext;
 	private final Map<String, List<DDMFormFieldValueRenderer>>
 		_ddmFormFieldValueRenderersMap = new ConcurrentHashMap<>();
