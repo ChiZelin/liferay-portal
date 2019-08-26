@@ -28,9 +28,7 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
-import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
@@ -70,23 +68,9 @@ public class DDMFormFieldRendererRegistryImpl
 		return ddmFormFieldRenders.get(ddmFormFieldRenders.size() - 1);
 	}
 
-	@Reference(unbind = "-")
-	public void setDefaultDDMFormFieldRenderer(
-		DDMFormFieldRenderer ddmFormFieldRenderer) {
-
-		ServiceRegistration<DDMFormFieldRenderer> serviceRegistration =
-			_bundleContext.registerService(
-				DDMFormFieldRenderer.class, ddmFormFieldRenderer, null);
-
-		_serviceRegistrations.put(ddmFormFieldRenderer, serviceRegistration);
-	}
-
 	private final BundleContext _bundleContext;
 	private final Map<String, List<DDMFormFieldRenderer>>
 		_ddmFormFieldRenderersMap = new ConcurrentHashMap<>();
-	private final Map
-		<DDMFormFieldRenderer, ServiceRegistration<DDMFormFieldRenderer>>
-			_serviceRegistrations = new ConcurrentHashMap<>();
 	private final ServiceTracker<DDMFormFieldRenderer, DDMFormFieldRenderer>
 		_serviceTracker;
 
