@@ -42,9 +42,9 @@ public abstract class BaseCapabilityProvider implements CapabilityProvider {
 		}
 
 		throw new IllegalArgumentException(
-			String.format(
-				"Capability %s is not exported by provider %s",
-				capabilityClass.getName(), getProviderKey()));
+			StringBundler.concat(
+				"Capability ", capabilityClass.getName(),
+				" is not exported by provider ", getProviderKey()));
 	}
 
 	@Override
@@ -67,7 +67,9 @@ public abstract class BaseCapabilityProvider implements CapabilityProvider {
 
 		if (_supportedCapabilities.containsKey(capabilityClass)) {
 			throw new IllegalStateException(
-				"Capability " + capabilityClass.getName() + " already exists");
+				StringBundler.concat(
+					"Capability ", capabilityClass.getName(),
+					" already exists"));
 		}
 
 		_supportedCapabilities.put(capabilityClass, capability);
