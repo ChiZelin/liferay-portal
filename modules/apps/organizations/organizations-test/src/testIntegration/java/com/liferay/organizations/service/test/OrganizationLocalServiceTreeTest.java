@@ -31,7 +31,7 @@ import org.junit.Rule;
 import org.junit.runner.RunWith;
 
 /**
- * @author Shinn Lok
+ * @author Shinn Ldas
  */
 @RunWith(Arquillian.class)
 public class OrganizationLocalServiceTreeTest
