@@ -12,7 +12,7 @@
  * details.
  */
 
-package com.liferay.portal.service.test;
+package com.liferay.portal.local.service.tree.test.util;
 
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.TreeModel;
