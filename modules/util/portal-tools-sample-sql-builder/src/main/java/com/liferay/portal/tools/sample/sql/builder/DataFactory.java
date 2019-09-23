@@ -122,6 +122,7 @@ import com.liferay.message.boards.model.impl.MBThreadModelImpl;
 import com.liferay.message.boards.social.MBActivityKeys;
 import com.liferay.petra.reflect.ReflectionUtil;
 import com.liferay.petra.string.CharPool;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.io.OutputStreamWriter;
@@ -175,7 +176,6 @@ import com.liferay.portal.kernel.util.IntegerWrapper;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.ObjectValuePair;
 import com.liferay.portal.kernel.util.PortletKeys;
-import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.TextFormatter;
 import com.liferay.portal.kernel.util.Time;
@@ -885,8 +885,7 @@ public class DataFactory {
 				assetTagModel.setCreateDate(new Date());
 				assetTagModel.setModifiedDate(new Date());
 				assetTagModel.setName(
-					StringBundler.concat(
-						"TestTag_", String.valueOf(i), "_", String.valueOf(j)));
+					StringBundler.concat("TestTag_", i, "_", j));
 				assetTagModel.setLastPublishDate(new Date());
 
 				assetTagModels.add(assetTagModel);
@@ -3752,8 +3751,8 @@ public class DataFactory {
 		wikiPageModel.setVersion(WikiPageConstants.VERSION_DEFAULT);
 		wikiPageModel.setContent(
 			StringBundler.concat(
-				"This is Test Page ", String.valueOf(index), " of ",
-				wikiNodeModel.getName(), "."));
+				"This is Test Page ", index, " of ", wikiNodeModel.getName(),
+				"."));
 		wikiPageModel.setFormat("creole");
 		wikiPageModel.setHead(true);
 		wikiPageModel.setLastPublishDate(new Date());

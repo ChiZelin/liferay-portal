@@ -15,6 +15,7 @@
 package com.liferay.portal.tools.service.builder;
 
 import com.liferay.petra.string.CharPool;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.petra.xml.Dom4jUtil;
 import com.liferay.portal.kernel.dao.db.IndexMetadata;
@@ -34,7 +35,6 @@ import com.liferay.portal.kernel.util.ClearThreadLocalUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.PropertiesUtil;
-import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.StringUtil_IW;
 import com.liferay.portal.kernel.util.TextFormatter;
@@ -4511,13 +4511,11 @@ public class ServiceBuilder {
 			throw new ServiceBuilderException(
 				StringBundler.concat(
 					"Unable to create entity mapping \"", tableName,
-					"\" because table name exceeds ",
-					String.valueOf(_databaseNameMaxLength), " characters. ",
-					"Some databases do not allow table names longer than 30 ",
-					"characters. To disable this warning set the ",
-					"\"service-builder\" attribute ",
-					"\"database-name-max-length\" to the max length that your ",
-					"database supports."));
+					"\" because table name exceeds ", _databaseNameMaxLength,
+					" characters. Some databases do not allow table names ",
+					"longer than 30 characters. To disable this warning set ",
+					"the \"service-builder\" attribute \"database-name-max-",
+					"length\" to the max length that your database supports."));
 		}
 
 		sb.append(tableName);
@@ -4537,7 +4535,7 @@ public class ServiceBuilder {
 						StringBundler.concat(
 							"Unable to create entity mapping \"", tableName,
 							"\" because column name \"", dbName, "\" exceeds ",
-							String.valueOf(_databaseNameMaxLength),
+							_databaseNameMaxLength,
 							" characters. Some databases do not allow column ",
 							"names longer than 30 characters. To disable this ",
 							"warning set the \"service-builder\" attribute ",
@@ -4654,13 +4652,11 @@ public class ServiceBuilder {
 			throw new ServiceBuilderException(
 				StringBundler.concat(
 					"Unable to create entity \"", tableName,
-					"\" because table name exceeds ",
-					String.valueOf(_databaseNameMaxLength), " characters. ",
-					"Some databases do not allow table names longer than 30 ",
-					"characters. To disable this warning set the ",
-					"\"service-builder\" attribute ",
-					"\"database-name-max-length\" to the max length that your ",
-					"database supports."));
+					"\" because table name exceeds ", _databaseNameMaxLength,
+					" characters. Some databases do not allow table names ",
+					"longer than 30 characters. To disable this warning set ",
+					"the \"service-builder\" attribute \"database-name-max-",
+					"length\" to the max length that your database supports."));
 		}
 
 		sb.append(tableName);
@@ -4679,12 +4675,11 @@ public class ServiceBuilder {
 					StringBundler.concat(
 						"Unable to create entity \"", tableName,
 						"\" because column name \"", dbName, "\" exceeds ",
-						String.valueOf(_databaseNameMaxLength), " characters. ",
-						"Some databases do not allow column names longer than ",
-						"30 characters. To disable this warning set the ",
-						"\"service-builder\" attribute ",
-						"\"database-name-max-length\" to the max length that ",
-						"your database supports"));
+						_databaseNameMaxLength, " characters. Some databases ",
+						"do not allow column names longer than 30 characters. ",
+						"To disable this warning set the \"service-builder\" ",
+						"attribute \"database-name-max-length\" to the max ",
+						"length that your database supports"));
 			}
 
 			String type = entityColumn.getType();
