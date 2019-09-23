@@ -15,12 +15,12 @@
 package com.liferay.portal.modules;
 
 import com.liferay.petra.string.CharPool;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.io.unsync.UnsyncBufferedReader;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.SetUtil;
-import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.modules.util.GradleDependency;
@@ -462,10 +462,8 @@ public class ModulesStructureTest {
 
 							Assert.assertFalse(
 								StringBundler.concat(
-									"Please rename ", String.valueOf(path),
-									" to ",
-									String.valueOf(
-										path.resolveSibling(entry.getValue()))),
+									"Please rename ", path, " to ",
+									path.resolveSibling(entry.getValue())),
 								Files.exists(path));
 						}
 					}
@@ -1007,8 +1005,7 @@ public class ModulesStructureTest {
 				String name = line.substring(2, end);
 
 				Assert.assertTrue(
-					StringBundler.concat(
-						"Incorrect \"", line, "\" in ", String.valueOf(path)),
+					StringBundler.concat("Incorrect \"", line, "\" in ", path),
 					Files.exists(dirPath.resolve(name)));
 			}
 		}
@@ -1071,9 +1068,8 @@ public class ModulesStructureTest {
 
 			Assert.assertEquals(
 				StringBundler.concat(
-					"Forbidden leading or trailing whitespaces in line ",
-					String.valueOf(i + 1), " of ",
-					String.valueOf(gradlePropertiesPath)),
+					"Forbidden leading or trailing whitespaces in line ", i + 1,
+					" of ", gradlePropertiesPath),
 				line.trim(), line);
 
 			Assert.assertFalse(
@@ -1084,8 +1080,7 @@ public class ModulesStructureTest {
 
 			Assert.assertTrue(
 				StringBundler.concat(
-					"Incorrect line \"", line, "\" in ",
-					String.valueOf(gradlePropertiesPath)),
+					"Incorrect line \"", line, "\" in ", gradlePropertiesPath),
 				pos != -1);
 
 			String key = line.substring(0, pos);
@@ -1169,13 +1164,13 @@ public class ModulesStructureTest {
 		_testGitRepoProjectGroup(
 			StringBundler.concat(
 				"Property \"", _GIT_REPO_GRADLE_PROJECT_GROUP_KEY, "\" in ",
-				String.valueOf(gradlePropertiesPath)),
+				gradlePropertiesPath),
 			projectGroup);
 
 		Assert.assertEquals(
 			StringBundler.concat(
 				"Incorrect \"", _GIT_REPO_GRADLE_PROJECT_PATH_PREFIX_KEY,
-				"\" in ", String.valueOf(gradlePropertiesPath)),
+				"\" in ", gradlePropertiesPath),
 			_getProjectPathPrefix(dirPath), projectPathPrefix);
 
 		if (privateRepo) {
@@ -1279,8 +1274,7 @@ public class ModulesStructureTest {
 		if (Validator.isNotNull(expectedValue) && Validator.isNotNull(value)) {
 			Assert.assertEquals(
 				StringBundler.concat(
-					"Incorrect \"", key, "\" in ",
-					String.valueOf(gradlePropertiesPath)),
+					"Incorrect \"", key, "\" in ", gradlePropertiesPath),
 				expectedValue, value);
 		}
 	}
@@ -1290,8 +1284,8 @@ public class ModulesStructureTest {
 
 		Assert.assertFalse(
 			StringBundler.concat(
-				"Incorrect repository URL in ", String.valueOf(path),
-				", please use ", _REPOSITORY_URL, " instead"),
+				"Incorrect repository URL in ", path, ", please use ",
+				_REPOSITORY_URL, " instead"),
 			content.contains("plugins.gradle.org/m2"));
 
 		Assert.assertFalse(
