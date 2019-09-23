@@ -24,6 +24,7 @@ dependencies {
 	compile group: "org.apache.axis", name: "axis-jaxrpc", version: "1.4"
 	compile group: "org.apache.axis", name: "axis-saaj", version: "1.4"
 
+	compileOnly group: "com.liferay", name: "com.liferay.petra.lang", version: "1.0.0"
 	compileOnly group: "com.liferay", name: "com.liferay.petra.string", version: "1.0.0"
 	compileOnly group: "com.liferay", name: "com.liferay.petra.xml", version: "1.0.0"
 	compileOnly group: "com.liferay.portal", name: "com.liferay.portal.impl", version: "2.0.0"
