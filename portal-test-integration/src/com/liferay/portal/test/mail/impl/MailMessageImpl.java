@@ -20,7 +20,10 @@ import java.util.Iterator;
 
 /**
  * @author Adam Brandizzi
+ * @deprecated As of Mueller (7.2.x), replaced by {@link
+ *             com.liferay.portal.kernel.test.mail.impl.MailMessageImpl}
  */
+@Deprecated
 public class MailMessageImpl implements MailMessage {
 
 	public MailMessageImpl(com.dumbster.smtp.MailMessage mailMessage) {
