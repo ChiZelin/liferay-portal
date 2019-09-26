@@ -24,6 +24,7 @@ import com.liferay.portal.kernel.service.OrganizationServiceUtil;
 import com.liferay.portal.kernel.service.UserLocalServiceUtil;
 import com.liferay.portal.kernel.service.UserServiceUtil;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
+import com.liferay.portal.kernel.test.rule.SynchronousMailTestRule;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.util.ArrayUtil;
@@ -31,7 +32,6 @@ import com.liferay.portal.security.membership.policy.organization.BaseOrganizati
 import com.liferay.portal.security.membership.policy.test.util.MembershipPolicyTestUtil;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
-import com.liferay.portal.test.rule.SynchronousMailTestRule;
 
 import java.util.Collections;
 import java.util.List;
