@@ -14,7 +14,7 @@
 
 package com.liferay.portal.kernel.test.rule;
 
-import com.liferay.portal.test.mail.MailServiceTestUtil;
+import com.liferay.portal.kernel.test.mail.MailServiceTestUtil;
 
 import org.junit.runner.Description;
 

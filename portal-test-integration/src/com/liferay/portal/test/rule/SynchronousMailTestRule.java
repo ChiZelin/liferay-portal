@@ -14,9 +14,9 @@
 
 package com.liferay.portal.test.rule;
 
+import com.liferay.portal.kernel.test.mail.MailServiceTestUtil;
 import com.liferay.portal.kernel.test.rule.SynchronousDestinationTestRule;
 import com.liferay.portal.kernel.test.rule.SynchronousDestinationTestRule.SyncHandler;
-import com.liferay.portal.test.mail.MailServiceTestUtil;
 
 import org.junit.runner.Description;
 

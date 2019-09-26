@@ -17,9 +17,9 @@ package com.liferay.portal.util.mail.test;
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.mail.kernel.model.MailMessage;
 import com.liferay.petra.mail.MailEngine;
+import com.liferay.portal.kernel.test.mail.MailServiceTestUtil;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.SynchronousMailTestRule;
-import com.liferay.portal.test.mail.MailServiceTestUtil;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
 import java.util.List;
@@ -54,7 +54,7 @@ public class MailEngineTest {
 
 		Assert.assertEquals(1, MailServiceTestUtil.getInboxSize());
 
-		List<com.liferay.portal.test.mail.MailMessage> mailMessages =
+		List<com.liferay.portal.kernel.test.mail.MailMessage> mailMessages =
 			MailServiceTestUtil.getMailMessages(
 				"Body", "My name is Inigo Montoya.");
 
