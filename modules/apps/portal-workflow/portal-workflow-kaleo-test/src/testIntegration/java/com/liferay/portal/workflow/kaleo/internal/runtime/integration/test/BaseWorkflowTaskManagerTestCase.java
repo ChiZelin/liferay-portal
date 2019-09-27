@@ -79,6 +79,8 @@ import com.liferay.portal.kernel.service.UserNotificationEventLocalServiceUtil;
 import com.liferay.portal.kernel.service.WorkflowDefinitionLinkLocalServiceUtil;
 import com.liferay.portal.kernel.service.WorkflowInstanceLinkLocalServiceUtil;
 import com.liferay.portal.kernel.settings.LocalizedValuesMap;
+import com.liferay.portal.kernel.test.log.CaptureAppender;
+import com.liferay.portal.kernel.test.log.Log4JLoggerTestUtil;
 import com.liferay.portal.kernel.test.randomizerbumpers.NumericStringRandomizerBumper;
 import com.liferay.portal.kernel.test.randomizerbumpers.UniqueStringRandomizerBumper;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
@@ -103,8 +105,6 @@ import com.liferay.portal.kernel.workflow.WorkflowTask;
 import com.liferay.portal.kernel.workflow.WorkflowTaskManagerUtil;
 import com.liferay.portal.search.test.util.IdempotentRetryAssert;
 import com.liferay.portal.security.permission.SimplePermissionChecker;
-import com.liferay.portal.test.log.CaptureAppender;
-import com.liferay.portal.test.log.Log4JLoggerTestUtil;
 import com.liferay.portal.test.rule.Inject;
 
 import java.util.ArrayList;

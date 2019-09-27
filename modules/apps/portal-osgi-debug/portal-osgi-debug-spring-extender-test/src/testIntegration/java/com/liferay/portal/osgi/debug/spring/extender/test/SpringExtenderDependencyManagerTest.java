@@ -23,14 +23,14 @@ import com.liferay.portal.kernel.io.unsync.UnsyncByteArrayInputStream;
 import com.liferay.portal.kernel.io.unsync.UnsyncByteArrayOutputStream;
 import com.liferay.portal.kernel.log.SanitizerLogWrapper;
 import com.liferay.portal.kernel.test.ReflectionTestUtil;
+import com.liferay.portal.kernel.test.log.CaptureAppender;
+import com.liferay.portal.kernel.test.log.Log4JLoggerTestUtil;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.util.HashMapDictionary;
 import com.liferay.portal.kernel.util.StreamUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.osgi.debug.spring.extender.test.reference.SpringExtenderTestComponentReference;
 import com.liferay.portal.osgi.debug.spring.extender.test.service.impl.SpringExtenderTestComponentLocalServiceImpl;
-import com.liferay.portal.test.log.CaptureAppender;
-import com.liferay.portal.test.log.Log4JLoggerTestUtil;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 

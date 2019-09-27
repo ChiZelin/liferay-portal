@@ -20,9 +20,9 @@ import com.liferay.portal.kernel.dao.db.DB;
 import com.liferay.portal.kernel.dao.db.DBManagerUtil;
 import com.liferay.portal.kernel.io.unsync.UnsyncPrintWriter;
 import com.liferay.portal.kernel.io.unsync.UnsyncStringWriter;
+import com.liferay.portal.kernel.test.log.CaptureAppender;
+import com.liferay.portal.kernel.test.log.Log4JLoggerTestUtil;
 import com.liferay.portal.kernel.test.rule.AbstractTestRule;
-import com.liferay.portal.test.log.CaptureAppender;
-import com.liferay.portal.test.log.Log4JLoggerTestUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;

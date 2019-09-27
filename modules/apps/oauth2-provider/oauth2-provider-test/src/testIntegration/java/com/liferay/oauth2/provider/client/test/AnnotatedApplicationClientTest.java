@@ -19,12 +19,12 @@ import com.liferay.oauth2.provider.internal.test.TestAnnotatedApplication;
 import com.liferay.oauth2.provider.internal.test.TestInterfaceAnnotatedApplication;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.model.User;
+import com.liferay.portal.kernel.test.log.CaptureAppender;
+import com.liferay.portal.kernel.test.log.Log4JLoggerTestUtil;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.util.UserTestUtil;
 import com.liferay.portal.kernel.util.HashMapDictionary;
 import com.liferay.portal.kernel.util.PortalUtil;
-import com.liferay.portal.test.log.CaptureAppender;
-import com.liferay.portal.test.log.Log4JLoggerTestUtil;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
 import java.util.Arrays;
