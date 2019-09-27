@@ -17,6 +17,7 @@ package com.liferay.portal.test.log;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.log.LogWrapper;
+import com.liferay.portal.kernel.test.log.CaptureAppender;
 import com.liferay.portal.log.Log4jLogImpl;
 
 import org.apache.log4j.Level;
@@ -24,7 +25,10 @@ import org.apache.log4j.Logger;
 
 /**
  * @author Shuyang Zhou
+ * @deprecated As of Mueller (7.2.x), replaced by {@link
+ *                com.liferay.portal.kernel.test.log.Log4JLoggerTestUtil}
  */
+@Deprecated
 public class Log4JLoggerTestUtil {
 
 	public static CaptureAppender configureLog4JLogger(
