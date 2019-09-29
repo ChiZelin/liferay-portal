@@ -37,7 +37,10 @@ import java.util.stream.Stream;
 
 /**
  * @author Preston Crary
+ * @deprecated As of Mueller (7.2.x), replaced by {@link
+ *             com.liferay.portal.kernel.test.rule.InjectTestBag}
  */
+@Deprecated
 public class InjectTestBag {
 
 	public InjectTestBag(Class<?> testClass) throws Exception {
