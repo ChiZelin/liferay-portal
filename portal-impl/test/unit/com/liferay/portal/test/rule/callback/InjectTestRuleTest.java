@@ -16,9 +16,9 @@ package com.liferay.portal.test.rule.callback;
 
 import com.liferay.portal.kernel.io.unsync.UnsyncByteArrayOutputStream;
 import com.liferay.portal.kernel.test.ConsoleTestUtil;
+import com.liferay.portal.kernel.test.rule.InjectTestRule;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.InjectTestBag;
-import com.liferay.portal.test.rule.InjectTestRule;
 import com.liferay.registry.BasicRegistryImpl;
 import com.liferay.registry.Registry;
 import com.liferay.registry.RegistryUtil;
