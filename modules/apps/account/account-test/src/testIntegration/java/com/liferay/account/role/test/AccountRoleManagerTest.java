@@ -19,9 +19,9 @@ import com.liferay.account.role.AccountRoleManager;
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.portal.kernel.model.Role;
 import com.liferay.portal.kernel.service.RoleLocalService;
+import com.liferay.portal.kernel.test.rule.Inject;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
-import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
 import java.util.ArrayList;

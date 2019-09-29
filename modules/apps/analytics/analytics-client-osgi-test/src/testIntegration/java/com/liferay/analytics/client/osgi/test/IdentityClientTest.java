@@ -18,7 +18,7 @@ import com.liferay.analytics.client.IdentityClient;
 import com.liferay.analytics.model.IdentityContextMessage;
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
-import com.liferay.portal.test.rule.Inject;
+import com.liferay.portal.kernel.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
 import org.junit.Assert;

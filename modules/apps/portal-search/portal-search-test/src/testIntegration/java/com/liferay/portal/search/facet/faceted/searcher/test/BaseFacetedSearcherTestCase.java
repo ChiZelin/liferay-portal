@@ -26,10 +26,10 @@ import com.liferay.portal.kernel.search.SearchContext;
 import com.liferay.portal.kernel.search.facet.faceted.searcher.FacetedSearcher;
 import com.liferay.portal.kernel.search.facet.faceted.searcher.FacetedSearcherManager;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
+import com.liferay.portal.kernel.test.rule.Inject;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowThreadLocal;
 import com.liferay.portal.search.test.util.AssertUtils;
-import com.liferay.portal.test.rule.Inject;
 import com.liferay.users.admin.test.util.search.UserSearchFixture;
 
 import java.util.List;

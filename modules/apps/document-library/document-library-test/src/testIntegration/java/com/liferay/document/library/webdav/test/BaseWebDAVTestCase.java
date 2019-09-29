@@ -17,6 +17,7 @@ package com.liferay.document.library.webdav.test;
 import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.servlet.HttpHeaders;
+import com.liferay.portal.kernel.test.rule.Inject;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.GetterUtil;
@@ -26,7 +27,6 @@ import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.webdav.WebDAVStorage;
 import com.liferay.portal.kernel.webdav.WebDAVUtil;
 import com.liferay.portal.kernel.webdav.methods.Method;
-import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.webdav.WebDAVServlet;
 
 import java.util.HashMap;

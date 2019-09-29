@@ -22,7 +22,7 @@ import com.liferay.message.boards.service.MBThreadLocalService;
 import com.liferay.message.boards.uad.test.MBThreadUADTestUtil;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
-import com.liferay.portal.test.rule.Inject;
+import com.liferay.portal.kernel.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.user.associated.data.exporter.UADExporter;
 import com.liferay.user.associated.data.test.util.BaseUADExporterTestCase;

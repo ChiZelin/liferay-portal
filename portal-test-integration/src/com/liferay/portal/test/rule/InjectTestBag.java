@@ -16,6 +16,7 @@ package com.liferay.portal.test.rule;
 
 import com.liferay.petra.reflect.ReflectionUtil;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.test.rule.Inject;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.registry.Registry;
 import com.liferay.registry.RegistryUtil;

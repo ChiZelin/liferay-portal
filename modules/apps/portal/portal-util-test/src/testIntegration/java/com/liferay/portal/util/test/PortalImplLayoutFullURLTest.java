@@ -18,7 +18,7 @@ import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.portal.kernel.model.LayoutSet;
 import com.liferay.portal.kernel.service.VirtualHostLocalService;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
-import com.liferay.portal.test.rule.Inject;
+import com.liferay.portal.kernel.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
 import java.net.URL;

@@ -20,7 +20,7 @@ import com.liferay.portal.kernel.model.EmailAddress;
 import com.liferay.portal.kernel.service.EmailAddressLocalService;
 import com.liferay.portal.kernel.service.EmailAddressLocalServiceWrapper;
 import com.liferay.portal.kernel.service.ServiceWrapper;
-import com.liferay.portal.test.rule.Inject;
+import com.liferay.portal.kernel.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
 import org.junit.Assert;

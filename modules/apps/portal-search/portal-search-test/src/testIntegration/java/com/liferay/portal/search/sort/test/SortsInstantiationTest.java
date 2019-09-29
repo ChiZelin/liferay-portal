@@ -16,6 +16,7 @@ package com.liferay.portal.search.sort.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
+import com.liferay.portal.kernel.test.rule.Inject;
 import com.liferay.portal.search.script.Script;
 import com.liferay.portal.search.sort.FieldSort;
 import com.liferay.portal.search.sort.GeoDistanceSort;
@@ -24,7 +25,6 @@ import com.liferay.portal.search.sort.ScoreSort;
 import com.liferay.portal.search.sort.ScriptSort;
 import com.liferay.portal.search.sort.SortOrder;
 import com.liferay.portal.search.sort.Sorts;
-import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
 import org.junit.Assert;

@@ -18,7 +18,7 @@ import com.liferay.asset.kernel.model.AssetEntry;
 import com.liferay.asset.kernel.service.AssetEntryLocalService;
 import com.liferay.portal.kernel.model.BaseModel;
 import com.liferay.portal.kernel.model.User;
-import com.liferay.portal.test.rule.Inject;
+import com.liferay.portal.kernel.test.rule.Inject;
 
 /**
  * @author Samuel Trong Tran

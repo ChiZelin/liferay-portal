@@ -33,6 +33,7 @@ import com.liferay.portal.kernel.security.permission.PermissionCheckerFactory;
 import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
+import com.liferay.portal.kernel.test.rule.Inject;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
@@ -40,7 +41,6 @@ import com.liferay.portal.search.facet.Facet;
 import com.liferay.portal.search.facet.type.AssetEntriesFacetFactory;
 import com.liferay.portal.search.test.util.DocumentsAssert;
 import com.liferay.portal.search.test.util.FacetsAssert;
-import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
 import java.util.ArrayList;

@@ -20,9 +20,9 @@ import com.liferay.fragment.model.FragmentEntryLink;
 import com.liferay.fragment.service.persistence.FragmentEntryLinkFinder;
 import com.liferay.fragment.service.persistence.FragmentEntryLinkPersistence;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
+import com.liferay.portal.kernel.test.rule.Inject;
 import com.liferay.portal.kernel.transaction.Propagation;
 import com.liferay.portal.kernel.transaction.Transactional;
-import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.TransactionalTestRule;
 

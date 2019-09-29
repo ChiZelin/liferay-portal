@@ -25,7 +25,7 @@ import com.liferay.portal.kernel.model.StagedModel;
 import com.liferay.portal.kernel.service.ClassNameLocalService;
 import com.liferay.portal.kernel.service.LayoutLocalService;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
-import com.liferay.portal.test.rule.Inject;
+import com.liferay.portal.kernel.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.segments.model.SegmentsExperience;
 import com.liferay.segments.service.SegmentsExperienceLocalServiceUtil;

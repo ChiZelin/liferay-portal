@@ -21,7 +21,7 @@ import com.liferay.item.selector.ItemSelectorReturnType;
 import com.liferay.item.selector.ItemSelectorView;
 import com.liferay.item.selector.ItemSelectorViewReturnTypeProvider;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
-import com.liferay.portal.test.rule.Inject;
+import com.liferay.portal.kernel.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
 import java.util.ArrayList;

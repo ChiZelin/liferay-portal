@@ -15,8 +15,8 @@
 package com.liferay.dynamic.data.mapping.internal.form.renderer.servlet.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
+import com.liferay.portal.kernel.test.rule.Inject;
 import com.liferay.portal.kernel.util.WebKeys;
-import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
 import java.io.IOException;

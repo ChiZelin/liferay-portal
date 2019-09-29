@@ -20,7 +20,7 @@ import com.liferay.bookmarks.service.BookmarksFolderLocalService;
 import com.liferay.bookmarks.uad.test.BookmarksFolderUADTestUtil;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
-import com.liferay.portal.test.rule.Inject;
+import com.liferay.portal.kernel.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.user.associated.data.display.UADDisplay;
 import com.liferay.user.associated.data.test.util.BaseUADDisplayTestCase;

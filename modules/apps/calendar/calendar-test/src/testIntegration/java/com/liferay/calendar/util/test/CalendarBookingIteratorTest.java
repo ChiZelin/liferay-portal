@@ -22,9 +22,9 @@ import com.liferay.calendar.recurrence.RecurrenceSerializer;
 import com.liferay.calendar.service.CalendarBookingLocalService;
 import com.liferay.calendar.util.CalendarBookingIterator;
 import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.test.rule.Inject;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.util.TimeZoneUtil;
-import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
 import java.text.ParseException;

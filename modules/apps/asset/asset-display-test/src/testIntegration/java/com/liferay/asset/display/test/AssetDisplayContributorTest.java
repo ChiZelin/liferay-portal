@@ -19,7 +19,7 @@ import com.liferay.asset.kernel.model.AssetEntry;
 import com.liferay.info.display.contributor.field.InfoDisplayContributorField;
 import com.liferay.info.display.contributor.field.InfoDisplayContributorFieldTracker;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
-import com.liferay.portal.test.rule.Inject;
+import com.liferay.portal.kernel.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
 import java.util.List;

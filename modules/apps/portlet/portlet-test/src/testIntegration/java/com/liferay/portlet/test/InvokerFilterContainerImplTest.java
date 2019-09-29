@@ -21,12 +21,12 @@ import com.liferay.portal.kernel.portlet.PortletInstanceFactory;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
 import com.liferay.portal.kernel.servlet.ServletContextClassLoaderPool;
 import com.liferay.portal.kernel.servlet.ServletContextPool;
+import com.liferay.portal.kernel.test.rule.Inject;
 import com.liferay.portal.kernel.util.HashMapDictionary;
 import com.liferay.portal.kernel.util.PortalClassLoaderUtil;
 import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.model.impl.PortletAppImpl;
 import com.liferay.portal.model.impl.PortletImpl;
-import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
 import java.util.Collections;

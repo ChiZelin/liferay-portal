@@ -22,9 +22,9 @@ import com.liferay.portal.kernel.model.role.RoleConstants;
 import com.liferay.portal.kernel.service.RoleService;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
+import com.liferay.portal.kernel.test.rule.Inject;
 import com.liferay.portal.kernel.test.util.RoleTestUtil;
 import com.liferay.portal.security.permission.test.util.BasePermissionTestCase;
-import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
 import java.util.LinkedHashMap;

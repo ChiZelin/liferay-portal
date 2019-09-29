@@ -25,6 +25,7 @@ import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.search.Hits;
 import com.liferay.portal.kernel.search.SearchContext;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
+import com.liferay.portal.kernel.test.rule.Inject;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -32,7 +33,6 @@ import com.liferay.portal.search.facet.Facet;
 import com.liferay.portal.search.facet.tag.AssetTagNamesFacetFactory;
 import com.liferay.portal.search.test.util.DocumentsAssert;
 import com.liferay.portal.search.test.util.FacetsAssert;
-import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
 import java.util.Arrays;

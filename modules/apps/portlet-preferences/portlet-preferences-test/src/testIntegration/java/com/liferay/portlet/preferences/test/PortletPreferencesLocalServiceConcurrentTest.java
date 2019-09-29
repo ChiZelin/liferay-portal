@@ -22,6 +22,7 @@ import com.liferay.portal.kernel.test.ReflectionTestUtil;
 import com.liferay.portal.kernel.test.randomizerbumpers.UniqueStringRandomizerBumper;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
+import com.liferay.portal.kernel.test.rule.Inject;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.util.ProxyUtil;
@@ -35,7 +36,6 @@ import com.liferay.portal.test.rule.ExpectedLog;
 import com.liferay.portal.test.rule.ExpectedLogs;
 import com.liferay.portal.test.rule.ExpectedMultipleLogs;
 import com.liferay.portal.test.rule.ExpectedType;
-import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.util.PropsValues;
 

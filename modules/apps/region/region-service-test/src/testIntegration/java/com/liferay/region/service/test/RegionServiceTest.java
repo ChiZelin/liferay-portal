@@ -20,8 +20,8 @@ import com.liferay.portal.kernel.model.Region;
 import com.liferay.portal.kernel.service.CountryService;
 import com.liferay.portal.kernel.service.RegionService;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
+import com.liferay.portal.kernel.test.rule.Inject;
 import com.liferay.portal.kernel.util.ListUtil;
-import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
 import java.util.List;

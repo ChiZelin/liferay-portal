@@ -18,9 +18,9 @@ import com.liferay.portal.configuration.metatype.annotations.ExtendedObjectClass
 import com.liferay.portal.configuration.settings.internal.constants.SettingsLocatorTestConstants;
 import com.liferay.portal.kernel.settings.Settings;
 import com.liferay.portal.kernel.settings.SettingsLocatorHelper;
+import com.liferay.portal.kernel.test.rule.Inject;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
-import com.liferay.portal.test.rule.Inject;
 
 import org.junit.Assert;
 import org.junit.Test;

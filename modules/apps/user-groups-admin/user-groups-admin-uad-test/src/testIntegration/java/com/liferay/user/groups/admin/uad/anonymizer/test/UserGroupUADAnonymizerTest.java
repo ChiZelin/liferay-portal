@@ -20,7 +20,7 @@ import com.liferay.portal.kernel.model.UserGroup;
 import com.liferay.portal.kernel.service.UserGroupLocalService;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
-import com.liferay.portal.test.rule.Inject;
+import com.liferay.portal.kernel.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.user.associated.data.anonymizer.UADAnonymizer;
 import com.liferay.user.associated.data.test.util.BaseUADAnonymizerTestCase;

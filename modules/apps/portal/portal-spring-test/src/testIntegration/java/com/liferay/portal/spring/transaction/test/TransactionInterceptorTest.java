@@ -22,11 +22,11 @@ import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.service.ClassNameLocalService;
 import com.liferay.portal.kernel.service.persistence.ClassNamePersistence;
 import com.liferay.portal.kernel.test.ReflectionTestUtil;
+import com.liferay.portal.kernel.test.rule.Inject;
 import com.liferay.portal.kernel.util.InfrastructureUtil;
 import com.liferay.portal.model.impl.ClassNameImpl;
 import com.liferay.portal.spring.hibernate.PortletTransactionManager;
 import com.liferay.portal.spring.transaction.TransactionExecutor;
-import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
 import org.junit.Assert;

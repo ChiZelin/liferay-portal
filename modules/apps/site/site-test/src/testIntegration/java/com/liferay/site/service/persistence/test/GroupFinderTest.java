@@ -32,6 +32,7 @@ import com.liferay.portal.kernel.service.UserGroupLocalService;
 import com.liferay.portal.kernel.service.persistence.GroupFinder;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
+import com.liferay.portal.kernel.test.rule.Inject;
 import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.OrganizationTestUtil;
 import com.liferay.portal.kernel.test.util.ResourcePermissionTestUtil;
@@ -41,7 +42,6 @@ import com.liferay.portal.kernel.test.util.UserGroupTestUtil;
 import com.liferay.portal.kernel.test.util.UserTestUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.comparator.GroupNameComparator;
-import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.TransactionalTestRule;
 

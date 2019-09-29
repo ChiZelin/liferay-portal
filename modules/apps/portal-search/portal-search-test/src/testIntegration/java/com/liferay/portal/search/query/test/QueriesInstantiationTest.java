@@ -16,6 +16,7 @@ package com.liferay.portal.search.query.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
+import com.liferay.portal.kernel.test.rule.Inject;
 import com.liferay.portal.search.geolocation.GeoDistance;
 import com.liferay.portal.search.geolocation.GeoLocationPoint;
 import com.liferay.portal.search.query.BooleanQuery;
@@ -54,7 +55,6 @@ import com.liferay.portal.search.query.TermsQuery;
 import com.liferay.portal.search.query.TermsSetQuery;
 import com.liferay.portal.search.query.WildcardQuery;
 import com.liferay.portal.search.script.Script;
-import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
 import java.util.ArrayList;

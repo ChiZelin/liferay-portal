@@ -24,6 +24,7 @@ import com.liferay.portal.kernel.service.PortalPreferencesLocalService;
 import com.liferay.portal.kernel.service.PortalPreferencesLocalServiceUtil;
 import com.liferay.portal.kernel.test.ReflectionTestUtil;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
+import com.liferay.portal.kernel.test.rule.Inject;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.transaction.TransactionConfig;
 import com.liferay.portal.kernel.transaction.TransactionInvokerUtil;
@@ -35,7 +36,6 @@ import com.liferay.portal.spring.transaction.DefaultTransactionExecutor;
 import com.liferay.portal.spring.transaction.TransactionAttributeAdapter;
 import com.liferay.portal.spring.transaction.TransactionInterceptor;
 import com.liferay.portal.spring.transaction.TransactionStatusAdapter;
-import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portlet.PortalPreferencesWrapperCacheUtil;
 

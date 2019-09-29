@@ -29,6 +29,7 @@ import com.liferay.portal.kernel.model.Portlet;
 import com.liferay.portal.kernel.model.StagedModel;
 import com.liferay.portal.kernel.service.PortletLocalService;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
+import com.liferay.portal.kernel.test.rule.Inject;
 import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.util.ArrayUtil;
@@ -42,7 +43,6 @@ import com.liferay.portal.kernel.xml.SAXReader;
 import com.liferay.portal.kernel.zip.ZipReaderFactory;
 import com.liferay.portal.kernel.zip.ZipWriter;
 import com.liferay.portal.kernel.zip.ZipWriterFactory;
-import com.liferay.portal.test.rule.Inject;
 import com.liferay.portlet.PortletPreferencesImpl;
 
 import java.util.ArrayList;

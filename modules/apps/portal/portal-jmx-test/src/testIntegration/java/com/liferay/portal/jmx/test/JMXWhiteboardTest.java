@@ -15,8 +15,8 @@
 package com.liferay.portal.jmx.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
+import com.liferay.portal.kernel.test.rule.Inject;
 import com.liferay.portal.kernel.util.MapUtil;
-import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
 import javax.management.DynamicMBean;

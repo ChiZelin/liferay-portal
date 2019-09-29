@@ -20,7 +20,7 @@ import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.service.TeamLocalService;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
-import com.liferay.portal.test.rule.Inject;
+import com.liferay.portal.kernel.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.site.teams.uad.test.TeamUADTestHelper;
 import com.liferay.user.associated.data.anonymizer.UADAnonymizer;

@@ -18,6 +18,7 @@ import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.portal.kernel.search.SearchEngine;
 import com.liferay.portal.kernel.search.SearchEngineHelper;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
+import com.liferay.portal.kernel.test.rule.Inject;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.search.document.Document;
@@ -30,7 +31,6 @@ import com.liferay.portal.search.engine.adapter.document.GetDocumentRequest;
 import com.liferay.portal.search.engine.adapter.document.GetDocumentResponse;
 import com.liferay.portal.search.engine.adapter.document.IndexDocumentRequest;
 import com.liferay.portal.search.engine.adapter.document.UpdateDocumentRequest;
-import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
 import org.junit.Assert;

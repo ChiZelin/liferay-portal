@@ -24,8 +24,8 @@ import com.liferay.portal.kernel.search.IndexerRegistry;
 import com.liferay.portal.kernel.search.SearchEngineHelper;
 import com.liferay.portal.kernel.service.ResourcePermissionLocalService;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
+import com.liferay.portal.kernel.test.rule.Inject;
 import com.liferay.portal.search.test.util.IndexedFieldsFixture;
-import com.liferay.portal.test.rule.Inject;
 
 import java.util.ArrayList;
 import java.util.List;

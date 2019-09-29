@@ -16,6 +16,7 @@ package com.liferay.portal.search.aggregations.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
+import com.liferay.portal.kernel.test.rule.Inject;
 import com.liferay.portal.search.aggregation.Aggregations;
 import com.liferay.portal.search.aggregation.bucket.ChildrenAggregation;
 import com.liferay.portal.search.aggregation.bucket.DateHistogramAggregation;
@@ -66,7 +67,6 @@ import com.liferay.portal.search.aggregation.pipeline.SumBucketPipelineAggregati
 import com.liferay.portal.search.geolocation.GeoLocationPoint;
 import com.liferay.portal.search.query.Query;
 import com.liferay.portal.search.script.Script;
-import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
 import org.junit.Assert;

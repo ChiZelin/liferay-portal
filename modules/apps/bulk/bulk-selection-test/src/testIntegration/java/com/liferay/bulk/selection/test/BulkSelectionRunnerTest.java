@@ -21,9 +21,9 @@ import com.liferay.bulk.selection.test.util.TestBulkSelectionFactory;
 import com.liferay.bulk.selection.test.util.TestBusyBulkSelectionAction;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
+import com.liferay.portal.kernel.test.rule.Inject;
 import com.liferay.portal.kernel.test.rule.Sync;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
-import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
 import java.io.Serializable;

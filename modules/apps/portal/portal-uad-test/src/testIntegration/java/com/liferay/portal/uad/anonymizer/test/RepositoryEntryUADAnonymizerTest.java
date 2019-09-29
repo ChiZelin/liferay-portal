@@ -21,7 +21,7 @@ import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.service.RepositoryEntryLocalService;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
-import com.liferay.portal.test.rule.Inject;
+import com.liferay.portal.kernel.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.uad.test.RepositoryEntryUADTestHelper;
 

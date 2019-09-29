@@ -29,10 +29,10 @@ import com.liferay.dynamic.data.mapping.test.util.DDMStructureLayoutTestHelper;
 import com.liferay.dynamic.data.mapping.test.util.DDMStructureTestHelper;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.model.Group;
+import com.liferay.portal.kernel.test.rule.Inject;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.StringUtil;
-import com.liferay.portal.test.rule.Inject;
 
 import java.io.InputStream;
 

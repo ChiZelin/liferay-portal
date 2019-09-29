@@ -19,6 +19,7 @@ import com.liferay.petra.concurrent.DefaultNoticeableFuture;
 import com.liferay.portal.aop.AopService;
 import com.liferay.portal.kernel.test.ReflectionTestUtil;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
+import com.liferay.portal.kernel.test.rule.Inject;
 import com.liferay.portal.kernel.transaction.Isolation;
 import com.liferay.portal.kernel.transaction.Transactional;
 import com.liferay.portal.kernel.util.HashMapDictionary;
@@ -28,7 +29,6 @@ import com.liferay.portal.spring.aop.AopInvocationHandler;
 import com.liferay.portal.spring.transaction.TransactionAttributeAdapter;
 import com.liferay.portal.spring.transaction.TransactionHandler;
 import com.liferay.portal.spring.transaction.TransactionStatusAdapter;
-import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
 import java.lang.reflect.Constructor;

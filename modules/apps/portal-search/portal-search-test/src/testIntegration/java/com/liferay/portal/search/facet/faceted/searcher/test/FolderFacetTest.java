@@ -32,6 +32,7 @@ import com.liferay.portal.kernel.security.permission.PermissionCheckerFactory;
 import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
+import com.liferay.portal.kernel.test.rule.Inject;
 import com.liferay.portal.kernel.test.rule.Sync;
 import com.liferay.portal.kernel.test.rule.SynchronousDestinationTestRule;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
@@ -42,7 +43,6 @@ import com.liferay.portal.search.facet.custom.CustomFacetFactory;
 import com.liferay.portal.search.facet.folder.FolderFacetFactory;
 import com.liferay.portal.search.test.util.DocumentsAssert;
 import com.liferay.portal.search.test.util.FacetsAssert;
-import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
 import java.util.Arrays;

@@ -24,6 +24,7 @@ import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.service.ResourcePermissionLocalService;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
+import com.liferay.portal.kernel.test.rule.Inject;
 import com.liferay.portal.kernel.test.rule.Sync;
 import com.liferay.portal.kernel.test.util.UserTestUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
@@ -32,7 +33,6 @@ import com.liferay.portal.test.rule.ExpectedDBType;
 import com.liferay.portal.test.rule.ExpectedLog;
 import com.liferay.portal.test.rule.ExpectedLogs;
 import com.liferay.portal.test.rule.ExpectedType;
-import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.upgrade.v7_0_0.UpgradeResourcePermission;
 

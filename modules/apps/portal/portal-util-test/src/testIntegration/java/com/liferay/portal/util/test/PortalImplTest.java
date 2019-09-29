@@ -15,11 +15,11 @@
 package com.liferay.portal.util.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
+import com.liferay.portal.kernel.test.rule.Inject;
 import com.liferay.portal.kernel.upload.UploadServletRequest;
 import com.liferay.portal.kernel.util.File;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.osgi.web.portlet.container.test.util.PortletContainerTestUtil;
-import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.upload.LiferayServletRequest;
 import com.liferay.portal.upload.UploadServletRequestImpl;

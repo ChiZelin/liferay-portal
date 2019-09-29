@@ -20,7 +20,7 @@ import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.model.ResourceAction;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.service.ResourceActionLocalService;
-import com.liferay.portal.test.rule.Inject;
+import com.liferay.portal.kernel.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
 import java.util.ArrayList;
