@@ -15,6 +15,7 @@
 package com.liferay.portal.test.rule;
 
 import com.liferay.portal.kernel.test.rule.AbstractTestRule;
+import com.liferay.portal.kernel.test.rule.InjectTestBag;
 
 import org.junit.runner.Description;
 
