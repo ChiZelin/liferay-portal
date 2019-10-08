@@ -45,7 +45,10 @@ import javax.portlet.ReadOnlyException;
 
 /**
  * @author Adam Brandizzi
+ * @deprecated As of Athanasius (7.3.x), replaced by {@link
+ *             MailServiceTestUtil}
  */
+@Deprecated
 public class MailServiceTestUtil {
 
 	public static void clearMessages() {

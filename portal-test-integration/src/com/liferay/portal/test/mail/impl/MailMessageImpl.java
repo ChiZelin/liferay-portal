@@ -20,7 +20,10 @@ import java.util.Iterator;
 
 /**
  * @author Adam Brandizzi
+ * @deprecated As of Athanasius (7.3.x), replaced by {@link
+ *             MailMessageImpl}
  */
+@Deprecated
 public class MailMessageImpl implements MailMessage {
 
 	public MailMessageImpl(com.dumbster.smtp.MailMessage mailMessage) {
