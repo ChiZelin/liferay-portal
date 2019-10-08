@@ -17,6 +17,7 @@ package com.liferay.portal.test.rule;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.CompanyProviderClassTestRule;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRunMethodTestRule;
+import com.liferay.portal.kernel.test.rule.DestinationAwaitClassTestRule;
 import com.liferay.portal.kernel.test.rule.SynchronousDestinationTestRule;
 import com.liferay.portal.kernel.test.rule.TimeoutTestRule;
 
