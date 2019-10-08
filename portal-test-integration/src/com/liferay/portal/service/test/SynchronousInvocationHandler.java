@@ -22,6 +22,8 @@ import java.util.concurrent.CyclicBarrier;
 /**
  * @author Matthew Tambara
  * @author Shuyang Zhou
+ * @deprecated As of Mueller (7.2.x), replaced by {@link
+ *             SynchronousInvocationHandler}
  */
 public class SynchronousInvocationHandler implements InvocationHandler {
 
