@@ -19,6 +19,7 @@ import com.liferay.portal.kernel.test.rule.CompanyProviderClassTestRule;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRunMethodTestRule;
 import com.liferay.portal.kernel.test.rule.SynchronousDestinationTestRule;
 import com.liferay.portal.kernel.test.rule.TimeoutTestRule;
+import com.liferay.portal.kernel.test.rule.UniqueStringRandomizerBumperClassTestRule;
 
 import java.util.ArrayList;
 import java.util.List;
