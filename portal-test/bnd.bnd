@@ -11,6 +11,7 @@ Export-Package:\
 	com.liferay.portal.kernel.test.rule.callback,\
 	com.liferay.portal.kernel.test.search,\
 	com.liferay.portal.kernel.test.util,\
+	com.liferay.portal.service.test,\
 	com.liferay.portal.test.log,\
 	com.liferay.portal.test.mail,\
 	com.liferay.portal.test.randomizerbumpers,\
