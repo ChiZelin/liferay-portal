@@ -24,8 +24,11 @@ import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Sergio González
+ * @deprecated As of Athanasius (7.3.x), replaced by {@link
+ *             DLFileRankLocalService}
  */
 @Component(service = ServiceWrapper.class)
+@Deprecated
 public class DLFileRankDLAppLocalServiceWrapper
 	extends DLAppLocalServiceWrapper {
 
@@ -39,12 +42,10 @@ public class DLFileRankDLAppLocalServiceWrapper
 		super(dlAppLocalService);
 	}
 
-	@Override
 	public void deleteFileRanksByFileEntryId(long fileEntryId) {
 		_dlFileRankLocalService.deleteFileRanksByFileEntryId(fileEntryId);
 	}
 
-	@Override
 	public void deleteFileRanksByUserId(long userId) {
 		_dlFileRankLocalService.deleteFileRanksByUserId(userId);
 	}
