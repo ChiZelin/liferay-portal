@@ -43,20 +43,32 @@ public class AMDLAppServiceWrapper extends DLAppServiceWrapper {
 		super(dlAppService);
 	}
 
-	@Override
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
+	 *             #updateFileEntryAndCheckIn(long, String, String, String,
+	 *             String, String, DLVersionNumberIncrease, File,
+	 *             ServiceContext)}
+	 */
+	@Deprecated
 	public FileEntry updateFileEntryAndCheckIn(
 			long fileEntryId, String sourceFileName, String mimeType,
 			String title, String description, String changeLog,
 			boolean majorVersion, File file, ServiceContext serviceContext)
 		throws PortalException {
 
-		return AMCleanUpOnUpdateAndCheckInThreadLocal.enable(
-			() -> super.updateFileEntryAndCheckIn(
-				fileEntryId, sourceFileName, mimeType, title, description,
-				changeLog, majorVersion, file, serviceContext));
+		return updateFileEntryAndCheckIn(
+			fileEntryId, sourceFileName, mimeType, title, description,
+			changeLog, DLVersionNumberIncrease.fromMajorVersion(majorVersion),
+			file, serviceContext);
 	}
 
-	@Override
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
+	 *			 #updateFileEntryAndCheckIn(long, String, String, String,
+	 *			 String, String, DLVersionNumberIncrease, InputStream, long,
+	 *			 ServiceContext)
+	 */
+	@Deprecated
 	public FileEntry updateFileEntryAndCheckIn(
 			long fileEntryId, String sourceFileName, String mimeType,
 			String title, String description, String changeLog,
@@ -64,10 +76,10 @@ public class AMDLAppServiceWrapper extends DLAppServiceWrapper {
 			ServiceContext serviceContext)
 		throws PortalException {
 
-		return AMCleanUpOnUpdateAndCheckInThreadLocal.enable(
-			() -> super.updateFileEntryAndCheckIn(
-				fileEntryId, sourceFileName, mimeType, title, description,
-				changeLog, majorVersion, is, size, serviceContext));
+		return updateFileEntryAndCheckIn(
+			fileEntryId, sourceFileName, mimeType, title, description,
+			changeLog, DLVersionNumberIncrease.fromMajorVersion(majorVersion),
+			is, size, serviceContext);
 	}
 
 	@Override
