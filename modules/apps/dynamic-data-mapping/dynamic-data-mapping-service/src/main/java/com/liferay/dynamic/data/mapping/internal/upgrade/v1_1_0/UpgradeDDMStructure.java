@@ -42,12 +42,23 @@ import java.util.Map;
  */
 public class UpgradeDDMStructure extends UpgradeProcess {
 
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
+	 *             #UpgradeDDMStructure(DDMFormDeserializer, DDMFormSerializer)}
+	 */
+	@Deprecated
 	public UpgradeDDMStructure(
 		DDMExpressionFactory ddmExpressionFactory,
 		DDMFormDeserializer ddmFormDeserializer,
 		DDMFormSerializer ddmFormSerializer) {
 
-		_ddmExpressionFactory = ddmExpressionFactory;
+		this(ddmFormDeserializer, ddmFormSerializer);
+	}
+
+	public UpgradeDDMStructure(
+		DDMFormDeserializer ddmFormDeserializer,
+		DDMFormSerializer ddmFormSerializer) {
+
 		_ddmFormDeserializer = ddmFormDeserializer;
 		_ddmFormSerializer = ddmFormSerializer;
 	}
@@ -176,7 +187,6 @@ public class UpgradeDDMStructure extends UpgradeProcess {
 		}
 	}
 
-	private final DDMExpressionFactory _ddmExpressionFactory;
 	private final DDMFormDeserializer _ddmFormDeserializer;
 	private final DDMFormSerializer _ddmFormSerializer;
 
