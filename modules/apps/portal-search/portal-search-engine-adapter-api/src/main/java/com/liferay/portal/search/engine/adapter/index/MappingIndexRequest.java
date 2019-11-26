@@ -15,27 +15,11 @@
 package com.liferay.portal.search.engine.adapter.index;
 
 /**
- * @author Michael C. Han
+ * @author Leon Chi
  */
-public class GetIndexIndexRequest
-	implements IndexRequest<GetIndexIndexResponse> {
+public interface MappingIndexRequest<T extends IndexResponse>
+	extends IndexRequest {
 
-	public GetIndexIndexRequest(String indexName) {
-		_indexName = indexName;
-	}
-
-	@Override
-	public GetIndexIndexResponse accept(
-		IndexRequestExecutor indexRequestExecutor) {
-
-		return indexRequestExecutor.executeIndexRequest(this);
-	}
-
-	@Override
-	public String[] getIndexNames() {
-		return new String[] {_indexName};
-	}
-
-	private final String _indexName;
+	public String getMappingName();
 
 }

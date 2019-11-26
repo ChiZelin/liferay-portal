@@ -18,7 +18,7 @@ package com.liferay.portal.search.engine.adapter.index;
  * @author Dylan Rebelak
  */
 public class GetMappingIndexRequest
-	implements IndexRequest<GetMappingIndexResponse> {
+	implements MappingIndexRequest<GetMappingIndexResponse> {
 
 	public GetMappingIndexRequest(String[] indexNames, String mappingName) {
 		_indexNames = indexNames;
