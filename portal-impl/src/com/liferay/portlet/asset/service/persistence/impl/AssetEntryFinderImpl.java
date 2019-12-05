@@ -19,6 +19,7 @@ import com.liferay.asset.kernel.model.AssetEntry;
 import com.liferay.asset.kernel.service.AssetCategoryLocalServiceUtil;
 import com.liferay.asset.kernel.service.persistence.AssetEntryFinder;
 import com.liferay.asset.kernel.service.persistence.AssetEntryQuery;
+import com.liferay.document.library.kernel.service.persistence.DLFileEntryFinder;
 import com.liferay.document.library.kernel.service.persistence.DLFolderFinder;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.dao.orm.QueryPos;
@@ -38,7 +39,6 @@ import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.util.PropsValues;
 import com.liferay.portlet.asset.model.impl.AssetEntryImpl;
-import com.liferay.portlet.documentlibrary.service.persistence.impl.DLFileEntryFinderImpl;
 import com.liferay.util.dao.orm.CustomSQLUtil;
 
 import java.sql.Timestamp;
@@ -116,7 +116,8 @@ public class AssetEntryFinderImpl
 			sql = StringUtil.replace(
 				sql, "[$JOIN$]",
 				CustomSQLUtil.get(
-					DLFileEntryFinderImpl.JOIN_AE_BY_DL_FILE_ENTRY));
+					DLFileEntryFinder.class.getName() +
+						".joinAE_ByDLFileEntry"));
 			sql = StringUtil.replace(
 				sql, "[$WHERE$]", "DLFileEntry.treePath LIKE ? AND");
 
