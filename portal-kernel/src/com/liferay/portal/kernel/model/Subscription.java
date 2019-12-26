@@ -30,7 +30,7 @@ import org.osgi.annotation.versioning.ProviderType;
 @Deprecated
 @ImplementationClassName("com.liferay.portal.model.impl.SubscriptionImpl")
 @ProviderType
-public interface Subscription extends PersistedModel, SubscriptionModel {
+public interface Subscription extends SubscriptionModel {
 
 	/**
 	 * NOTE FOR DEVELOPERS:

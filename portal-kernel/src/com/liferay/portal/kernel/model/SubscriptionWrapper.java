@@ -267,16 +267,6 @@ public class SubscriptionWrapper
 		return model.getUserUuid();
 	}
 
-	/**
-	 * NOTE FOR DEVELOPERS:
-	 *
-	 * Never modify or reference this class directly. All methods that expect a subscription model instance should use the <code>Subscription</code> interface instead.
-	 */
-	@Override
-	public void persist() {
-		model.persist();
-	}
-
 	@Override
 	public void setClassName(String className) {
 		model.setClassName(className);

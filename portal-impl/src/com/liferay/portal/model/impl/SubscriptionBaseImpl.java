@@ -15,7 +15,6 @@
 package com.liferay.portal.model.impl;
 
 import com.liferay.portal.kernel.model.Subscription;
-import com.liferay.portal.kernel.service.SubscriptionLocalServiceUtil;
 
 /**
  * The extended model base implementation for the Subscription service. Represents a row in the &quot;Subscription&quot; database table, with each column mapped to a property of this class.
@@ -39,14 +38,5 @@ public abstract class SubscriptionBaseImpl
 	 *
 	 * Never modify or reference this class directly. All methods that expect a subscription model instance should use the <code>Subscription</code> interface instead.
 	 */
-	@Override
-	public void persist() {
-		if (this.isNew()) {
-			SubscriptionLocalServiceUtil.addSubscription(this);
-		}
-		else {
-			SubscriptionLocalServiceUtil.updateSubscription(this);
-		}
-	}
 
 }
