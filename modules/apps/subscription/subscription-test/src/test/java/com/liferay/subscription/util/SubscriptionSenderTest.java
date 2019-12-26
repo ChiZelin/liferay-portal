@@ -12,28 +12,27 @@
  * details.
  */
 
-package com.liferay.portal.util;
+package com.liferay.subscription.util;
 
 import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.model.CompanyWrapper;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.GroupWrapper;
-import com.liferay.portal.kernel.model.Subscription;
 import com.liferay.portal.kernel.service.CompanyLocalServiceUtil;
 import com.liferay.portal.kernel.service.CompanyLocalServiceWrapper;
 import com.liferay.portal.kernel.service.GroupLocalServiceUtil;
 import com.liferay.portal.kernel.service.GroupLocalServiceWrapper;
 import com.liferay.portal.kernel.service.ServiceContext;
-import com.liferay.portal.kernel.service.SubscriptionLocalService;
-import com.liferay.portal.kernel.service.SubscriptionLocalServiceUtil;
 import com.liferay.portal.kernel.test.ReflectionTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.ProxyFactory;
-import com.liferay.portal.kernel.util.SubscriptionSender;
 import com.liferay.portal.kernel.uuid.PortalUUID;
 import com.liferay.portal.kernel.uuid.PortalUUIDUtil;
+import com.liferay.subscription.model.Subscription;
+import com.liferay.subscription.service.SubscriptionLocalService;
+import com.liferay.subscription.service.SubscriptionLocalServiceUtil;
 
 import java.util.Collections;
 
