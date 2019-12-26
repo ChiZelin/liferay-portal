@@ -12,7 +12,7 @@
  * details.
  */
 
-package com.liferay.portal.util;
+package com.liferay.subscription.util;
 
 import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.model.CompanyWrapper;
