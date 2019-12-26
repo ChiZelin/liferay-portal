@@ -2365,7 +2365,7 @@
 
 		<reference entity="Release" package-path="com.liferay.portal" />
 	</entity>
-	<entity deprecated="true" local-service="true" name="Subscription" remote-service="false">
+	<entity deprecated="true" local-service="false" name="Subscription" remote-service="false">
 
 		<!-- PK fields -->
 
