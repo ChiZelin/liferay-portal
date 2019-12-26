@@ -96,9 +96,7 @@ public class UnsubscribeHooks {
 		}
 	}
 
-	public void createUnsubscriptionTicket(
-		com.liferay.portal.kernel.model.Subscription subscription) {
-
+	public void createUnsubscriptionTicket(Subscription subscription) {
 		if (_subscriptionSender.isBulk()) {
 			return;
 		}
@@ -139,9 +137,7 @@ public class UnsubscribeHooks {
 		mailMessage.setBody(processedBody);
 	}
 
-	private Ticket _getTicket(
-		com.liferay.portal.kernel.model.Subscription subscription) {
-
+	private Ticket _getTicket(Subscription subscription) {
 		Calendar calendar = Calendar.getInstance();
 
 		calendar.add(
