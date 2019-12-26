@@ -22,7 +22,6 @@ import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.LanguageUtil;
-import com.liferay.portal.kernel.model.Subscription;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.security.auth.PrincipalThreadLocal;
@@ -32,6 +31,7 @@ import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
 import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermission;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.util.TextFormatter;
+import com.liferay.subscription.model.Subscription;
 import com.liferay.subscription.util.SubscriptionSender;
 
 import java.util.List;

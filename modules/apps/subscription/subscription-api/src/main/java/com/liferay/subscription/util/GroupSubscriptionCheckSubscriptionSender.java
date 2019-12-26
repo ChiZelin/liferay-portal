@@ -17,12 +17,12 @@ package com.liferay.subscription.util;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.ResourceAction;
-import com.liferay.portal.kernel.model.Subscription;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.security.permission.ResourcePermissionCheckerUtil;
 import com.liferay.portal.kernel.service.GroupLocalServiceUtil;
 import com.liferay.portal.kernel.service.ResourceActionLocalServiceUtil;
+import com.liferay.subscription.model.Subscription;
 
 /**
  * @author Roberto Díaz
