@@ -212,7 +212,7 @@ public class SubscriptionSender implements Serializable {
 				Locale locale = LocaleUtil.getDefault();
 
 				MailTemplateContext mailTemplateContext =
-					_getBasicMailTemplateContext(locale);
+					getBasicMailTemplateContext(locale);
 
 				String template = replyToAddress;
 
@@ -559,6 +559,22 @@ public class SubscriptionSender implements Serializable {
 			subscription.getSubscriptionId());
 	}
 
+	protected MailTemplateContext getBasicMailTemplateContext(Locale locale) {
+		MailTemplateContextBuilder mailTemplateContextBuilder =
+			MailTemplateFactoryUtil.createMailTemplateContextBuilder();
+
+		String portletName = _getPortletName(locale);
+
+		mailTemplateContextBuilder.put("[$PORTLET_NAME$]", portletName);
+		mailTemplateContextBuilder.put(
+			"[$PORTLET_TITLE$]", _getPortletTitle(portletName, locale));
+
+		_context.forEach(mailTemplateContextBuilder::put);
+		_localizedContext.forEach(mailTemplateContextBuilder::put);
+
+		return mailTemplateContextBuilder.build();
+	}
+
 	protected boolean hasPermission(
 			Subscription subscription, String className, long classPK,
 			User user)
@@ -824,27 +840,10 @@ public class SubscriptionSender implements Serializable {
 		_notifyHooks(Hook.Event.MAIL_MESSAGE_CREATED, mailMessage);
 	}
 
-	/**
-	 * @deprecated As of Judson (7.1.x), with no direct replacement
-	 */
-	@Deprecated
-	protected String replaceContent(
-			String content, Locale locale, boolean escape)
-		throws Exception {
-
-		MailTemplateContext mailTemplateContext = _getBasicMailTemplateContext(
-			locale);
-
-		MailTemplate mailTemplate = MailTemplateFactoryUtil.createMailTemplate(
-			content, escape);
-
-		return mailTemplate.renderAsString(locale, mailTemplateContext);
-	}
-
 	protected void sendEmail(InternetAddress to, Locale locale)
 		throws Exception {
 
-		MailTemplateContext mailTemplateContext = _getBasicMailTemplateContext(
+		MailTemplateContext mailTemplateContext = getBasicMailTemplateContext(
 			locale);
 
 		MailTemplate fromAddressMailTemplate =
@@ -1025,22 +1024,6 @@ public class SubscriptionSender implements Serializable {
 		_bulkAddresses.add(internetAddress);
 	}
 
-	private MailTemplateContext _getBasicMailTemplateContext(Locale locale) {
-		MailTemplateContextBuilder mailTemplateContextBuilder =
-			MailTemplateFactoryUtil.createMailTemplateContextBuilder();
-
-		String portletName = _getPortletName(locale);
-
-		mailTemplateContextBuilder.put("[$PORTLET_NAME$]", portletName);
-		mailTemplateContextBuilder.put(
-			"[$PORTLET_TITLE$]", _getPortletTitle(portletName, locale));
-
-		_context.forEach(mailTemplateContextBuilder::put);
-		_localizedContext.forEach(mailTemplateContextBuilder::put);
-
-		return mailTemplateContextBuilder.build();
-	}
-
 	private MailTemplateContext _getBodyMailTemplateContext(
 		Locale locale, InternetAddress from, InternetAddress to) {
 
@@ -1063,7 +1046,7 @@ public class SubscriptionSender implements Serializable {
 			mailTemplateContextBuilder.build();
 
 		return mailTemplateContext.aggregateWith(
-			_getBasicMailTemplateContext(locale));
+			getBasicMailTemplateContext(locale));
 	}
 
 	private <T> List<Hook<T>> _getHooks(Hook.Event<T> event) {

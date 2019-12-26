@@ -14,6 +14,9 @@
 
 package com.liferay.powwow.util;
 
+import com.liferay.mail.kernel.template.MailTemplate;
+import com.liferay.mail.kernel.template.MailTemplateContext;
+import com.liferay.mail.kernel.template.MailTemplateFactoryUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.subscription.util.SubscriptionSender;
@@ -44,7 +47,7 @@ public class PowwowSubscriptionSender extends SubscriptionSender {
 			processedBody = body;
 		}
 
-		return replaceContent(processedBody, locale, true);
+		return _replaceContent(processedBody, locale, true);
 	}
 
 	public String getEmailNotificationSubject(Locale locale) throws Exception {
@@ -66,7 +69,20 @@ public class PowwowSubscriptionSender extends SubscriptionSender {
 			processedSubject = subject;
 		}
 
-		return replaceContent(processedSubject, locale, false);
+		return _replaceContent(processedSubject, locale, false);
+	}
+
+	private String _replaceContent(
+			String content, Locale locale, boolean escape)
+		throws Exception {
+
+		MailTemplateContext mailTemplateContext = getBasicMailTemplateContext(
+			locale);
+
+		MailTemplate mailTemplate = MailTemplateFactoryUtil.createMailTemplate(
+			content, escape);
+
+		return mailTemplate.renderAsString(locale, mailTemplateContext);
 	}
 
 }
