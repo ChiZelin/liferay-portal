@@ -17,7 +17,7 @@ package com.liferay.subscription.web.internal.util;
 import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.kernel.service.TicketLocalService;
 import com.liferay.portal.kernel.service.UserLocalService;
-import com.liferay.portal.kernel.util.SubscriptionSender;
+import com.liferay.subscription.util.SubscriptionSender;
 import com.liferay.subscription.util.UnsubscribeHelper;
 import com.liferay.subscription.web.internal.configuration.SubscriptionConfiguration;
 

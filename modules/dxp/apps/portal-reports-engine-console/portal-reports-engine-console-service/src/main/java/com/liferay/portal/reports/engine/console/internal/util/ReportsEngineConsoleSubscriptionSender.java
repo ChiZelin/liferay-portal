@@ -17,7 +17,7 @@ package com.liferay.portal.reports.engine.console.internal.util;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.User;
-import com.liferay.portal.kernel.util.SubscriptionSender;
+import com.liferay.subscription.util.SubscriptionSender;
 
 /**
  * @author Brian I. Kim

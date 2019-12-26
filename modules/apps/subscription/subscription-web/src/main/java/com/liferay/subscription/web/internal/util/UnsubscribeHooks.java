@@ -28,8 +28,8 @@ import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
-import com.liferay.portal.kernel.util.SubscriptionSender;
 import com.liferay.subscription.model.Subscription;
+import com.liferay.subscription.util.SubscriptionSender;
 import com.liferay.subscription.web.internal.configuration.SubscriptionConfiguration;
 import com.liferay.subscription.web.internal.constants.SubscriptionConstants;
 

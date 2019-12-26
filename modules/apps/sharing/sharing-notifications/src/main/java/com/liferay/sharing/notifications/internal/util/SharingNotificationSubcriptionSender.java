@@ -15,7 +15,7 @@
 package com.liferay.sharing.notifications.internal.util;
 
 import com.liferay.portal.kernel.json.JSONObject;
-import com.liferay.portal.kernel.util.SubscriptionSender;
+import com.liferay.subscription.util.SubscriptionSender;
 
 /**
  * @author Alejandro Tardín

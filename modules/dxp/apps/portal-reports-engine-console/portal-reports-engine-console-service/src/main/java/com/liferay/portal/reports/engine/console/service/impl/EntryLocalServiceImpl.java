@@ -45,7 +45,6 @@ import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
-import com.liferay.portal.kernel.util.SubscriptionSender;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.reports.engine.MemoryReportDesignRetriever;
 import com.liferay.portal.reports.engine.ReportDataSourceType;
@@ -65,6 +64,7 @@ import com.liferay.portal.reports.engine.console.model.Source;
 import com.liferay.portal.reports.engine.console.service.base.EntryLocalServiceBaseImpl;
 import com.liferay.portal.reports.engine.console.status.ReportStatus;
 import com.liferay.portal.reports.engine.constants.ReportsEngineDestinationNames;
+import com.liferay.subscription.util.SubscriptionSender;
 
 import java.io.File;
 import java.io.IOException;

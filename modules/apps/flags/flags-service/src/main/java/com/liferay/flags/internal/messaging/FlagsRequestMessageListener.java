@@ -45,7 +45,7 @@ import com.liferay.portal.kernel.service.UserGroupRoleLocalService;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.PortletKeys;
-import com.liferay.portal.kernel.util.SubscriptionSender;
+import com.liferay.subscription.util.SubscriptionSender;
 
 import java.io.IOException;
 
