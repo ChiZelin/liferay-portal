@@ -12,7 +12,7 @@
  * details.
  */
 
-package com.liferay.portal.subscription.social;
+package com.liferay.subscription.internal.social;
 
 import com.liferay.portal.kernel.bean.BeanReference;
 import com.liferay.portal.kernel.model.Subscription;
