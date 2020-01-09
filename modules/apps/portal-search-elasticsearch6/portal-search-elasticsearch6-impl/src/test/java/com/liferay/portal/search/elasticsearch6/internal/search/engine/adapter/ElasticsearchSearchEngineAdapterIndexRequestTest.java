@@ -37,6 +37,7 @@ import com.liferay.portal.search.engine.adapter.index.GetIndexIndexRequest;
 import com.liferay.portal.search.engine.adapter.index.GetIndexIndexResponse;
 import com.liferay.portal.search.engine.adapter.index.GetMappingIndexRequest;
 import com.liferay.portal.search.engine.adapter.index.GetMappingIndexResponse;
+import com.liferay.portal.search.engine.adapter.index.IndexRequest;
 import com.liferay.portal.search.engine.adapter.index.IndexRequestExecutor;
 import com.liferay.portal.search.engine.adapter.index.IndicesExistsIndexRequest;
 import com.liferay.portal.search.engine.adapter.index.IndicesExistsIndexResponse;
@@ -231,7 +232,9 @@ public class ElasticsearchSearchEngineAdapterIndexRequestTest {
 				new String[] {_INDEX_NAME}, mappingName, fields);
 
 		GetFieldMappingIndexResponse getFieldMappingIndexResponse =
-			_searchEngineAdapter.execute(getFieldMappingIndexRequest);
+			_searchEngineAdapter.execute(
+				(IndexRequest<GetFieldMappingIndexResponse>)
+					getFieldMappingIndexRequest);
 
 		Map<String, String> fieldMappings =
 			getFieldMappingIndexResponse.getFieldMappings();
@@ -272,7 +275,8 @@ public class ElasticsearchSearchEngineAdapterIndexRequestTest {
 			new GetMappingIndexRequest(new String[] {_INDEX_NAME}, mappingName);
 
 		GetMappingIndexResponse getMappingIndexResponse =
-			_searchEngineAdapter.execute(getMappingIndexRequest);
+			_searchEngineAdapter.execute(
+				(IndexRequest<GetMappingIndexResponse>)getMappingIndexRequest);
 
 		Map<String, String> indexMappings =
 			getMappingIndexResponse.getIndexMappings();
@@ -312,7 +316,8 @@ public class ElasticsearchSearchEngineAdapterIndexRequestTest {
 				new String[] {_INDEX_NAME}, mappingName, mappingSource);
 
 		PutMappingIndexResponse putMappingIndexResponse =
-			_searchEngineAdapter.execute(putMappingIndexRequest);
+			_searchEngineAdapter.execute(
+				(IndexRequest<PutMappingIndexResponse>)putMappingIndexRequest);
 
 		Assert.assertTrue(putMappingIndexResponse.isAcknowledged());
 
