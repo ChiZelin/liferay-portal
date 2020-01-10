@@ -24,23 +24,15 @@ import com.liferay.portal.kernel.service.GroupLocalServiceUtil;
 import com.liferay.portal.kernel.service.GroupLocalServiceWrapper;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.test.ReflectionTestUtil;
-import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.ProxyFactory;
 import com.liferay.portal.kernel.uuid.PortalUUID;
 import com.liferay.portal.kernel.uuid.PortalUUIDUtil;
-import com.liferay.subscription.model.Subscription;
-import com.liferay.subscription.service.SubscriptionLocalService;
-import com.liferay.subscription.service.SubscriptionLocalServiceUtil;
-
-import java.util.Collections;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import org.mockito.Mockito;
 
 /**
  * @author Mika Koivisto
@@ -180,54 +172,6 @@ public class SubscriptionSenderTest {
 		SubscriptionSender subscriptionSender = new SubscriptionSender();
 
 		Assert.assertFalse(subscriptionSender.hasSubscribers());
-	}
-
-	@Test
-	public void testHasSubscriptionsReturnsFalseWhenNoSubscriptionsInDB() {
-		SubscriptionLocalService subscriptionLocalService = Mockito.mock(
-			SubscriptionLocalService.class);
-
-		ReflectionTestUtil.setFieldValue(
-			SubscriptionLocalServiceUtil.class, "_service",
-			subscriptionLocalService);
-
-		Mockito.when(
-			subscriptionLocalService.getSubscriptions(
-				Mockito.anyLong(), Mockito.anyString(), Mockito.anyLong())
-		).thenReturn(
-			Collections.emptyList()
-		);
-
-		SubscriptionSender subscriptionSender = new SubscriptionSender();
-
-		subscriptionSender.addPersistedSubscribers(
-			Group.class.getName(), RandomTestUtil.randomInt());
-
-		Assert.assertFalse(subscriptionSender.hasSubscribers());
-	}
-
-	@Test
-	public void testHasSubscriptionsReturnsTrueWhenSubscriptionsInDB() {
-		SubscriptionLocalService subscriptionLocalService = Mockito.mock(
-			SubscriptionLocalService.class);
-
-		ReflectionTestUtil.setFieldValue(
-			SubscriptionLocalServiceUtil.class, "_service",
-			subscriptionLocalService);
-
-		Mockito.when(
-			subscriptionLocalService.getSubscriptions(
-				Mockito.anyLong(), Mockito.anyString(), Mockito.anyLong())
-		).thenReturn(
-			Collections.singletonList(Mockito.mock(Subscription.class))
-		);
-
-		SubscriptionSender subscriptionSender = new SubscriptionSender();
-
-		subscriptionSender.addPersistedSubscribers(
-			Group.class.getName(), RandomTestUtil.randomInt());
-
-		Assert.assertTrue(subscriptionSender.hasSubscribers());
 	}
 
 }
