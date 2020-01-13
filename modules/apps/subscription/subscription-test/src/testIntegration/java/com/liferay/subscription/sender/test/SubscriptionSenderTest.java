@@ -18,8 +18,9 @@ import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
+import com.liferay.portal.test.rule.Inject;
 import com.liferay.subscription.model.Subscription;
-import com.liferay.subscription.service.SubscriptionLocalServiceUtil;
+import com.liferay.subscription.service.SubscriptionLocalService;
 import com.liferay.subscription.service.persistence.SubscriptionPersistence;
 import com.liferay.subscription.service.persistence.SubscriptionUtil;
 import com.liferay.subscription.util.SubscriptionSender;
@@ -62,7 +63,7 @@ public class SubscriptionSenderTest {
 
 		subscription.setClassPK(classPK);
 
-		SubscriptionLocalServiceUtil.addSubscription(subscription);
+		_subscriptionLocalService.addSubscription(subscription);
 
 		SubscriptionSender subscriptionSender = new SubscriptionSender();
 
@@ -75,8 +76,11 @@ public class SubscriptionSenderTest {
 			Assert.assertTrue(subscriptionSender.hasSubscribers());
 		}
 		finally {
-			SubscriptionLocalServiceUtil.deleteSubscription(subscription);
+			_subscriptionLocalService.deleteSubscription(subscription);
 		}
 	}
+
+	@Inject
+	private SubscriptionLocalService _subscriptionLocalService;
 
 }
