@@ -21,8 +21,6 @@ import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.subscription.model.Subscription;
 import com.liferay.subscription.service.SubscriptionLocalService;
-import com.liferay.subscription.service.persistence.SubscriptionPersistence;
-import com.liferay.subscription.service.persistence.SubscriptionUtil;
 import com.liferay.subscription.util.SubscriptionSender;
 
 import org.junit.Assert;
@@ -52,15 +50,12 @@ public class SubscriptionSenderTest {
 		int companyId = RandomTestUtil.randomInt();
 		int classPK = RandomTestUtil.randomInt();
 
-		SubscriptionPersistence persistence = SubscriptionUtil.getPersistence();
-
-		Subscription subscription = persistence.create(
-			RandomTestUtil.nextLong());
+		Subscription subscription =
+			_subscriptionLocalService.createSubscription(
+				RandomTestUtil.nextLong());
 
 		subscription.setCompanyId(companyId);
-
 		subscription.setClassName(Group.class.getName());
-
 		subscription.setClassPK(classPK);
 
 		_subscriptionLocalService.addSubscription(subscription);
