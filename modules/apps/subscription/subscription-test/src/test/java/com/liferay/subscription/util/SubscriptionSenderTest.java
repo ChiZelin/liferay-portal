@@ -49,7 +49,7 @@ import org.mockito.Mockito;
 public class SubscriptionSenderTest {
 
 	@BeforeClass
-	public static void setUpClass() throws Exception {
+	public static void setUpClass() {
 		ReflectionTestUtil.setFieldValue(
 			CompanyLocalServiceUtil.class, "_service",
 			new CompanyLocalServiceWrapper(null) {
