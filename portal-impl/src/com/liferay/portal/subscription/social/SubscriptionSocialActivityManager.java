@@ -23,7 +23,9 @@ import com.liferay.social.kernel.service.SocialActivityLocalService;
 
 /**
  * @author Adolfo Pérez
+ * @deprecated As of Athanasius (7.3.x), , with no direct replacement
  */
+@Deprecated
 @OSGiBeanProperties(
 	property = "model.class.name=com.liferay.portal.kernel.model.Subscription",
 	service = SocialActivityManager.class
