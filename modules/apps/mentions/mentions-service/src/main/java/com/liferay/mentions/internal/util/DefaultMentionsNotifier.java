@@ -32,9 +32,9 @@ import com.liferay.portal.kernel.util.LocalizationUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.PrefsPropsUtil;
 import com.liferay.portal.kernel.util.PropsKeys;
-import com.liferay.portal.kernel.util.SubscriptionSender;
 import com.liferay.social.kernel.util.SocialInteractionsConfiguration;
 import com.liferay.social.kernel.util.SocialInteractionsConfigurationUtil;
+import com.liferay.subscription.util.SubscriptionSender;
 
 import java.util.HashSet;
 import java.util.List;

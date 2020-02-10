@@ -16,8 +16,8 @@ package com.liferay.powwow.util;
 
 import com.liferay.mail.kernel.model.MailMessage;
 import com.liferay.portal.kernel.util.LocaleUtil;
-import com.liferay.portal.kernel.util.SubscriptionSender;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.subscription.util.SubscriptionSender;
 
 import java.util.Locale;
 

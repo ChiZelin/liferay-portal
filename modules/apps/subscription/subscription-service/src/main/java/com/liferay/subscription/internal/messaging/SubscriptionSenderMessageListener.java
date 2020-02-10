@@ -21,8 +21,8 @@ import com.liferay.portal.kernel.messaging.BaseMessageListener;
 import com.liferay.portal.kernel.messaging.DestinationNames;
 import com.liferay.portal.kernel.messaging.Message;
 import com.liferay.portal.kernel.messaging.MessageListener;
-import com.liferay.portal.kernel.util.SubscriptionSender;
 import com.liferay.portal.kernel.util.Time;
+import com.liferay.subscription.util.SubscriptionSender;
 
 import org.apache.commons.lang.time.StopWatch;
 

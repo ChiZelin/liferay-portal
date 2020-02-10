@@ -16,7 +16,7 @@ package com.liferay.message.boards.internal.util;
 
 import com.liferay.comment.configuration.CommentGroupServiceConfiguration;
 import com.liferay.portal.kernel.model.User;
-import com.liferay.portal.kernel.util.SubscriptionSender;
+import com.liferay.subscription.util.SubscriptionSender;
 
 /**
  * @author Roberto Díaz

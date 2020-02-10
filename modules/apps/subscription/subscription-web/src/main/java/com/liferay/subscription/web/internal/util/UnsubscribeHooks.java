@@ -28,8 +28,8 @@ import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
-import com.liferay.portal.kernel.util.SubscriptionSender;
 import com.liferay.subscription.model.Subscription;
+import com.liferay.subscription.util.SubscriptionSender;
 import com.liferay.subscription.web.internal.configuration.SubscriptionConfiguration;
 import com.liferay.subscription.web.internal.constants.SubscriptionConstants;
 
@@ -98,9 +98,7 @@ public class UnsubscribeHooks {
 		}
 	}
 
-	public void createUnsubscriptionTicket(
-		com.liferay.portal.kernel.model.Subscription subscription) {
-
+	public void createUnsubscriptionTicket(Subscription subscription) {
 		if (_subscriptionSender.isBulk()) {
 			return;
 		}
@@ -141,9 +139,7 @@ public class UnsubscribeHooks {
 		mailMessage.setBody(processedBody);
 	}
 
-	private Ticket _getTicket(
-		com.liferay.portal.kernel.model.Subscription subscription) {
-
+	private Ticket _getTicket(Subscription subscription) {
 		Calendar calendar = Calendar.getInstance();
 
 		calendar.add(

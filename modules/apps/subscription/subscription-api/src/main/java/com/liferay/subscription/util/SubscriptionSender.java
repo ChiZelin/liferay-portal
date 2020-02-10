@@ -12,7 +12,7 @@
  * details.
  */
 
-package com.liferay.portal.kernel.util;
+package com.liferay.subscription.util;
 
 import com.liferay.mail.kernel.model.FileAttachment;
 import com.liferay.mail.kernel.model.MailMessage;
@@ -23,6 +23,7 @@ import com.liferay.mail.kernel.template.MailTemplateContext;
 import com.liferay.mail.kernel.template.MailTemplateContextBuilder;
 import com.liferay.mail.kernel.template.MailTemplateFactoryUtil;
 import com.liferay.petra.lang.ClassLoaderPool;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
@@ -34,7 +35,6 @@ import com.liferay.portal.kernel.messaging.MessageBusUtil;
 import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.ResourceAction;
-import com.liferay.portal.kernel.model.Subscription;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.model.UserNotificationDeliveryConstants;
 import com.liferay.portal.kernel.notifications.UserNotificationManagerUtil;
@@ -46,11 +46,24 @@ import com.liferay.portal.kernel.service.CompanyLocalServiceUtil;
 import com.liferay.portal.kernel.service.GroupLocalServiceUtil;
 import com.liferay.portal.kernel.service.ResourceActionLocalServiceUtil;
 import com.liferay.portal.kernel.service.ServiceContext;
-import com.liferay.portal.kernel.service.SubscriptionLocalServiceUtil;
 import com.liferay.portal.kernel.service.UserLocalServiceUtil;
 import com.liferay.portal.kernel.service.UserNotificationEventLocalServiceUtil;
 import com.liferay.portal.kernel.transaction.TransactionCommitCallbackUtil;
+import com.liferay.portal.kernel.util.ArrayUtil;
+import com.liferay.portal.kernel.util.EscapableLocalizableFunction;
+import com.liferay.portal.kernel.util.EscapableObject;
+import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.HtmlEscapableObject;
+import com.liferay.portal.kernel.util.HtmlUtil;
+import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.kernel.util.MapUtil;
+import com.liferay.portal.kernel.util.ObjectValuePair;
+import com.liferay.portal.kernel.util.PortalUtil;
+import com.liferay.portal.kernel.util.Tuple;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.uuid.PortalUUIDUtil;
+import com.liferay.subscription.model.Subscription;
+import com.liferay.subscription.service.SubscriptionLocalServiceUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -75,10 +88,7 @@ import javax.mail.internet.InternetAddress;
  * @author Raymond Augé
  * @author Sergio González
  * @author Roberto Díaz
- * @deprecated As of Athanasius (7.3.x), replaced by {@link
- *             com.liferay.subscription.util.SubscriptionSender}
  */
-@Deprecated
 public class SubscriptionSender implements Serializable {
 
 	public void addFileAttachment(File file) {
@@ -151,10 +161,10 @@ public class SubscriptionSender implements Serializable {
 						notifyPersistedSubscriber(
 							subscription, notifyImmediately);
 					}
-					catch (Exception exception) {
+					catch (Exception e) {
 						_log.error(
 							"Unable to process subscription: " + subscription,
-							exception);
+							e);
 					}
 				}
 			}
@@ -198,7 +208,7 @@ public class SubscriptionSender implements Serializable {
 
 			_runtimeSubscribersOVPs.clear();
 
-			if (bulk && (_bulkAddresses != null)) {
+			if (bulk) {
 				Locale locale = LocaleUtil.getDefault();
 
 				MailTemplateContext mailTemplateContext =
@@ -502,7 +512,7 @@ public class SubscriptionSender implements Serializable {
 				groupId = scopeGroupId;
 			}
 		}
-		catch (Exception exception) {
+		catch (Exception e) {
 		}
 
 		this.scopeGroupId = scopeGroupId;
@@ -714,8 +724,8 @@ public class SubscriptionSender implements Serializable {
 				return;
 			}
 		}
-		catch (Exception exception) {
-			_log.error(exception, exception);
+		catch (Exception e) {
+			_log.error(e, e);
 
 			return;
 		}

@@ -12,36 +12,27 @@
  * details.
  */
 
-package com.liferay.portal.util;
+package com.liferay.subscription.util;
 
 import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.model.CompanyWrapper;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.GroupWrapper;
-import com.liferay.portal.kernel.model.Subscription;
 import com.liferay.portal.kernel.service.CompanyLocalServiceUtil;
 import com.liferay.portal.kernel.service.CompanyLocalServiceWrapper;
 import com.liferay.portal.kernel.service.GroupLocalServiceUtil;
 import com.liferay.portal.kernel.service.GroupLocalServiceWrapper;
 import com.liferay.portal.kernel.service.ServiceContext;
-import com.liferay.portal.kernel.service.SubscriptionLocalService;
-import com.liferay.portal.kernel.service.SubscriptionLocalServiceUtil;
 import com.liferay.portal.kernel.test.ReflectionTestUtil;
-import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.ProxyFactory;
-import com.liferay.portal.kernel.util.SubscriptionSender;
 import com.liferay.portal.kernel.uuid.PortalUUID;
 import com.liferay.portal.kernel.uuid.PortalUUIDUtil;
-
-import java.util.Collections;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import org.mockito.Mockito;
 
 /**
  * @author Mika Koivisto
@@ -49,7 +40,7 @@ import org.mockito.Mockito;
 public class SubscriptionSenderTest {
 
 	@BeforeClass
-	public static void setUpClass() throws Exception {
+	public static void setUpClass() {
 		ReflectionTestUtil.setFieldValue(
 			CompanyLocalServiceUtil.class, "_service",
 			new CompanyLocalServiceWrapper(null) {
@@ -181,54 +172,6 @@ public class SubscriptionSenderTest {
 		SubscriptionSender subscriptionSender = new SubscriptionSender();
 
 		Assert.assertFalse(subscriptionSender.hasSubscribers());
-	}
-
-	@Test
-	public void testHasSubscriptionsReturnsFalseWhenNoSubscriptionsInDB() {
-		SubscriptionLocalService subscriptionLocalService = Mockito.mock(
-			SubscriptionLocalService.class);
-
-		ReflectionTestUtil.setFieldValue(
-			SubscriptionLocalServiceUtil.class, "_service",
-			subscriptionLocalService);
-
-		Mockito.when(
-			subscriptionLocalService.getSubscriptions(
-				Mockito.anyLong(), Mockito.anyString(), Mockito.anyLong())
-		).thenReturn(
-			Collections.emptyList()
-		);
-
-		SubscriptionSender subscriptionSender = new SubscriptionSender();
-
-		subscriptionSender.addPersistedSubscribers(
-			Group.class.getName(), RandomTestUtil.randomInt());
-
-		Assert.assertFalse(subscriptionSender.hasSubscribers());
-	}
-
-	@Test
-	public void testHasSubscriptionsReturnsTrueWhenSubscriptionsInDB() {
-		SubscriptionLocalService subscriptionLocalService = Mockito.mock(
-			SubscriptionLocalService.class);
-
-		ReflectionTestUtil.setFieldValue(
-			SubscriptionLocalServiceUtil.class, "_service",
-			subscriptionLocalService);
-
-		Mockito.when(
-			subscriptionLocalService.getSubscriptions(
-				Mockito.anyLong(), Mockito.anyString(), Mockito.anyLong())
-		).thenReturn(
-			Collections.singletonList(Mockito.mock(Subscription.class))
-		);
-
-		SubscriptionSender subscriptionSender = new SubscriptionSender();
-
-		subscriptionSender.addPersistedSubscribers(
-			Group.class.getName(), RandomTestUtil.randomInt());
-
-		Assert.assertTrue(subscriptionSender.hasSubscribers());
 	}
 
 }
