@@ -19,6 +19,7 @@ import com.liferay.asset.kernel.model.AssetEntry;
 import com.liferay.asset.kernel.service.AssetCategoryLocalServiceUtil;
 import com.liferay.asset.kernel.service.persistence.AssetEntryFinder;
 import com.liferay.asset.kernel.service.persistence.AssetEntryQuery;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.dao.orm.QueryPos;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
@@ -31,7 +32,6 @@ import com.liferay.portal.kernel.service.ClassNameLocalServiceUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.CalendarUtil;
 import com.liferay.portal.kernel.util.ListUtil;
-import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.util.PropsValues;
@@ -151,6 +151,21 @@ public class AssetEntryFinderImpl
 		}
 	}
 
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
+	 *			 #buildAllCategoriesSQL(long[], StringBundler)}
+	 */
+	@Deprecated
+	protected void buildAllCategoriesSQL(
+		long[] categoryIds, com.liferay.portal.kernel.util.StringBundler sb) {
+
+		StringBundler petraSB = new StringBundler();
+
+		buildAllCategoriesSQL(categoryIds, petraSB);
+
+		sb.append(petraSB.getStrings());
+	}
+
 	protected void buildAllCategoriesSQL(long[] categoryIds, StringBundler sb) {
 		String findByAndCategoryIdsSQL = CustomSQLUtil.get(
 			FIND_BY_AND_CATEGORY_IDS);
@@ -186,6 +201,21 @@ public class AssetEntryFinderImpl
 		sb.append(StringPool.CLOSE_PARENTHESIS);
 	}
 
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
+	 *			 #buildAllTagsSQL(long[][], StringBundler)}
+	 */
+	@Deprecated
+	protected void buildAllTagsSQL(
+		long[][] tagIds, com.liferay.portal.kernel.util.StringBundler sb) {
+
+		StringBundler petraSB = new StringBundler();
+
+		buildAllTagsSQL(tagIds, petraSB);
+
+		sb.append(petraSB.getStrings());
+	}
+
 	protected void buildAllTagsSQL(long[][] tagIds, StringBundler sb) {
 		sb.append(" AND AssetEntry.entryId IN (");
 
@@ -208,6 +238,21 @@ public class AssetEntryFinderImpl
 		}
 
 		sb.append(StringPool.CLOSE_PARENTHESIS);
+	}
+
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
+	 *			 #buildAnyCategoriesSQL(long[], StringBundler)}
+	 */
+	@Deprecated
+	protected void buildAnyCategoriesSQL(
+		long[] categoryIds, com.liferay.portal.kernel.util.StringBundler sb) {
+
+		StringBundler petraSB = new StringBundler();
+
+		buildAnyCategoriesSQL(categoryIds, petraSB);
+
+		sb.append(petraSB.getStrings());
 	}
 
 	protected void buildAnyCategoriesSQL(long[] categoryIds, StringBundler sb) {
@@ -238,6 +283,23 @@ public class AssetEntryFinderImpl
 			StringUtil.replace(sql, "[$CATEGORY_ID$]", categoryIdsString));
 
 		sb.append(StringPool.CLOSE_PARENTHESIS);
+	}
+
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
+	 *			 #buildAnyTagsSQL(long[], StringBundler)}
+	 */
+	@Deprecated
+	protected String buildAnyTagsSQL(
+		long[] tagIds, com.liferay.portal.kernel.util.StringBundler sb) {
+
+		StringBundler petraSB = new StringBundler();
+
+		buildAnyTagsSQL(tagIds, petraSB);
+
+		sb.append(petraSB.getStrings());
+
+		return petraSB.toString();
 	}
 
 	protected String buildAnyTagsSQL(long[] tagIds, StringBundler sb) {
@@ -605,6 +667,21 @@ public class AssetEntryFinderImpl
 		return sqlQuery;
 	}
 
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
+	 *			 #buildClassTypeIdsSQL(long[], StringBundler)}
+	 */
+	@Deprecated
+	protected void buildClassTypeIdsSQL(
+		long[] classTypeIds, com.liferay.portal.kernel.util.StringBundler sb) {
+
+		StringBundler petraSB = new StringBundler();
+
+		buildClassTypeIdsSQL(classTypeIds, petraSB);
+
+		sb.append(petraSB.getStrings());
+	}
+
 	protected void buildClassTypeIdsSQL(long[] classTypeIds, StringBundler sb) {
 		sb.append(" AND (");
 
@@ -619,6 +696,21 @@ public class AssetEntryFinderImpl
 				sb.append(StringPool.CLOSE_PARENTHESIS);
 			}
 		}
+	}
+
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
+	 *			 #buildNotAllCategoriesSQL(long[], StringBundler)}
+	 */
+	@Deprecated
+	protected void buildNotAllCategoriesSQL(
+		long[] categoryIds, com.liferay.portal.kernel.util.StringBundler sb) {
+
+		StringBundler petraSB = new StringBundler();
+
+		buildNotAllCategoriesSQL(categoryIds, petraSB);
+
+		sb.append(petraSB.getStrings());
 	}
 
 	protected void buildNotAllCategoriesSQL(
@@ -660,6 +752,21 @@ public class AssetEntryFinderImpl
 		sb.append(StringPool.CLOSE_PARENTHESIS);
 	}
 
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
+	 *			 #buildNotAllTagsSQL(long[][], StringBundler)}
+	 */
+	@Deprecated
+	protected void buildNotAllTagsSQL(
+		long[][] tagIds, com.liferay.portal.kernel.util.StringBundler sb) {
+
+		StringBundler petraSB = new StringBundler();
+
+		buildNotAllTagsSQL(tagIds, petraSB);
+
+		sb.append(petraSB.getStrings());
+	}
+
 	protected void buildNotAllTagsSQL(long[][] tagIds, StringBundler sb) {
 		sb.append(" AND (");
 
@@ -680,6 +787,22 @@ public class AssetEntryFinderImpl
 		}
 
 		sb.append(StringPool.CLOSE_PARENTHESIS);
+	}
+
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
+	 *			 #buildNotAnyCategoriesSQL(long[], StringBundler)}
+	 */
+	@Deprecated
+	protected void buildNotAnyCategoriesSQL(
+		long[] notCategoryIds,
+		com.liferay.portal.kernel.util.StringBundler sb) {
+
+		StringBundler petraSB = new StringBundler();
+
+		buildNotAnyCategoriesSQL(notCategoryIds, petraSB);
+
+		sb.append(petraSB.getStrings());
 	}
 
 	protected void buildNotAnyCategoriesSQL(
@@ -707,6 +830,23 @@ public class AssetEntryFinderImpl
 		sb.append(
 			StringUtil.replace(sql, "[$CATEGORY_ID$]", notCategoryIdsString));
 		sb.append(StringPool.CLOSE_PARENTHESIS);
+	}
+
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
+	 *			 #buildNotAnyTagsSQL(long[], StringBundler)}
+	 */
+	@Deprecated
+	protected String buildNotAnyTagsSQL(
+		long[] notTagIds, com.liferay.portal.kernel.util.StringBundler sb) {
+
+		StringBundler petraSB = new StringBundler();
+
+		buildNotAnyTagsSQL(notTagIds, petraSB);
+
+		sb.append(petraSB.getStrings());
+
+		return sb.toString();
 	}
 
 	protected String buildNotAnyTagsSQL(long[] notTagIds, StringBundler sb) {
