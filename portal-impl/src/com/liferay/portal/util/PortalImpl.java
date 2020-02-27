@@ -6426,6 +6426,10 @@ public class PortalImpl implements Portal {
 				return false;
 			}
 
+			if (resourceId.equals(StringPool.BLANK)) {
+				return false;
+			}
+
 			count--;
 
 			if (count == 0) {
