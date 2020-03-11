@@ -18,7 +18,9 @@ import com.liferay.portal.kernel.util.ThreadLocalBinder;
 
 /**
  * @author Shuyang Zhou
+ * @deprecated As of Athanasius (7.3.x), with no direct replacement
  */
+@Deprecated
 public class ParallelRenderThreadLocalBinderUtil {
 
 	public static void bind() {
