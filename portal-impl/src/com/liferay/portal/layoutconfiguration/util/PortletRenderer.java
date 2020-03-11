@@ -23,7 +23,6 @@ import com.liferay.portal.kernel.servlet.BufferCacheServletResponse;
 import com.liferay.portal.kernel.util.Mergeable;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.ThreadLocalBinder;
-import com.liferay.portal.kernel.util.WebKeys;
 
 import java.io.IOException;
 
@@ -53,12 +52,20 @@ public class PortletRenderer {
 		_columnPos = columnPos;
 	}
 
+	/**
+	 * @deprecated As of Athanasius (7.3.x), with no direct replacement
+	 */
+	@Deprecated
 	public void finishParallelRender() {
 		if (_restrictPortletServletRequest != null) {
 			_restrictPortletServletRequest.mergeSharedAttributes();
 		}
 	}
 
+	/**
+	 * @deprecated As of Athanasius (7.3.x), with no direct replacement
+	 */
+	@Deprecated
 	public Callable<StringBundler> getCallable(
 		HttpServletRequest httpServletRequest,
 		HttpServletResponse httpServletResponse,
@@ -96,9 +103,6 @@ public class PortletRenderer {
 			httpServletRequest, _RENDER_PATH, _columnId, _columnPos,
 			_columnCount);
 
-		_restrictPortletServletRequest =
-			(RestrictPortletServletRequest)httpServletRequest;
-
 		return _render(httpServletRequest, httpServletResponse);
 	}
 
@@ -110,19 +114,7 @@ public class PortletRenderer {
 		httpServletRequest = PortletContainerUtil.setupOptionalRenderParameters(
 			httpServletRequest, null, _columnId, _columnPos, _columnCount);
 
-		httpServletRequest.setAttribute(
-			WebKeys.PARALLEL_RENDERING_TIMEOUT_ERROR, Boolean.TRUE);
-
-		_restrictPortletServletRequest =
-			(RestrictPortletServletRequest)httpServletRequest;
-
-		try {
-			return _render(httpServletRequest, httpServletResponse);
-		}
-		finally {
-			httpServletRequest.removeAttribute(
-				WebKeys.PARALLEL_RENDERING_TIMEOUT_ERROR);
-		}
+		return _render(httpServletRequest, httpServletResponse);
 	}
 
 	public Map<String, Object> renderHeaders(
@@ -193,18 +185,6 @@ public class PortletRenderer {
 		BufferCacheServletResponse bufferCacheServletResponse =
 			new BufferCacheServletResponse(httpServletResponse);
 
-		Object lock = httpServletRequest.getAttribute(
-			WebKeys.PARALLEL_RENDERING_MERGE_LOCK);
-
-		httpServletRequest.setAttribute(
-			WebKeys.PARALLEL_RENDERING_MERGE_LOCK, null);
-
-		Object portletParallelRender = httpServletRequest.getAttribute(
-			WebKeys.PORTLET_PARALLEL_RENDER);
-
-		httpServletRequest.setAttribute(
-			WebKeys.PORTLET_PARALLEL_RENDER, Boolean.FALSE);
-
 		try {
 			PortletContainerUtil.render(
 				httpServletRequest, bufferCacheServletResponse, _portlet);
@@ -213,12 +193,6 @@ public class PortletRenderer {
 		}
 		catch (IOException ioException) {
 			throw new PortletContainerException(ioException);
-		}
-		finally {
-			httpServletRequest.setAttribute(
-				WebKeys.PARALLEL_RENDERING_MERGE_LOCK, lock);
-			httpServletRequest.setAttribute(
-				WebKeys.PORTLET_PARALLEL_RENDER, portletParallelRender);
 		}
 	}
 
@@ -229,8 +203,17 @@ public class PortletRenderer {
 	private final String _columnId;
 	private final Integer _columnPos;
 	private final Portlet _portlet;
+
+	/**
+	 * @deprecated As of Athanasius (7.3.x), with no direct replacement
+	 */
+	@Deprecated
 	private RestrictPortletServletRequest _restrictPortletServletRequest;
 
+	/**
+	 * @deprecated As of Athanasius (7.3.x), with no direct replacement
+	 */
+	@Deprecated
 	private abstract class CopyThreadLocalCallable<T> implements Callable<T> {
 
 		public CopyThreadLocalCallable(boolean readOnly, boolean clearOnExit) {
@@ -298,6 +281,10 @@ public class PortletRenderer {
 
 	}
 
+	/**
+	 * @deprecated As of Athanasius (7.3.x), with no direct replacement
+	 */
+	@Deprecated
 	private class PortletRendererCallable
 		extends CopyThreadLocalCallable<StringBundler> {
 
