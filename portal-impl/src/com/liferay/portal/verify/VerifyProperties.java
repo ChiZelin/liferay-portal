@@ -1747,7 +1747,6 @@ public class VerifyProperties extends VerifyProcess {
 		"layout.first.pageable[embedded]",
 		"layout.first.pageable[link_to_layout]", "layout.first.pageable[panel]",
 		"layout.first.pageable[url]", "layout.form.add", "layout.form.update",
-		"layout.parallel.render.thread.pool.allow.core.thread.timeout",
 		"layout.parentable[control_panel]", "layout.parentable[embedded]",
 		"layout.parentable[link_to_layout]", "layout.parentable[panel]",
 		"layout.parentable[url]", "layout.reset.portlet.ids",
