@@ -14,24 +14,18 @@
 
 package com.liferay.portal.layoutconfiguration.util;
 
-import com.liferay.petra.lang.CentralizedThreadLocal;
 import com.liferay.portal.kernel.model.Portlet;
 import com.liferay.portal.kernel.portlet.PortletContainerException;
 import com.liferay.portal.kernel.portlet.PortletContainerUtil;
-import com.liferay.portal.kernel.portlet.RestrictPortletServletRequest;
 import com.liferay.portal.kernel.servlet.BufferCacheServletResponse;
-import com.liferay.portal.kernel.util.Mergeable;
 import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.kernel.util.ThreadLocalBinder;
 
 import java.io.IOException;
 
-import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -50,29 +44,6 @@ public class PortletRenderer {
 		_columnId = columnId;
 		_columnCount = columnCount;
 		_columnPos = columnPos;
-	}
-
-	/**
-	 * @deprecated As of Athanasius (7.3.x), with no direct replacement
-	 */
-	@Deprecated
-	public void finishParallelRender() {
-		if (_restrictPortletServletRequest != null) {
-			_restrictPortletServletRequest.mergeSharedAttributes();
-		}
-	}
-
-	/**
-	 * @deprecated As of Athanasius (7.3.x), with no direct replacement
-	 */
-	@Deprecated
-	public Callable<StringBundler> getCallable(
-		HttpServletRequest httpServletRequest,
-		HttpServletResponse httpServletResponse,
-		Map<String, Object> headerRequestAttributes) {
-
-		return new PortletRendererCallable(
-			httpServletRequest, httpServletResponse, headerRequestAttributes);
 	}
 
 	public Portlet getPortlet() {
@@ -203,170 +174,5 @@ public class PortletRenderer {
 	private final String _columnId;
 	private final Integer _columnPos;
 	private final Portlet _portlet;
-
-	/**
-	 * @deprecated As of Athanasius (7.3.x), with no direct replacement
-	 */
-	@Deprecated
-	private RestrictPortletServletRequest _restrictPortletServletRequest;
-
-	/**
-	 * @deprecated As of Athanasius (7.3.x), with no direct replacement
-	 */
-	@Deprecated
-	private abstract class CopyThreadLocalCallable<T> implements Callable<T> {
-
-		public CopyThreadLocalCallable(boolean readOnly, boolean clearOnExit) {
-			this(null, readOnly, clearOnExit);
-		}
-
-		public CopyThreadLocalCallable(
-			ThreadLocalBinder threadLocalBinder, boolean readOnly,
-			boolean clearOnExit) {
-
-			_threadLocalBinder = threadLocalBinder;
-
-			if (_threadLocalBinder != null) {
-				_threadLocalBinder.record();
-			}
-
-			if (readOnly) {
-				_longLivedThreadLocals = Collections.unmodifiableMap(
-					CentralizedThreadLocal.getLongLivedThreadLocals());
-				_shortLivedThreadLocals = Collections.unmodifiableMap(
-					CentralizedThreadLocal.getShortLivedThreadLocals());
-			}
-			else {
-				_longLivedThreadLocals =
-					CentralizedThreadLocal.getLongLivedThreadLocals();
-				_shortLivedThreadLocals =
-					CentralizedThreadLocal.getShortLivedThreadLocals();
-			}
-
-			_clearOnExit = clearOnExit;
-		}
-
-		@Override
-		public final T call() throws Exception {
-			CentralizedThreadLocal.setThreadLocals(
-				_longLivedThreadLocals, _shortLivedThreadLocals);
-
-			if (_threadLocalBinder != null) {
-				_threadLocalBinder.bind();
-			}
-
-			try {
-				return doCall();
-			}
-			finally {
-				if (_clearOnExit) {
-					if (_threadLocalBinder != null) {
-						_threadLocalBinder.cleanUp();
-					}
-
-					CentralizedThreadLocal.clearLongLivedThreadLocals();
-					CentralizedThreadLocal.clearShortLivedThreadLocals();
-				}
-			}
-		}
-
-		public abstract T doCall() throws Exception;
-
-		private final boolean _clearOnExit;
-		private final Map<CentralizedThreadLocal<?>, Object>
-			_longLivedThreadLocals;
-		private final Map<CentralizedThreadLocal<?>, Object>
-			_shortLivedThreadLocals;
-		private final ThreadLocalBinder _threadLocalBinder;
-
-	}
-
-	/**
-	 * @deprecated As of Athanasius (7.3.x), with no direct replacement
-	 */
-	@Deprecated
-	private class PortletRendererCallable
-		extends CopyThreadLocalCallable<StringBundler> {
-
-		public PortletRendererCallable(
-			HttpServletRequest httpServletRequest,
-			HttpServletResponse httpServletResponse,
-			Map<String, Object> headerRequestAttributes) {
-
-			super(
-				ParallelRenderThreadLocalBinderUtil.getThreadLocalBinder(),
-				false, true);
-
-			_httpServletRequest = httpServletRequest;
-			_httpServletResponse = httpServletResponse;
-			_headerRequestAttributes = headerRequestAttributes;
-		}
-
-		@Override
-		public StringBundler doCall() throws Exception {
-			HttpServletRequest httpServletRequest =
-				PortletContainerUtil.setupOptionalRenderParameters(
-					_httpServletRequest, null, _columnId, _columnPos,
-					_columnCount);
-
-			_copyHeaderRequestAttributes(
-				_headerRequestAttributes, httpServletRequest);
-
-			_restrictPortletServletRequest =
-				(RestrictPortletServletRequest)httpServletRequest;
-
-			try {
-				_split(_httpServletRequest, _restrictPortletServletRequest);
-
-				return _render(httpServletRequest, _httpServletResponse);
-			}
-			catch (Exception exception) {
-
-				// Under parallel rendering context. An interrupted state means
-				// the call was cancelled and so we should not rethrow the
-				// exception.
-
-				Thread currentThread = Thread.currentThread();
-
-				if (!currentThread.isInterrupted()) {
-					throw exception;
-				}
-
-				return null;
-			}
-		}
-
-		private void _split(
-			HttpServletRequest httpServletRequest,
-			RestrictPortletServletRequest restrictPortletServletRequest) {
-
-			Enumeration<String> attributeNames =
-				httpServletRequest.getAttributeNames();
-
-			while (attributeNames.hasMoreElements()) {
-				String attributeName = attributeNames.nextElement();
-
-				Object attribute = httpServletRequest.getAttribute(
-					attributeName);
-
-				if (!(attribute instanceof Mergeable<?>) ||
-					!RestrictPortletServletRequest.isSharedRequestAttribute(
-						attributeName)) {
-
-					continue;
-				}
-
-				Mergeable<?> mergeable = (Mergeable<?>)attribute;
-
-				restrictPortletServletRequest.setAttribute(
-					attributeName, mergeable.split());
-			}
-		}
-
-		private final Map<String, Object> _headerRequestAttributes;
-		private final HttpServletRequest _httpServletRequest;
-		private final HttpServletResponse _httpServletResponse;
-
-	}
 
 }
