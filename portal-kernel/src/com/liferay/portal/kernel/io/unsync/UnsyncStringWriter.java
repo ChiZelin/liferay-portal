@@ -14,8 +14,9 @@
 
 package com.liferay.portal.kernel.io.unsync;
 
+import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
-import com.liferay.portal.kernel.util.StringBundler;
+import com.liferay.portal.kernel.util.StringBundlerAdapterUtil;
 
 import java.io.Writer;
 
@@ -34,7 +35,10 @@ public class UnsyncStringWriter extends Writer {
 
 	public UnsyncStringWriter(boolean useStringBundler) {
 		if (useStringBundler) {
-			stringBundler = new StringBundler();
+			sb = new StringBundler();
+
+			stringBundler =
+				StringBundlerAdapterUtil.convertToKernelStringBundler(sb);
 		}
 		else {
 			stringBuilder = new StringBuilder();
@@ -43,7 +47,10 @@ public class UnsyncStringWriter extends Writer {
 
 	public UnsyncStringWriter(boolean useStringBundler, int initialCapacity) {
 		if (useStringBundler) {
-			stringBundler = new StringBundler(initialCapacity);
+			sb = new StringBundler(initialCapacity);
+
+			stringBundler =
+				StringBundlerAdapterUtil.convertToKernelStringBundler(sb);
 		}
 		else {
 			stringBuilder = new StringBuilder(initialCapacity);
@@ -96,17 +103,26 @@ public class UnsyncStringWriter extends Writer {
 	public void flush() {
 	}
 
+	public StringBundler getSB() {
+		return sb;
+	}
+
 	public StringBuilder getStringBuilder() {
 		return stringBuilder;
 	}
 
-	public StringBundler getStringBundler() {
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
+	 *             #getSB()}
+	 */
+	@Deprecated
+	public com.liferay.portal.kernel.util.StringBundler getStringBundler() {
 		return stringBundler;
 	}
 
 	public void reset() {
-		if (stringBundler != null) {
-			stringBundler.setIndex(0);
+		if (sb != null) {
+			sb.setIndex(0);
 		}
 		else {
 			stringBuilder.setLength(0);
@@ -115,8 +131,8 @@ public class UnsyncStringWriter extends Writer {
 
 	@Override
 	public String toString() {
-		if (stringBundler != null) {
-			return stringBundler.toString();
+		if (sb != null) {
+			return sb.toString();
 		}
 
 		return stringBuilder.toString();
@@ -133,8 +149,8 @@ public class UnsyncStringWriter extends Writer {
 			return;
 		}
 
-		if (stringBundler != null) {
-			stringBundler.append(new String(chars, offset, length));
+		if (sb != null) {
+			sb.append(new String(chars, offset, length));
 		}
 		else {
 			stringBuilder.append(chars, offset, length);
@@ -143,14 +159,14 @@ public class UnsyncStringWriter extends Writer {
 
 	@Override
 	public void write(int c) {
-		if (stringBundler != null) {
+		if (sb != null) {
 			char ch = (char)c;
 
 			if (ch <= 127) {
-				stringBundler.append(StringPool.ASCII_TABLE[ch]);
+				sb.append(StringPool.ASCII_TABLE[ch]);
 			}
 			else {
-				stringBundler.append(String.valueOf(ch));
+				sb.append(String.valueOf(ch));
 			}
 		}
 		else {
@@ -160,8 +176,8 @@ public class UnsyncStringWriter extends Writer {
 
 	@Override
 	public void write(String string) {
-		if (stringBundler != null) {
-			stringBundler.append(string);
+		if (sb != null) {
+			sb.append(string);
 		}
 		else {
 			stringBuilder.append(string);
@@ -175,15 +191,22 @@ public class UnsyncStringWriter extends Writer {
 
 			write(string);
 		}
-		else if (stringBundler != null) {
-			stringBundler.append(string.substring(offset, offset + length));
+		else if (sb != null) {
+			sb.append(string.substring(offset, offset + length));
 		}
 		else {
 			stringBuilder.append(string.substring(offset, offset + length));
 		}
 	}
 
+	protected StringBundler sb;
 	protected StringBuilder stringBuilder;
-	protected StringBundler stringBundler;
+
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
+	 *             #sb}
+	 */
+	@Deprecated
+	protected com.liferay.portal.kernel.util.StringBundler stringBundler;
 
 }
