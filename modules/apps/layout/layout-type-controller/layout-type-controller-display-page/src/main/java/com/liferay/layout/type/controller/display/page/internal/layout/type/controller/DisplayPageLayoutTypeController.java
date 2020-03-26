@@ -209,7 +209,7 @@ public class DisplayPageLayoutTypeController
 		}
 
 		httpServletRequest.setAttribute(
-			WebKeys.LAYOUT_CONTENT, unsyncStringWriter.getStringBundler());
+			WebKeys.LAYOUT_CONTENT, unsyncStringWriter.getSB());
 
 		return false;
 	}

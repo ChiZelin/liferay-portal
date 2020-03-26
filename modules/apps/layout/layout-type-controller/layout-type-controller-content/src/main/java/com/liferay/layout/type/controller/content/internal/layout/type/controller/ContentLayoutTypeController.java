@@ -190,7 +190,7 @@ public class ContentLayoutTypeController extends BaseLayoutTypeControllerImpl {
 		}
 
 		httpServletRequest.setAttribute(
-			WebKeys.LAYOUT_CONTENT, unsyncStringWriter.getStringBundler());
+			WebKeys.LAYOUT_CONTENT, unsyncStringWriter.getSB());
 
 		return false;
 	}

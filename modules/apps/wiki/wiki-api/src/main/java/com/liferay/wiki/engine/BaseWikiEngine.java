@@ -14,12 +14,12 @@
 
 package com.liferay.wiki.engine;
 
+import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.io.unsync.UnsyncStringWriter;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.util.ResourceBundleLoader;
 import com.liferay.portal.kernel.util.ResourceBundleUtil;
-import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.language.LanguageResources;
 import com.liferay.taglib.servlet.PipingServletResponse;
@@ -116,7 +116,7 @@ public abstract class BaseWikiEngine implements WikiEngine {
 		requestDispatcher.include(
 			pageContext.getRequest(), pipingServletResponse);
 
-		StringBundler sb = unsyncStringWriter.getStringBundler();
+		StringBundler sb = unsyncStringWriter.getSB();
 
 		return sb.toString();
 	}

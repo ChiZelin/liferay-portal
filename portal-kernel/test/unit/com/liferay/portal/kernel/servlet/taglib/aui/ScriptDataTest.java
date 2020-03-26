@@ -14,8 +14,8 @@
 
 package com.liferay.portal.kernel.servlet.taglib.aui;
 
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.io.unsync.UnsyncStringWriter;
-import com.liferay.portal.kernel.util.StringBundler;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -80,7 +80,7 @@ public class ScriptDataTest {
 	protected void assertVariables(
 		UnsyncStringWriter unsyncStringWriter, String... variables) {
 
-		StringBundler sb = unsyncStringWriter.getStringBundler();
+		StringBundler sb = unsyncStringWriter.getSB();
 
 		Set<String> strings = new HashSet<>(
 			Arrays.asList(Arrays.copyOf(sb.getStrings(), sb.index())));
