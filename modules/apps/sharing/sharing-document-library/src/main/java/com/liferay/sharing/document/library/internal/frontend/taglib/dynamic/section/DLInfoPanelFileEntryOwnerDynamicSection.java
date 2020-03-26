@@ -15,8 +15,9 @@
 package com.liferay.sharing.document.library.internal.frontend.taglib.dynamic.section;
 
 import com.liferay.frontend.taglib.dynamic.section.DynamicSection;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
-import com.liferay.portal.kernel.util.StringBundler;
+import com.liferay.portal.kernel.util.StringBundlerAdapterUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.sharing.configuration.SharingConfiguration;
 import com.liferay.sharing.configuration.SharingConfigurationFactory;
@@ -43,8 +44,24 @@ import org.osgi.service.component.annotations.Reference;
 )
 public class DLInfoPanelFileEntryOwnerDynamicSection implements DynamicSection {
 
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
+	 *			 #modifySB(StringBundler, PageContext)}
+	 */
+	@Deprecated
 	@Override
-	public StringBundler modify(StringBundler sb, PageContext pageContext) {
+	public com.liferay.portal.kernel.util.StringBundler modify(
+		com.liferay.portal.kernel.util.StringBundler sb,
+		PageContext pageContext) {
+
+		return StringBundlerAdapterUtil.convertToKernelStringBundler(
+			modifySB(
+				StringBundlerAdapterUtil.convertToPetraStringBundler(sb),
+				pageContext));
+	}
+
+	@Override
+	public StringBundler modifySB(StringBundler sb, PageContext pageContext) {
 		HttpServletRequest httpServletRequest =
 			(HttpServletRequest)pageContext.getRequest();
 

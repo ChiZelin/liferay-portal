@@ -14,8 +14,9 @@
 
 package com.liferay.frontend.taglib.dynamic.section;
 
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.io.unsync.UnsyncStringWriter;
-import com.liferay.portal.kernel.util.StringBundler;
+import com.liferay.portal.kernel.util.StringBundlerAdapterUtil;
 import com.liferay.taglib.servlet.PipingServletResponse;
 
 import java.io.IOException;
@@ -31,8 +32,25 @@ import javax.servlet.jsp.PageContext;
  */
 public abstract class BaseJSPDynamicSection implements DynamicSection {
 
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
+	 *			 #modifySB(StringBundler, PageContext)}
+	 */
+	@Deprecated
 	@Override
-	public StringBundler modify(StringBundler sb, PageContext pageContext)
+	public com.liferay.portal.kernel.util.StringBundler modify(
+			com.liferay.portal.kernel.util.StringBundler sb,
+			PageContext pageContext)
+		throws IOException, ServletException {
+
+		return StringBundlerAdapterUtil.convertToKernelStringBundler(
+			modifySB(
+				StringBundlerAdapterUtil.convertToPetraStringBundler(sb),
+				pageContext));
+	}
+
+	@Override
+	public StringBundler modifySB(StringBundler sb, PageContext pageContext)
 		throws IOException, ServletException {
 
 		ServletContext servletContext = getServletContext();
@@ -48,7 +66,7 @@ public abstract class BaseJSPDynamicSection implements DynamicSection {
 			requestDispatcher.include(
 				pageContext.getRequest(), httpServletResponse);
 
-			return unsyncStringWriter.getStringBundler();
+			return unsyncStringWriter.getSB();
 		}
 	}
 

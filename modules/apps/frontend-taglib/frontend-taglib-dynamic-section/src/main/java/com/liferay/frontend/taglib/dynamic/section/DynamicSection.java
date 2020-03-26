@@ -14,7 +14,8 @@
 
 package com.liferay.frontend.taglib.dynamic.section;
 
-import com.liferay.portal.kernel.util.StringBundler;
+import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.util.StringBundlerAdapterUtil;
 
 import java.io.IOException;
 
@@ -26,7 +27,24 @@ import javax.servlet.jsp.PageContext;
  */
 public interface DynamicSection {
 
-	public StringBundler modify(StringBundler sb, PageContext pageContext)
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
+	 *			 #modifySB(StringBundler, PageContext)}
+	 */
+	@Deprecated
+	public com.liferay.portal.kernel.util.StringBundler modify(
+			com.liferay.portal.kernel.util.StringBundler sb,
+			PageContext pageContext)
 		throws IOException, ServletException;
+
+	public default StringBundler modifySB(
+			StringBundler sb, PageContext pageContext)
+		throws IOException, ServletException {
+
+		return StringBundlerAdapterUtil.convertToPetraStringBundler(
+			modify(
+				StringBundlerAdapterUtil.convertToKernelStringBundler(sb),
+				pageContext));
+	}
 
 }
