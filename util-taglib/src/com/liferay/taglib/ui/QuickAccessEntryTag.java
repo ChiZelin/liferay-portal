@@ -86,7 +86,7 @@ public class QuickAccessEntryTag extends BaseBodyTagSupport implements BodyTag {
 
 		QuickAccessEntry quickAccessEntry = new QuickAccessEntry();
 
-		quickAccessEntry.setBody(getBodyContentAsStringBundler());
+		quickAccessEntry.setBody(getBodyContentAsSB());
 		quickAccessEntry.setId(StringUtil.randomId());
 		quickAccessEntry.setLabel(_label);
 		quickAccessEntry.setOnClick(_onClick);

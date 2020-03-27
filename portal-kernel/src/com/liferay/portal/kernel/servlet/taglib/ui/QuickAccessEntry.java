@@ -14,7 +14,8 @@
 
 package com.liferay.portal.kernel.servlet.taglib.ui;
 
-import com.liferay.portal.kernel.util.StringBundler;
+import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.util.StringBundlerAdapterUtil;
 import com.liferay.portal.kernel.util.Validator;
 
 /**
@@ -52,6 +53,15 @@ public class QuickAccessEntry {
 		}
 
 		return _url;
+	}
+
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
+	 *			 #setBody(StringBundler)}
+	 */
+	@Deprecated
+	public void setBody(com.liferay.portal.kernel.util.StringBundler bodySB) {
+		setBody(StringBundlerAdapterUtil.convertToPetraStringBundler(bodySB));
 	}
 
 	public void setBody(StringBundler bodySB) {
