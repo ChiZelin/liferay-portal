@@ -16,12 +16,13 @@ package com.liferay.portal.kernel.servlet;
 
 import com.liferay.petra.nio.CharsetDecoderUtil;
 import com.liferay.petra.nio.CharsetEncoderUtil;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.io.DummyOutputStream;
 import com.liferay.portal.kernel.io.DummyWriter;
 import com.liferay.portal.kernel.io.unsync.UnsyncByteArrayOutputStream;
 import com.liferay.portal.kernel.io.unsync.UnsyncStringWriter;
-import com.liferay.portal.kernel.util.StringBundler;
+import com.liferay.portal.kernel.util.StringBundlerAdapterUtil;
 import com.liferay.portal.kernel.util.UnsyncPrintWriterPool;
 
 import java.io.IOException;
@@ -180,6 +181,52 @@ public class BufferCacheServletResponse extends MetaInfoCacheServletResponse {
 	/**
 	 * @see #getCharBuffer()
 	 */
+	public StringBundler getSB() throws IOException {
+		if (_charBuffer != null) {
+			StringBundler sb = new StringBundler(1);
+
+			sb.append(_charBuffer.toString());
+
+			return sb;
+		}
+
+		if (_byteBuffer != null) {
+			CharBuffer charBuffer = CharsetDecoderUtil.decode(
+				getCharacterEncoding(), _byteBuffer.duplicate());
+
+			StringBundler sb = new StringBundler(1);
+
+			sb.append(charBuffer.toString());
+
+			return sb;
+		}
+
+		_flushInternalBuffer();
+
+		if (_unsyncStringWriter != null) {
+			return _unsyncStringWriter.getSB();
+		}
+
+		if (_unsyncByteArrayOutputStream != null) {
+			ByteBuffer byteBuffer =
+				_unsyncByteArrayOutputStream.unsafeGetByteBuffer();
+
+			CharBuffer charBuffer = CharsetDecoderUtil.decode(
+				getCharacterEncoding(), byteBuffer);
+
+			StringBundler sb = new StringBundler(1);
+
+			sb.append(charBuffer.toString());
+
+			return sb;
+		}
+
+		return new StringBundler(1);
+	}
+
+	/**
+	 * @see #getCharBuffer()
+	 */
 	public String getString() throws IOException {
 		if (_charBuffer != null) {
 			return _charBuffer.toString();
@@ -213,48 +260,14 @@ public class BufferCacheServletResponse extends MetaInfoCacheServletResponse {
 
 	/**
 	 * @see #getCharBuffer()
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
+	 *             #getSB()}
 	 */
-	public StringBundler getStringBundler() throws IOException {
-		if (_charBuffer != null) {
-			StringBundler sb = new StringBundler(1);
+	@Deprecated
+	public com.liferay.portal.kernel.util.StringBundler getStringBundler()
+		throws IOException {
 
-			sb.append(_charBuffer.toString());
-
-			return sb;
-		}
-
-		if (_byteBuffer != null) {
-			CharBuffer charBuffer = CharsetDecoderUtil.decode(
-				getCharacterEncoding(), _byteBuffer.duplicate());
-
-			StringBundler sb = new StringBundler(1);
-
-			sb.append(charBuffer.toString());
-
-			return sb;
-		}
-
-		_flushInternalBuffer();
-
-		if (_unsyncStringWriter != null) {
-			return _unsyncStringWriter.getStringBundler();
-		}
-
-		if (_unsyncByteArrayOutputStream != null) {
-			ByteBuffer byteBuffer =
-				_unsyncByteArrayOutputStream.unsafeGetByteBuffer();
-
-			CharBuffer charBuffer = CharsetDecoderUtil.decode(
-				getCharacterEncoding(), byteBuffer);
-
-			StringBundler sb = new StringBundler(1);
-
-			sb.append(charBuffer.toString());
-
-			return sb;
-		}
-
-		return new StringBundler(1);
+		return StringBundlerAdapterUtil.convertToKernelStringBundler(getSB());
 	}
 
 	@Override
