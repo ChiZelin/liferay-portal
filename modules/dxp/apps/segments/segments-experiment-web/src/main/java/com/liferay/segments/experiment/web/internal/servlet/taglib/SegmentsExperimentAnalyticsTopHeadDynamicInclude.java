@@ -14,11 +14,11 @@
 
 package com.liferay.segments.experiment.web.internal.servlet.taglib;
 
+import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.servlet.taglib.DynamicInclude;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.GetterUtil;
-import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.segments.constants.SegmentsExperienceConstants;
@@ -70,7 +70,7 @@ public class SegmentsExperimentAnalyticsTopHeadDynamicInclude
 			httpServletRequest.getAttribute(
 				SegmentsWebKeys.SEGMENTS_EXPERIENCE_IDS));
 
-		StringBundler sb = StringUtil.replaceToStringBundler(
+		StringBundler sb = StringUtil.replaceToSB(
 			_TMPL_CONTENT, "${", "}",
 			_getValues(
 				segmentsExperiment,
