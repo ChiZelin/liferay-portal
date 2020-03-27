@@ -14,6 +14,7 @@
 
 package com.liferay.portal.layoutconfiguration.util;
 
+import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.io.unsync.UnsyncStringWriter;
 import com.liferay.portal.kernel.layoutconfiguration.util.RuntimePage;
@@ -33,7 +34,7 @@ import com.liferay.portal.kernel.template.TemplateManagerUtil;
 import com.liferay.portal.kernel.template.TemplateResource;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.JavaConstants;
-import com.liferay.portal.kernel.util.StringBundler;
+import com.liferay.portal.kernel.util.StringBundlerAdapterUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
@@ -68,8 +69,26 @@ import org.apache.commons.lang.time.StopWatch;
  */
 public class RuntimePageImpl implements RuntimePage {
 
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
+	 *			 #getProcessedTemplateSB(HttpServletRequest, HttpServletResponse, String, TemplateResource)}
+	 */
+	@Deprecated
 	@Override
-	public StringBundler getProcessedTemplate(
+	public com.liferay.portal.kernel.util.StringBundler getProcessedTemplate(
+			HttpServletRequest httpServletRequest,
+			HttpServletResponse httpServletResponse, String portletId,
+			TemplateResource templateResource)
+		throws Exception {
+
+		return StringBundlerAdapterUtil.convertToKernelStringBundler(
+			getProcessedTemplateSB(
+				httpServletRequest, httpServletResponse, portletId,
+				templateResource));
+	}
+
+	@Override
+	public StringBundler getProcessedTemplateSB(
 			HttpServletRequest httpServletRequest,
 			HttpServletResponse httpServletResponse, String portletId,
 			TemplateResource templateResource)
@@ -523,8 +542,7 @@ public class RuntimePageImpl implements RuntimePage {
 					_log.debug(
 						StringBundler.concat(
 							"Serially rendered portlet ", rendererPortletId,
-							" in ", String.valueOf(stopWatch.getTime()),
-							" ms"));
+							" in ", stopWatch.getTime(), " ms"));
 				}
 			}
 
@@ -535,7 +553,7 @@ public class RuntimePageImpl implements RuntimePage {
 			}
 		}
 
-		return StringUtil.replaceWithStringBundler(
+		return StringUtil.replaceWithSB(
 			unsyncStringWriter.toString(), "[$TEMPLATE_PORTLET_", "$]",
 			contentsMap);
 	}

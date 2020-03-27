@@ -14,9 +14,10 @@
 
 package com.liferay.portal.kernel.layoutconfiguration.util;
 
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.layoutconfiguration.util.xml.RuntimeLogic;
 import com.liferay.portal.kernel.template.TemplateResource;
-import com.liferay.portal.kernel.util.StringBundler;
+import com.liferay.portal.kernel.util.StringBundlerAdapterUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -28,13 +29,31 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class RuntimePageUtil {
 
-	public static StringBundler getProcessedTemplate(
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
+	 *			 #getProcessedTemplateSB(HttpServletRequest, HttpServletResponse, String, TemplateResource)}
+	 */
+	@Deprecated
+	public static com.liferay.portal.kernel.util.StringBundler
+			getProcessedTemplate(
+				HttpServletRequest httpServletRequest,
+				HttpServletResponse httpServletResponse, String portletId,
+				TemplateResource templateResource)
+		throws Exception {
+
+		return StringBundlerAdapterUtil.convertToKernelStringBundler(
+			getProcessedTemplateSB(
+				httpServletRequest, httpServletResponse, portletId,
+				templateResource));
+	}
+
+	public static StringBundler getProcessedTemplateSB(
 			HttpServletRequest httpServletRequest,
 			HttpServletResponse httpServletResponse, String portletId,
 			TemplateResource templateResource)
 		throws Exception {
 
-		return getRuntimePage().getProcessedTemplate(
+		return getRuntimePage().getProcessedTemplateSB(
 			httpServletRequest, httpServletResponse, portletId,
 			templateResource);
 	}
