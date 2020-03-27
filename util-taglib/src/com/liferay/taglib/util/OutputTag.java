@@ -50,8 +50,7 @@ public class OutputTag extends PositionTagSupport {
 	public int doEndTag() throws JspException {
 		try {
 			if (_output) {
-				String bodyContentString =
-					getBodyContentAsStringBundler().toString();
+				String bodyContentString = getBodyContentAsSB().toString();
 
 				bodyContentString = _addAtrribute(
 					bodyContentString, "link", "data-senna-track",
