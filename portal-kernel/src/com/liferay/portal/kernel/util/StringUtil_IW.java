@@ -470,12 +470,32 @@ public class StringUtil_IW {
 		return StringUtil.replaceLast(s, oldSubs, newSubs);
 	}
 
+	public com.liferay.petra.string.StringBundler replaceToSB(
+		java.lang.String s, java.lang.String begin, java.lang.String end,
+		java.util.Map<java.lang.String, java.lang.String> values) {
+		return StringUtil.replaceToSB(s, begin, end, values);
+	}
+
+	/**
+	 * @deprecated
+	 */
+	@Deprecated
 	public com.liferay.portal.kernel.util.StringBundler replaceToStringBundler(
 		java.lang.String s, java.lang.String begin, java.lang.String end,
 		java.util.Map<java.lang.String, java.lang.String> values) {
 		return StringUtil.replaceToStringBundler(s, begin, end, values);
 	}
 
+	public com.liferay.petra.string.StringBundler replaceWithSB(
+		java.lang.String s, java.lang.String begin, java.lang.String end,
+		java.util.Map<java.lang.String, com.liferay.petra.string.StringBundler> values) {
+		return StringUtil.replaceWithSB(s, begin, end, values);
+	}
+
+	/**
+	 * @deprecated
+	 */
+	@Deprecated
 	public com.liferay.portal.kernel.util.StringBundler replaceWithStringBundler(
 		java.lang.String s, java.lang.String begin, java.lang.String end,
 		java.util.Map<java.lang.String, com.liferay.portal.kernel.util.StringBundler> values) {
