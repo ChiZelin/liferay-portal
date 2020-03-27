@@ -14,9 +14,10 @@
 
 package com.liferay.portal.kernel.servlet.taglib.aui;
 
+import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.util.Mergeable;
-import com.liferay.portal.kernel.util.StringBundler;
+import com.liferay.portal.kernel.util.StringBundlerAdapterUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 
@@ -40,6 +41,22 @@ import java.util.stream.Stream;
  * @author Shuyang Zhou
  */
 public class ScriptData implements Mergeable<ScriptData>, Serializable {
+
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
+	 *			 #append(String, StringBundler, String, ScriptData.ModulesType)}
+	 */
+	@Deprecated
+	public void append(
+		String portletId,
+		com.liferay.portal.kernel.util.StringBundler contentSB, String modules,
+		ModulesType modulesType) {
+
+		append(
+			portletId,
+			StringBundlerAdapterUtil.convertToPetraStringBundler(contentSB),
+			modules, modulesType);
+	}
 
 	public void append(
 		String portletId, String content, String modules,
