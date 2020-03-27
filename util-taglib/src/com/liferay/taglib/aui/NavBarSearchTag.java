@@ -14,12 +14,12 @@
 
 package com.liferay.taglib.aui;
 
+import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.dao.search.DisplayTerms;
 import com.liferay.portal.kernel.dao.search.SearchContainer;
 import com.liferay.portal.kernel.util.JavaConstants;
 import com.liferay.portal.kernel.util.PortalUtil;
-import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.taglib.aui.base.BaseNavBarSearchTag;
 
@@ -43,7 +43,7 @@ public class NavBarSearchTag extends BaseNavBarSearchTag {
 			this, NavBarTag.class);
 
 		if (navBarTag != null) {
-			StringBundler sb = navBarTag.getResponsiveButtonsSB();
+			StringBundler sb = navBarTag.getResponsiveButtonsStringBundler();
 
 			sb.append("<a class=\"btn navbar-btn navbar-toggle");
 
