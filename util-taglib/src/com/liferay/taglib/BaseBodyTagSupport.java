@@ -14,11 +14,12 @@
 
 package com.liferay.taglib;
 
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.servlet.taglib.BodyContentWrapper;
 import com.liferay.portal.kernel.util.ServerDetector;
-import com.liferay.portal.kernel.util.StringBundler;
+import com.liferay.portal.kernel.util.StringBundlerAdapterUtil;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -53,7 +54,7 @@ public class BaseBodyTagSupport extends TagSupport {
 		return bodyContent;
 	}
 
-	public StringBundler getBodyContentAsStringBundler() {
+	public StringBundler getBodyContentAsSB() {
 		if (!(this instanceof BodyTag)) {
 			Class<?> clazz = getClass();
 
@@ -67,7 +68,7 @@ public class BaseBodyTagSupport extends TagSupport {
 			BodyContentWrapper bodyContentWrapper =
 				(BodyContentWrapper)bodyContent;
 
-			return bodyContentWrapper.getStringBundler();
+			return bodyContentWrapper.getSB();
 		}
 
 		if (bodyContent == null) {
@@ -89,6 +90,18 @@ public class BaseBodyTagSupport extends TagSupport {
 		return new StringBundler(bodyContentString);
 	}
 
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
+	 *			 #getBodyContentAsSB()}
+	 */
+	@Deprecated
+	public com.liferay.portal.kernel.util.StringBundler
+		getBodyContentAsStringBundler() {
+
+		return StringBundlerAdapterUtil.convertToKernelStringBundler(
+			getBodyContentAsSB());
+	}
+
 	public HttpServletRequest getRequest() {
 		return (HttpServletRequest)pageContext.getRequest();
 	}
@@ -105,7 +118,7 @@ public class BaseBodyTagSupport extends TagSupport {
 	}
 
 	public void writeBodyContent(Writer writer) throws IOException {
-		StringBundler sb = getBodyContentAsStringBundler();
+		StringBundler sb = getBodyContentAsSB();
 
 		sb.writeTo(writer);
 	}
