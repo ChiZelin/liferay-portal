@@ -14,6 +14,7 @@
 
 package com.liferay.portal.kernel.theme;
 
+import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -28,7 +29,7 @@ import com.liferay.portal.kernel.util.Http;
 import com.liferay.portal.kernel.util.HttpUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
-import com.liferay.portal.kernel.util.StringBundler;
+import com.liferay.portal.kernel.util.StringBundlerAdapterUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
@@ -73,7 +74,7 @@ public class PortletDisplay implements Cloneable, Serializable {
 		_columnCount = master.getColumnCount();
 		_columnId = master.getColumnId();
 		_columnPos = master.getColumnPos();
-		_contentSB = master.getContent();
+		_contentSB = master.getContentSB();
 		_customCSSClassName = master.getCustomCSSClassName();
 		_description = master.getDescription();
 		_id = master.getId();
@@ -145,7 +146,7 @@ public class PortletDisplay implements Cloneable, Serializable {
 		slave.setColumnCount(_columnCount);
 		slave.setColumnId(_columnId);
 		slave.setColumnPos(_columnPos);
-		slave.setContent(_contentSB);
+		slave.setContentSB(_contentSB);
 		slave.setCustomCSSClassName(_customCSSClassName);
 		slave.setDescription(_description);
 		slave.setId(_id);
@@ -224,7 +225,17 @@ public class PortletDisplay implements Cloneable, Serializable {
 		return _columnPos;
 	}
 
-	public StringBundler getContent() {
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
+	 *			 #getContentSB()}
+	 */
+	@Deprecated
+	public com.liferay.portal.kernel.util.StringBundler getContent() {
+		return StringBundlerAdapterUtil.convertToKernelStringBundler(
+			getContentSB());
+	}
+
+	public StringBundler getContentSB() {
 		return _contentSB;
 	}
 
@@ -633,7 +644,19 @@ public class PortletDisplay implements Cloneable, Serializable {
 		_columnPos = columnPos;
 	}
 
-	public void setContent(StringBundler contentSB) {
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
+	 *			 #setContentSB(StringBundler)}
+	 */
+	@Deprecated
+	public void setContent(
+		com.liferay.portal.kernel.util.StringBundler contentSB) {
+
+		setContentSB(
+			StringBundlerAdapterUtil.convertToPetraStringBundler(contentSB));
+	}
+
+	public void setContentSB(StringBundler contentSB) {
 		if (contentSB == null) {
 			_contentSB = _blankSB;
 		}

@@ -63,7 +63,7 @@ public class WrapPortletTag
 
 		requestDispatcher.include(httpServletRequest, pipingServletResponse);
 
-		portletDisplay.setContent(unsyncStringWriter.getStringBundler());
+		portletDisplay.setContentSB(unsyncStringWriter.getSB());
 
 		// Page
 
@@ -93,7 +93,7 @@ public class WrapPortletTag
 
 			// Portlet content
 
-			portletDisplay.setContent(getBodyContentAsStringBundler());
+			portletDisplay.setContentSB(getBodyContentAsSB());
 
 			// Page
 
