@@ -14,6 +14,7 @@
 
 package com.liferay.portal.kernel.servlet;
 
+import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.io.DummyOutputStream;
 import com.liferay.portal.kernel.io.DummyWriter;
@@ -23,7 +24,6 @@ import com.liferay.portal.kernel.io.unsync.UnsyncStringWriter;
 import com.liferay.portal.kernel.test.ReflectionTestUtil;
 import com.liferay.portal.kernel.test.rule.CodeCoverageAssertor;
 import com.liferay.portal.kernel.test.util.PropsTestUtil;
-import com.liferay.portal.kernel.util.StringBundler;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -517,7 +517,7 @@ public class BufferCacheServletResponseTest {
 		BufferCacheServletResponse bufferCacheServletResponse =
 			new BufferCacheServletResponse(stubHttpServletResponse);
 
-		StringBundler sb = bufferCacheServletResponse.getStringBundler();
+		StringBundler sb = bufferCacheServletResponse.getSB();
 
 		Assert.assertEquals(1, sb.capacity());
 		Assert.assertEquals(0, sb.index());
@@ -529,7 +529,7 @@ public class BufferCacheServletResponseTest {
 
 		bufferCacheServletResponse.setCharBuffer(CharBuffer.wrap(_TEST_STRING));
 
-		sb = bufferCacheServletResponse.getStringBundler();
+		sb = bufferCacheServletResponse.getSB();
 
 		Assert.assertEquals(1, sb.capacity());
 		Assert.assertEquals(1, sb.index());
@@ -546,7 +546,7 @@ public class BufferCacheServletResponseTest {
 
 		bufferCacheServletResponse.setByteBuffer(byteBuffer);
 
-		sb = bufferCacheServletResponse.getStringBundler();
+		sb = bufferCacheServletResponse.getSB();
 
 		Assert.assertEquals(1, sb.capacity());
 		Assert.assertEquals(1, sb.index());
@@ -565,7 +565,7 @@ public class BufferCacheServletResponseTest {
 
 		printWriter.print(_TEST_STRING);
 
-		sb = bufferCacheServletResponse.getStringBundler();
+		sb = bufferCacheServletResponse.getSB();
 
 		Assert.assertEquals(16, sb.capacity());
 		Assert.assertEquals(1, sb.index());
@@ -583,7 +583,7 @@ public class BufferCacheServletResponseTest {
 
 		servletOutputStream.write(_TEST_BYTES);
 
-		sb = bufferCacheServletResponse.getStringBundler();
+		sb = bufferCacheServletResponse.getSB();
 
 		Assert.assertEquals(1, sb.capacity());
 		Assert.assertEquals(1, sb.index());
