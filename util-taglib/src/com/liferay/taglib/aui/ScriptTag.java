@@ -14,10 +14,10 @@
 
 package com.liferay.taglib.aui;
 
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.model.Portlet;
 import com.liferay.portal.kernel.servlet.taglib.BodyContentWrapper;
 import com.liferay.portal.kernel.servlet.taglib.aui.ScriptData;
-import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.taglib.FileAvailabilityUtil;
 import com.liferay.taglib.aui.base.BaseScriptTag;
@@ -112,7 +112,7 @@ public class ScriptTag extends BaseScriptTag {
 				portletId = portlet.getPortletId();
 			}
 
-			StringBundler bodyContentSB = getBodyContentAsStringBundler();
+			StringBundler bodyContentSB = getBodyContentAsSB();
 
 			String require = getRequire();
 			String use = getUse();

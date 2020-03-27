@@ -109,7 +109,7 @@ public class SPATopHeadJSPDynamicInclude extends BaseJSPDynamicInclude {
 
 		configScriptData.append(
 			null,
-			StringUtil.replaceToStringBundler(
+			StringUtil.replaceToSB(
 				_CONFIG_TMPL_CONTENT, StringPool.POUND, StringPool.POUND,
 				values),
 			null, null);
@@ -123,7 +123,7 @@ public class SPATopHeadJSPDynamicInclude extends BaseJSPDynamicInclude {
 
 		initScriptData.append(
 			null,
-			StringUtil.replaceToStringBundler(
+			StringUtil.replaceToSB(
 				_INIT_TMPL_CONTENT, StringPool.POUND, StringPool.POUND, values),
 			initModuleName + " as frontendJsSpaWebLiferayInitEs",
 			ScriptData.ModulesType.ES6);

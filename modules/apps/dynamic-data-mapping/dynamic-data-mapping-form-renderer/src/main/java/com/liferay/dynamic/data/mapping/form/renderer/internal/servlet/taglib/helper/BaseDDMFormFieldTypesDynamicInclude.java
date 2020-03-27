@@ -167,7 +167,7 @@ public abstract class BaseDDMFormFieldTypesDynamicInclude
 
 		scriptData.append(
 			null,
-			StringUtil.replaceToStringBundler(
+			StringUtil.replaceToSB(
 				_TMPL_CONTENT, StringPool.POUND, StringPool.POUND, values),
 			modules, ScriptData.ModulesType.ES6);
 
