@@ -15,10 +15,11 @@
 package com.liferay.util.bridges.common;
 
 import com.liferay.petra.string.CharPool;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.util.StringBundler;
+import com.liferay.portal.kernel.util.StringBundlerAdapterUtil;
 
 import javax.portlet.PortletURL;
 
@@ -71,6 +72,15 @@ public class ScriptPostProcess {
 		catch (Exception exception) {
 			_log.error(exception, exception);
 		}
+	}
+
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
+	 *			 #setInitalPage(StringBundler)}
+	 */
+	@Deprecated
+	public void setInitalPage(com.liferay.portal.kernel.util.StringBundler sb) {
+		_sb = StringBundlerAdapterUtil.convertToPetraStringBundler(sb);
 	}
 
 	public void setInitalPage(StringBundler sb) {
