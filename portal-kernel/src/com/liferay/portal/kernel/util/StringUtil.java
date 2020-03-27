@@ -16,6 +16,7 @@ package com.liferay.portal.kernel.util;
 
 import com.liferay.petra.reflect.ReflectionUtil;
 import com.liferay.petra.string.CharPool;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 
 import java.io.IOException;
@@ -28,6 +29,7 @@ import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -2220,7 +2222,7 @@ public class StringUtil {
 				throw new IOException(
 					StringBundler.concat(
 						"Unable to open resource ", name, " in class loader ",
-						String.valueOf(classLoader)));
+						classLoader));
 			}
 
 			return read(is);
@@ -2722,7 +2724,7 @@ public class StringUtil {
 	public static String replace(
 		String s, String begin, String end, Map<String, String> values) {
 
-		StringBundler sb = replaceToStringBundler(s, begin, end, values);
+		StringBundler sb = replaceToSB(s, begin, end, values);
 
 		return sb.toString();
 	}
@@ -3100,7 +3102,7 @@ public class StringUtil {
 	 *         values are <code>null</code>.
 	 * @see    #replace(String, String, String, Map)
 	 */
-	public static StringBundler replaceToStringBundler(
+	public static StringBundler replaceToSB(
 		String s, String begin, String end, Map<String, String> values) {
 
 		if (Validator.isBlank(s) || Validator.isBlank(begin) ||
@@ -3147,6 +3149,56 @@ public class StringUtil {
 	 * by the beginning and ending strings, with the new values. The result is
 	 * returned as a {@link StringBundler}.
 	 *
+	 * <p>
+	 * For example, with the following initialized variables:
+	 * </p>
+	 *
+	 * <p>
+	 * <pre>
+	 * <code>
+	 * String s = "http://www.example-url/${userId}";
+	 * String begin = "${";
+	 * String end = "}";
+	 * Map<String, String> values =  new HashMap&#60;String, String&#62;();
+	 * values.put("userId", "jbloggs");
+	 * </code>
+	 * </pre></p>
+	 *
+	 * <p>
+	 * <code>StringBundler sb = replaceToStringBundler(s, begin, end,
+	 * values)</code> <code>sb.toString()</code> returns
+	 * <code>"http://www.example-url/jbloggs"</code>
+	 * </p>
+	 *
+	 * @param  s the original string
+	 * @param  begin the string preceding the substring to be modified. This
+	 *         string is excluded from the result.
+	 * @param  end the string following the substring to be modified. This
+	 *         string is excluded from the result.
+	 * @param  values the key-value map values
+	 * @return a string bundler representing the original string with all
+	 *         occurrences of the keywords found in the substring, replaced with
+	 *         the new values. <code>null</code> is returned if the original
+	 *         string, the beginning string, the ending string, or the key-map
+	 *         values are <code>null</code>.
+	 * @see    #replace(String, String, String, Map)
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
+	 *			 #replaceToSB(String, String, String, Map)}
+	 */
+	@Deprecated
+	public static com.liferay.portal.kernel.util.StringBundler
+		replaceToStringBundler(
+			String s, String begin, String end, Map<String, String> values) {
+
+		return StringBundlerAdapterUtil.convertToKernelStringBundler(
+			replaceToSB(s, begin, end, values));
+	}
+
+	/**
+	 * Replaces all occurrences of the keywords found in the substring, defined
+	 * by the beginning and ending strings, with the new values. The result is
+	 * returned as a {@link StringBundler}.
+	 *
 	 * @param  s the original string
 	 * @param  begin the string preceding the substring to be modified. This
 	 *         string is removed from the result.
@@ -3160,7 +3212,7 @@ public class StringUtil {
 	 *         string, the beginning string, the ending string, or the key-map
 	 *         values are <code>null</code>.
 	 */
-	public static StringBundler replaceWithStringBundler(
+	public static StringBundler replaceWithSB(
 		String s, String begin, String end, Map<String, StringBundler> values) {
 
 		if (Validator.isBlank(s) || Validator.isBlank(begin) ||
@@ -3207,6 +3259,47 @@ public class StringUtil {
 		}
 
 		return sb;
+	}
+
+	/**
+	 * Replaces all occurrences of the keywords found in the substring, defined
+	 * by the beginning and ending strings, with the new values. The result is
+	 * returned as a {@link StringBundler}.
+	 *
+	 * @param  s the original string
+	 * @param  begin the string preceding the substring to be modified. This
+	 *         string is removed from the result.
+	 * @param  end the string following the substring to be modified. This
+	 *         string is removed from the result.
+	 * @param  values the key-value map values, which has string keys and {@link
+	 *         StringBundler} values
+	 * @return a string bundler representing the original string with all
+	 *         occurrences of the keywords found in the substring, replaced with
+	 *         the new values. <code>null</code> is returned if the original
+	 *         string, the beginning string, the ending string, or the key-map
+	 *         values are <code>null</code>.
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
+	 *			 #replaceWithSB(String, String, String, Map)}
+	 */
+	@Deprecated
+	public static com.liferay.portal.kernel.util.StringBundler
+		replaceWithStringBundler(
+			String s, String begin, String end,
+			Map<String, com.liferay.portal.kernel.util.StringBundler> values) {
+
+		Map<String, StringBundler> map = new HashMap<>();
+
+		for (Map.Entry entry : values.entrySet()) {
+			com.liferay.portal.kernel.util.StringBundler kernelSB =
+				(com.liferay.portal.kernel.util.StringBundler)entry.getValue();
+
+			map.put(
+				(String)entry.getKey(),
+				new StringBundler(kernelSB.getStrings()));
+		}
+
+		return StringBundlerAdapterUtil.convertToKernelStringBundler(
+			replaceWithSB(s, begin, end, map));
 	}
 
 	/**
