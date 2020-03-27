@@ -14,8 +14,9 @@
 
 package com.liferay.taglib.aui;
 
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.util.IntegerWrapper;
-import com.liferay.portal.kernel.util.StringBundler;
+import com.liferay.portal.kernel.util.StringBundlerAdapterUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.taglib.aui.base.BaseNavBarTag;
 
@@ -55,7 +56,19 @@ public class NavBarTag extends BaseNavBarTag implements BodyTag {
 		return super.doStartTag();
 	}
 
-	public StringBundler getResponsiveButtonsSB() {
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
+	 *			 #getResponsiveButtonsStringBundler()}
+	 */
+	@Deprecated
+	public com.liferay.portal.kernel.util.StringBundler
+		getResponsiveButtonsSB() {
+
+		return StringBundlerAdapterUtil.convertToKernelStringBundler(
+			getResponsiveButtonsStringBundler());
+	}
+
+	public StringBundler getResponsiveButtonsStringBundler() {
 		return _responsiveButtonsSB;
 	}
 
