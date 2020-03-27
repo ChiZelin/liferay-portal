@@ -14,13 +14,24 @@
 
 package com.liferay.portal.kernel.servlet.taglib;
 
-import com.liferay.portal.kernel.util.StringBundler;
+import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.util.StringBundlerAdapterUtil;
 
 /**
  * @author Raymond Augé
  */
 public interface BodyContentWrapper {
 
-	public StringBundler getStringBundler();
+	public default StringBundler getSB() {
+		return StringBundlerAdapterUtil.convertToPetraStringBundler(
+			getStringBundler());
+	}
+
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
+	 *             #getSB()}
+	 */
+	@Deprecated
+	public com.liferay.portal.kernel.util.StringBundler getStringBundler();
 
 }

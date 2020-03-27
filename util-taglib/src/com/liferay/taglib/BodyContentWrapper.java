@@ -14,10 +14,11 @@
 
 package com.liferay.taglib;
 
+import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.io.unsync.UnsyncStringReader;
 import com.liferay.portal.kernel.io.unsync.UnsyncStringWriter;
-import com.liferay.portal.kernel.util.StringBundler;
+import com.liferay.portal.kernel.util.StringBundlerAdapterUtil;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -38,7 +39,7 @@ public class BodyContentWrapper
 
 		super(bodyContent.getEnclosingWriter());
 
-		_sb = unsyncStringWriter.getStringBundler();
+		_sb = unsyncStringWriter.getSB();
 	}
 
 	@Override
@@ -122,13 +123,23 @@ public class BodyContentWrapper
 	}
 
 	@Override
+	public StringBundler getSB() {
+		return _sb;
+	}
+
+	@Override
 	public String getString() {
 		return _sb.toString();
 	}
 
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
+	 *             #getSB()}
+	 */
+	@Deprecated
 	@Override
-	public StringBundler getStringBundler() {
-		return _sb;
+	public com.liferay.portal.kernel.util.StringBundler getStringBundler() {
+		return StringBundlerAdapterUtil.convertToKernelStringBundler(_sb);
 	}
 
 	@Override
