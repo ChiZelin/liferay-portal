@@ -156,17 +156,23 @@ public class StringBundler implements Serializable {
 	}
 
 	public StringBundler append(StringBundler sb) {
-		if ((sb == null) || (sb._arrayIndex == 0)) {
+		if (sb == null) {
 			return this;
 		}
 
-		if ((_array.length - _arrayIndex) < sb._arrayIndex) {
-			expandCapacity((_array.length + sb._arrayIndex) * 2);
+		int arrayIndex = sb.index();
+
+		if (arrayIndex == 0) {
+			return this;
 		}
 
-		System.arraycopy(sb._array, 0, _array, _arrayIndex, sb._arrayIndex);
+		if ((_array.length - _arrayIndex) < arrayIndex) {
+			expandCapacity((_array.length + arrayIndex) * 2);
+		}
 
-		_arrayIndex += sb._arrayIndex;
+		System.arraycopy(sb._array, 0, _array, _arrayIndex, arrayIndex);
+
+		_arrayIndex += arrayIndex;
 
 		return this;
 	}
