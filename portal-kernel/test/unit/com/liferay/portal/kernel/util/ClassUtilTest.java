@@ -14,7 +14,10 @@
 
 package com.liferay.portal.kernel.util;
 
+import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.test.CaptureHandler;
+import com.liferay.portal.kernel.test.JDKLoggerTestUtil;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -25,9 +28,15 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -87,6 +96,60 @@ public class ClassUtilTest {
 			"AnnotationClass.Annotation", "AnnotationClass", "A", "B");
 		testGetClassesFromAnnotation(
 			"AnnotationClass.Annotation", "AnnotationClass", "A", "B", "C");
+	}
+
+	@Test
+	public void testGetParentPath() {
+		ClassLoader classLoader = ClassUtilTest.class.getClassLoader();
+
+		String className = "java/lang/String.class";
+
+		URL url = classLoader.getResource(className);
+
+		URI uri = ClassUtil.getPathURIFromURL(url);
+
+		Path path = Paths.get(uri);
+
+		String expectedParentPath = StringUtil.replace(
+			path.toString(), CharPool.BACK_SLASH, CharPool.SLASH);
+
+		int pos = expectedParentPath.indexOf(className);
+
+		expectedParentPath = expectedParentPath.substring(0, pos);
+
+		Assert.assertEquals(
+			expectedParentPath,
+			ClassUtil.getParentPath(classLoader, "java.lang.String.class"));
+		Assert.assertEquals(
+			expectedParentPath,
+			ClassUtil.getParentPath(classLoader, "java.lang.String"));
+
+		//Test log output
+
+		try (CaptureHandler captureHandler =
+				JDKLoggerTestUtil.configureJDKLogger(
+					ClassUtil.class.getName(), Level.FINE)) {
+
+			ClassUtil.getParentPath(classLoader, "java.lang.String");
+
+			List<LogRecord> logRecords = captureHandler.getLogRecords();
+
+			Assert.assertEquals(logRecords.toString(), 3, logRecords.size());
+
+			LogRecord logRecord = logRecords.get(0);
+
+			Assert.assertEquals(
+				"Class name java.lang.String", logRecord.getMessage());
+
+			logRecord = logRecords.get(1);
+
+			Assert.assertEquals("URI " + uri, logRecord.getMessage());
+
+			logRecord = logRecords.get(2);
+
+			Assert.assertEquals(
+				"Parent path " + expectedParentPath, logRecord.getMessage());
+		}
 	}
 
 	@Test
