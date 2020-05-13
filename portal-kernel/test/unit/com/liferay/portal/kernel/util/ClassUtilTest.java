@@ -16,6 +16,7 @@ package com.liferay.portal.kernel.util;
 
 import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.test.CaptureHandler;
 import com.liferay.portal.kernel.test.JDKLoggerTestUtil;
 
@@ -24,6 +25,7 @@ import java.io.StringReader;
 
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
@@ -232,6 +234,40 @@ public class ClassUtilTest {
 		testGetPathURIFromURL(
 			"file:/C:/Liferay/tomcat/classes/javax/servlet/Servlet.class",
 			"/C:/Liferay/tomcat/classes/javax/servlet/Servlet.class");
+	}
+
+	@Test(expected = URISyntaxException.class)
+	public void testGetPathURIFromURLWithIllegalCharacter() throws Throwable {
+		try {
+			ClassUtil.getPathURIFromURL(
+				new URL(
+					"jar:file:/[opt/liferay/tomcat/lib/servlet-api.jar" +
+						"!/javax/servlet/Servlet.class"));
+
+			Assert.fail(
+				"SystemException caused by URISyntaxException should be " +
+					"thrown because of the illegal character '['");
+		}
+		catch (SystemException systemException) {
+			throw systemException.getCause();
+		}
+	}
+
+	@Test(expected = MalformedURLException.class)
+	public void testGetPathURIFromURLWithUnknownProtocol() throws Throwable {
+		try {
+			ClassUtil.getPathURIFromURL(
+				new URL(
+					"jar:unknown:/[opt/liferay/tomcat/lib/servlet-api.jar" +
+						"!/javax/servlet/Servlet.class"));
+
+			Assert.fail(
+				"SystemException caused by MalformedURLException should be " +
+					"thrown because of the unknown protocol");
+		}
+		catch (SystemException systemException) {
+			throw systemException.getCause();
+		}
 	}
 
 	protected void testGetClassesFromAnnotation(
