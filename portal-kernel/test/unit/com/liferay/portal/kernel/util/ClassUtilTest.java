@@ -19,6 +19,7 @@ import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.test.CaptureHandler;
 import com.liferay.portal.kernel.test.JDKLoggerTestUtil;
+import com.liferay.portal.kernel.test.rule.CodeCoverageAssertor;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -42,6 +43,7 @@ import java.util.logging.LogRecord;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 
 /**
@@ -49,6 +51,10 @@ import org.junit.Test;
  * @author Hugo Huijser
  */
 public class ClassUtilTest {
+
+	@ClassRule
+	public static final CodeCoverageAssertor codeCoverageAssertor =
+		CodeCoverageAssertor.INSTANCE;
 
 	@BeforeClass
 	public static void setUpClass() throws Exception {
@@ -151,6 +157,30 @@ public class ClassUtilTest {
 
 			Assert.assertEquals(
 				"Parent path " + expectedParentPath, logRecord.getMessage());
+		}
+	}
+
+	@Test
+	public void testGetPathURIFromURLLog() throws MalformedURLException {
+		try (CaptureHandler captureHandler =
+				JDKLoggerTestUtil.configureJDKLogger(
+					ClassUtil.class.getName(), Level.FINE)) {
+
+			ClassUtil.getPathURIFromURL(
+				new URL(
+					"jar:file:/opt/liferay/tomcat/lib/servlet-api.jar" +
+						"!/javax/servlet/Servlet.class"));
+
+			List<LogRecord> logRecords = captureHandler.getLogRecords();
+
+			Assert.assertEquals(logRecords.toString(), 1, logRecords.size());
+
+			LogRecord logRecord = logRecords.get(0);
+
+			Assert.assertEquals(
+				"URI file:/opt/liferay/tomcat/lib/servlet-api.jar!/javax" +
+					"/servlet/Servlet.class",
+				logRecord.getMessage());
 		}
 	}
 
