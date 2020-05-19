@@ -60,7 +60,10 @@ public class ClassUtilTest {
 	public static void setUpClass() throws Exception {
 		URL.setURLStreamHandlerFactory(
 			protocol -> {
-				if (protocol.equals("vfs") || protocol.equals("zip")) {
+				if (protocol.equals("vfs") || protocol.equals("zip") ||
+					protocol.equals("bundleresource") ||
+					protocol.equals("wsjar")) {
+
 					return new URLStreamHandler() {
 
 						protected URLConnection openConnection(URL url)
@@ -222,6 +225,18 @@ public class ClassUtilTest {
 			"zip:C:/With%20Space/tomcat/lib/servlet-api.jar" +
 				"!/javax/servlet/Servlet.class",
 			"/C:/With Space/tomcat/lib/servlet-api.jar" +
+				"!/javax/servlet/Servlet.class");
+	}
+
+	@Test
+	public void testGetPathURIFromURLWebsphere() throws Exception {
+		testGetPathURIFromURL(
+			"bundleresource://266.fwk-486185329/javax/servlet/Servlet.class",
+			"/javax/servlet/Servlet.class");
+		testGetPathURIFromURL(
+			"wsjar:file:/opt/liferay/tomcat/lib/servlet-api.jar" +
+				"!/javax/servlet/Servlet.class",
+			"/file:/opt/liferay/tomcat/lib/servlet-api.jar" +
 				"!/javax/servlet/Servlet.class");
 	}
 
