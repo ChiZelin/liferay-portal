@@ -110,6 +110,12 @@ public class ClassUtilTest {
 	}
 
 	@Test
+	public void testGetClassName() {
+		Assert.assertEquals(
+			"java.lang.Object", ClassUtil.getClassName(new Object()));
+	}
+
+	@Test
 	public void testGetParentPath() {
 		ClassLoader classLoader = ClassUtilTest.class.getClassLoader();
 
@@ -315,6 +321,41 @@ public class ClassUtilTest {
 		}
 	}
 
+	@Test
+	public void testIsSubclass() {
+		Assert.assertTrue(
+			ClassUtil.isSubclass(TestClassA.class, TestClassA.class));
+		Assert.assertFalse(
+			ClassUtil.isSubclass(TestClassA.class, (Class<?>)null));
+		Assert.assertFalse(ClassUtil.isSubclass(null, TestClassA.class));
+		Assert.assertTrue(
+			ClassUtil.isSubclass(TestClassB.class, TestClassA.class));
+		Assert.assertTrue(
+			ClassUtil.isSubclass(TestClassA.class, TestInterfaceA.class));
+		Assert.assertTrue(
+			ClassUtil.isSubclass(TestClassB.class, TestInterfaceA.class));
+		Assert.assertFalse(
+			ClassUtil.isSubclass(TestClassC.class, TestInterfaceA.class));
+
+		Assert.assertTrue(
+			ClassUtil.isSubclass(TestClassA.class, TestClassA.class.getName()));
+		Assert.assertFalse(
+			ClassUtil.isSubclass(TestClassA.class, (String)null));
+		Assert.assertFalse(
+			ClassUtil.isSubclass(null, TestClassA.class.getName()));
+		Assert.assertTrue(
+			ClassUtil.isSubclass(TestClassB.class, TestClassA.class.getName()));
+		Assert.assertTrue(
+			ClassUtil.isSubclass(
+				TestClassA.class, TestInterfaceA.class.getName()));
+		Assert.assertTrue(
+			ClassUtil.isSubclass(
+				TestClassB.class, TestInterfaceA.class.getName()));
+		Assert.assertFalse(
+			ClassUtil.isSubclass(
+				TestClassC.class, TestInterfaceA.class.getName()));
+	}
+
 	protected void testGetClassesFromAnnotation(
 			String annotation, String expectedAnnotationClassName,
 			String... arrayParameterClassNames)
@@ -359,6 +400,21 @@ public class ClassUtilTest {
 		URI uri = ClassUtil.getPathURIFromURL(new URL(url));
 
 		Assert.assertEquals(expectedPath, uri.getPath());
+	}
+
+	private class TestClassA implements TestInterfaceA {
+	}
+
+	private class TestClassB extends TestClassA {
+	}
+
+	private class TestClassC implements TestInterfaceB {
+	}
+
+	private interface TestInterfaceA {
+	}
+
+	private interface TestInterfaceB {
 	}
 
 }
