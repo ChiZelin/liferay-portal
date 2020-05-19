@@ -242,7 +242,7 @@ public class ClassUtilTest {
 		testGetPathURIFromURL(
 			"wsjar:file:/opt/liferay/tomcat/lib/servlet-api.jar" +
 				"!/javax/servlet/Servlet.class",
-			"/file:/opt/liferay/tomcat/lib/servlet-api.jar" +
+			"/opt/liferay/tomcat/lib/servlet-api.jar" +
 				"!/javax/servlet/Servlet.class");
 	}
 
