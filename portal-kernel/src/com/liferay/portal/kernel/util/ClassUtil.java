@@ -156,7 +156,7 @@ public class ClassUtil {
 		className = StringUtil.replace(className, "/class", _CLASS_EXTENSION);
 
 		URL url = classLoader.getResource(className);
-
+System.out.println(">>>>>>> URL: " + url);
 		Path path = Paths.get(getPathURIFromURL(url));
 
 		String parentPath = StringUtil.replace(
@@ -169,7 +169,7 @@ public class ClassUtil {
 		if (_log.isDebugEnabled()) {
 			_log.debug("Parent path " + parentPath);
 		}
-
+System.out.println(">>>>>>> ParentPath: " + parentPath);
 		return parentPath;
 	}
 
