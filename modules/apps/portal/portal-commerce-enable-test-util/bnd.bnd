@@ -1,0 +1,5 @@
+Bundle-Name: Liferay Portal Commerce Enable Test Utilities
+Bundle-SymbolicName: com.liferay.portal.commerce.enable.test.util
+Bundle-Version: 1.0.0
+Export-Package: com.liferay.portal.commerce.enable.test.util
+Liferay-Enterprise-App: x
