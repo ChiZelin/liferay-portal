@@ -15,7 +15,10 @@
 package com.liferay.petra.lang;
 
 import java.util.Map;
+import java.util.StringTokenizer;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentNavigableMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 /**
  * Maps servlet context names to/from the servlet context's class loader.
@@ -40,6 +43,25 @@ public class ClassLoaderPool {
 
 		if ((contextName != null) && !contextName.equals("null")) {
 			classLoader = _classLoaders.get(contextName);
+
+			if (classLoader == null) {
+				int index = contextName.lastIndexOf("_");
+
+				if ((index > 0) && (index != (contextName.length() - 1))) {
+					ConcurrentNavigableMap<Version, ClassLoader> classLoaders =
+						_fallbackClassLoaders.get(
+							contextName.substring(0, index));
+
+					if (classLoaders != null) {
+						Map.Entry<Version, ClassLoader> entry =
+							classLoaders.lastEntry();
+
+						if (entry != null) {
+							classLoader = entry.getValue();
+						}
+					}
+				}
+			}
 		}
 
 		if (classLoader == null) {
@@ -80,6 +102,30 @@ public class ClassLoaderPool {
 	public static void register(String contextName, ClassLoader classLoader) {
 		_classLoaders.put(contextName, classLoader);
 		_contextNames.put(classLoader, contextName);
+
+		int index = contextName.lastIndexOf("_");
+
+		if ((index == -1) || (index == (contextName.length() - 1))) {
+			return;
+		}
+
+		Version version = Version.parse(contextName.substring(index + 1));
+
+		if (version == null) {
+			return;
+		}
+
+		_fallbackClassLoaders.compute(
+			contextName.substring(0, index),
+			(key, classLoaders) -> {
+				if (classLoaders == null) {
+					classLoaders = new ConcurrentSkipListMap<>();
+				}
+
+				classLoaders.put(version, classLoader);
+
+				return classLoaders;
+			});
 	}
 
 	public static void unregister(ClassLoader classLoader) {
@@ -87,6 +133,8 @@ public class ClassLoaderPool {
 
 		if (contextName != null) {
 			_classLoaders.remove(contextName);
+
+			_unregisterFallback(contextName);
 		}
 	}
 
@@ -95,16 +143,194 @@ public class ClassLoaderPool {
 
 		if (classLoader != null) {
 			_contextNames.remove(classLoader);
+
+			_unregisterFallback(contextName);
 		}
+	}
+
+	private static void _unregisterFallback(String contextName) {
+		int index = contextName.lastIndexOf("_");
+
+		if ((index == -1) || (index == (contextName.length() - 1))) {
+			return;
+		}
+
+		Version version = Version.parse(contextName.substring(index + 1));
+
+		if (version == null) {
+			return;
+		}
+
+		_fallbackClassLoaders.computeIfPresent(
+			contextName.substring(0, index),
+			(key, classLoaders) -> {
+				classLoaders.remove(version);
+
+				if (classLoaders.isEmpty()) {
+					return null;
+				}
+
+				return classLoaders;
+			});
 	}
 
 	private static final Map<String, ClassLoader> _classLoaders =
 		new ConcurrentHashMap<>();
 	private static final Map<ClassLoader, String> _contextNames =
 		new ConcurrentHashMap<>();
+	private static final Map
+		<String, ConcurrentNavigableMap<Version, ClassLoader>>
+			_fallbackClassLoaders = new ConcurrentHashMap<>();
 
 	static {
+		register("SystemClassLoader", ClassLoader.getSystemClassLoader());
 		register("GlobalClassLoader", ClassLoaderPool.class.getClassLoader());
+	}
+
+	private static class Version implements Comparable<Version> {
+
+		public static Version parse(String version) {
+			int major;
+			int minor = 0;
+			int micro = 0;
+			String qualifier = "";
+
+			try {
+				StringTokenizer stringTokenizer = new StringTokenizer(
+					version, _SEPARATOR, true);
+
+				major = Integer.parseInt(stringTokenizer.nextToken());
+
+				if (stringTokenizer.hasMoreTokens()) {
+					stringTokenizer.nextToken();
+
+					minor = Integer.parseInt(stringTokenizer.nextToken());
+
+					if (stringTokenizer.hasMoreTokens()) {
+						stringTokenizer.nextToken();
+
+						micro = Integer.parseInt(stringTokenizer.nextToken());
+
+						if (stringTokenizer.hasMoreTokens()) {
+							stringTokenizer.nextToken();
+
+							qualifier = stringTokenizer.nextToken("");
+						}
+					}
+				}
+			}
+			catch (Exception exception) {
+				return null;
+			}
+
+			if ((major < 0) || (minor < 0) || (micro < 0)) {
+				return null;
+			}
+
+			for (char ch : qualifier.toCharArray()) {
+				if (('A' <= ch) && (ch <= 'Z')) {
+					continue;
+				}
+
+				if (('a' <= ch) && (ch <= 'z')) {
+					continue;
+				}
+
+				if (('0' <= ch) && (ch <= '9')) {
+					continue;
+				}
+
+				if ((ch == '_') || (ch == '-')) {
+					continue;
+				}
+
+				return null;
+			}
+
+			return new Version(major, minor, micro, qualifier);
+		}
+
+		@Override
+		public int compareTo(Version other) {
+			if (other == this) {
+				return 0;
+			}
+
+			int result = _major - other._major;
+
+			if (result != 0) {
+				return result;
+			}
+
+			result = _minor - other._minor;
+
+			if (result != 0) {
+				return result;
+			}
+
+			result = _micro - other._micro;
+
+			if (result != 0) {
+				return result;
+			}
+
+			return _qualifier.compareTo(other._qualifier);
+		}
+
+		@Override
+		public boolean equals(Object object) {
+			if (object == this) {
+				return true;
+			}
+
+			if (!(object instanceof Version)) {
+				return false;
+			}
+
+			Version other = (Version)object;
+
+			if ((_major == other._major) && (_minor == other._minor) &&
+				(_micro == other._micro) &&
+				_qualifier.equals(other._qualifier)) {
+
+				return true;
+			}
+
+			return false;
+		}
+
+		@Override
+		public int hashCode() {
+			int hash = _hash;
+
+			if (hash != 0) {
+				return hash;
+			}
+
+			hash = 31 * 17;
+			hash = (31 * hash) + _major;
+			hash = (31 * hash) + _minor;
+			hash = (31 * hash) + _micro;
+			hash = (31 * hash) + _qualifier.hashCode();
+
+			return _hash = hash;
+		}
+
+		private Version(int major, int minor, int micro, String qualifier) {
+			_major = major;
+			_minor = minor;
+			_micro = micro;
+			_qualifier = qualifier;
+		}
+
+		private static final String _SEPARATOR = ".";
+
+		private transient int _hash;
+		private final int _major;
+		private final int _micro;
+		private final int _minor;
+		private final String _qualifier;
+
 	}
 
 }
