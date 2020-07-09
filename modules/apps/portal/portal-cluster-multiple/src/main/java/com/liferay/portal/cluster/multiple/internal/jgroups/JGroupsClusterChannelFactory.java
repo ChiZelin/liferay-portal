@@ -17,6 +17,7 @@ package com.liferay.portal.cluster.multiple.internal.jgroups;
 import com.liferay.petra.concurrent.ConcurrentReferenceKeyHashMap;
 import com.liferay.petra.io.StreamUtil;
 import com.liferay.petra.io.unsync.UnsyncByteArrayInputStream;
+import com.liferay.petra.lang.ClassLoaderPool;
 import com.liferay.petra.memory.FinalizeManager;
 import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringBundler;
@@ -25,7 +26,6 @@ import com.liferay.portal.cluster.multiple.configuration.ClusterExecutorConfigur
 import com.liferay.portal.cluster.multiple.internal.ClusterChannel;
 import com.liferay.portal.cluster.multiple.internal.ClusterChannelFactory;
 import com.liferay.portal.cluster.multiple.internal.ClusterReceiver;
-import com.liferay.portal.cluster.multiple.internal.io.ClusterClassLoaderPool;
 import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.log.Log;
@@ -125,8 +125,10 @@ public class JGroupsClusterChannelFactory implements ClusterChannelFactory {
 
 				ClassLoader classLoader = bundleWiring.getClassLoader();
 
-				ClusterClassLoaderPool.registerFallback(
-					bundle.getSymbolicName(), bundle.getVersion(), classLoader);
+				ClassLoaderPool.register(
+					StringBundler.concat(
+						bundle.getSymbolicName(), "_", bundle.getVersion()),
+					classLoader);
 
 				return classLoader;
 			}
@@ -135,8 +137,9 @@ public class JGroupsClusterChannelFactory implements ClusterChannelFactory {
 			public void removedBundle(
 				Bundle bundle, BundleEvent event, ClassLoader classLoader) {
 
-				ClusterClassLoaderPool.unregisterFallback(
-					bundle.getSymbolicName(), bundle.getVersion());
+				ClassLoaderPool.unregister(
+					StringBundler.concat(
+						bundle.getSymbolicName(), "_", bundle.getVersion()));
 			}
 
 		};
