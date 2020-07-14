@@ -17,13 +17,18 @@ package com.liferay.petra.lang;
 import com.liferay.portal.kernel.test.ReflectionTestUtil;
 import com.liferay.portal.kernel.test.rule.CodeCoverageAssertor;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+
 import java.net.URL;
 import java.net.URLClassLoader;
 
 import java.util.Map;
+import java.util.concurrent.ConcurrentNavigableMap;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 
@@ -36,17 +41,21 @@ public class ClassLoaderPoolTest {
 	public static final CodeCoverageAssertor codeCoverageAssertor =
 		CodeCoverageAssertor.INSTANCE;
 
-	@Before
-	public void setUp() {
+	@BeforeClass
+	public static void setUpClass() {
 		_classLoaders = ReflectionTestUtil.getFieldValue(
 			ClassLoaderPool.class, "_classLoaders");
-
-		_classLoaders.clear();
 
 		_contextNames = ReflectionTestUtil.getFieldValue(
 			ClassLoaderPool.class, "_contextNames");
 
-		_contextNames.clear();
+		_fallbackClassLoaders = ReflectionTestUtil.getFieldValue(
+			ClassLoaderPool.class, "_fallbackClassLoaders");
+	}
+
+	@Before
+	public void setUp() {
+		_clear();
 	}
 
 	@Test
@@ -68,6 +77,51 @@ public class ClassLoaderPoolTest {
 			contextClassLoader, ClassLoaderPool.getClassLoader("null"));
 		Assert.assertSame(
 			contextClassLoader, ClassLoaderPool.getClassLoader(null));
+		Assert.assertSame(
+			contextClassLoader,
+			ClassLoaderPool.getClassLoader("symbolic.name_"));
+	}
+
+	@Test
+	public void testGetClassLoaderWithSymbolicNameAndVersion() {
+		ClassLoader classLoader = new URLClassLoader(new URL[0]);
+
+		// Test case 1
+
+		ClassLoaderPool.register(_CONTEXT_NAME, classLoader);
+
+		_classLoaders.clear();
+
+		Thread currentThread = Thread.currentThread();
+
+		Assert.assertSame(
+			currentThread.getContextClassLoader(),
+			ClassLoaderPool.getClassLoader(_CONTEXT_NAME));
+
+		// Test case 2
+
+		ClassLoaderPool.register("symbolic.name1_1.0.0", classLoader);
+
+		_classLoaders.clear();
+
+		Assert.assertSame(
+			classLoader,
+			ClassLoaderPool.getClassLoader("symbolic.name1_1.0.0"));
+
+		ConcurrentNavigableMap<Object, Object> classLoaders =
+			_fallbackClassLoaders.get("symbolic.name1");
+
+		classLoaders.clear();
+
+		Assert.assertSame(
+			currentThread.getContextClassLoader(),
+			ClassLoaderPool.getClassLoader("symbolic.name1_1.0.0"));
+
+		// Test case 3
+
+		Assert.assertSame(
+			currentThread.getContextClassLoader(),
+			ClassLoaderPool.getClassLoader("symbolic.name2_1.0.0"));
 	}
 
 	@Test
@@ -103,15 +157,113 @@ public class ClassLoaderPoolTest {
 	}
 
 	@Test
-	public void testRegister() {
-		ClassLoader classLoader = new URLClassLoader(new URL[0]);
+	public void testParse() throws Exception {
+		Class<?> clazz = Class.forName(
+			"com.liferay.petra.lang.ClassLoaderPool$Version");
 
-		ClassLoaderPool.register(_CONTEXT_NAME, classLoader);
+		Method method = ReflectionTestUtil.getMethod(
+			clazz, "parse", String.class);
+
+		_assertEquals("1.0.0", method.invoke(clazz, "1"));
+		_assertEquals("1.0.0", method.invoke(clazz, "1.0"));
+		_assertEquals("1.0.0.0", method.invoke(clazz, "1.0.0.0"));
+		_assertEquals("1.0.0.Aa0_-", method.invoke(clazz, "1.0.0.Aa0_-"));
+
+		Assert.assertNull(
+			"null should be return because of invalid version",
+			method.invoke(clazz, "1.x.0"));
+		Assert.assertNull(
+			"null should be return because of invalid version",
+			method.invoke(clazz, "-1.0.0"));
+		Assert.assertNull(
+			"null should be return because of invalid version",
+			method.invoke(clazz, "1.-1.0"));
+		Assert.assertNull(
+			"null should be return because of invalid version",
+			method.invoke(clazz, "1.0.-1"));
+		Assert.assertNull(
+			"null should be return because of invalid version",
+			method.invoke(clazz, "1.0.0.~"));
+		Assert.assertNull(
+			"null should be return because of invalid version",
+			method.invoke(clazz, "1.0."));
+	}
+
+	@Test
+	public void testRegister() throws Exception {
+
+		//Test case 1
+
+		ClassLoader classLoader1 = new URLClassLoader(new URL[0]);
+
+		ClassLoaderPool.register(_CONTEXT_NAME, classLoader1);
 
 		Assert.assertEquals(_contextNames.toString(), 1, _contextNames.size());
 		Assert.assertEquals(_classLoaders.toString(), 1, _classLoaders.size());
-		Assert.assertSame(classLoader, _classLoaders.get(_CONTEXT_NAME));
-		Assert.assertEquals(_CONTEXT_NAME, _contextNames.get(classLoader));
+		Assert.assertSame(classLoader1, _classLoaders.get(_CONTEXT_NAME));
+		Assert.assertEquals(_CONTEXT_NAME, _contextNames.get(classLoader1));
+		Assert.assertEquals(
+			_fallbackClassLoaders.toString(), 0, _fallbackClassLoaders.size());
+
+		//Test case 2
+
+		_clear();
+
+		ClassLoader classLoader2 = new URLClassLoader(new URL[0]);
+
+		ClassLoaderPool.register("symbolic_name", classLoader2);
+
+		Assert.assertEquals(_contextNames.toString(), 1, _contextNames.size());
+		Assert.assertEquals(_classLoaders.toString(), 1, _classLoaders.size());
+		Assert.assertSame(classLoader2, _classLoaders.get("symbolic_name"));
+		Assert.assertEquals("symbolic_name", _contextNames.get(classLoader2));
+
+		Assert.assertEquals(
+			_fallbackClassLoaders.toString(), 0, _fallbackClassLoaders.size());
+
+		//Test case 3
+
+		_clear();
+
+		ClassLoader classLoader3 = new URLClassLoader(new URL[0]);
+		ClassLoader classLoader4 = new URLClassLoader(new URL[0]);
+
+		ClassLoaderPool.register("symbolic.name_1.0.0", classLoader3);
+		ClassLoaderPool.register("symbolic.name_1.0.0", classLoader4);
+
+		ConcurrentNavigableMap<Object, Object> concurrentNavigableMap =
+			_fallbackClassLoaders.get("symbolic.name");
+
+		Assert.assertEquals(
+			concurrentNavigableMap.toString(), 1,
+			concurrentNavigableMap.size());
+
+		Class<?> clazz = Class.forName(
+			"com.liferay.petra.lang.ClassLoaderPool$Version");
+
+		Constructor<?> constructor = clazz.getDeclaredConstructors()[0];
+
+		constructor.setAccessible(true);
+
+		Assert.assertSame(
+			classLoader4,
+			concurrentNavigableMap.get(constructor.newInstance(1, 0, 0, "")));
+
+		//Test case 4
+
+		_clear();
+
+		ClassLoader classLoader5 = new URLClassLoader(new URL[0]);
+
+		ClassLoaderPool.register("symbolic.name_", classLoader5);
+
+		Assert.assertEquals(_contextNames.toString(), 1, _contextNames.size());
+		Assert.assertEquals(_classLoaders.toString(), 1, _classLoaders.size());
+		Assert.assertSame(classLoader5, _classLoaders.get("symbolic.name_"));
+		Assert.assertEquals("symbolic.name_", _contextNames.get(classLoader5));
+
+		Assert.assertEquals(
+			_fallbackClassLoaders.toString(), 0, _fallbackClassLoaders.size());
 	}
 
 	@Test(expected = NullPointerException.class)
@@ -133,41 +285,236 @@ public class ClassLoaderPoolTest {
 
 	@Test
 	public void testUnregisterWithInvalidContextName() {
+		//Test case 1
+
 		ClassLoaderPool.unregister(_CONTEXT_NAME);
+
+		_assertEmptyMaps();
+
+		//Test case 2
+
+		ClassLoaderPool.unregister("symbolic.name_1.0.0");
 
 		_assertEmptyMaps();
 	}
 
 	@Test
-	public void testUnregisterWithValidClassLoader() {
-		ClassLoader classLoader = new URLClassLoader(new URL[0]);
+	public void testUnregisterWithValidClassLoader() throws Exception {
+		ClassLoader classLoader1 = new URLClassLoader(new URL[0]);
 
-		ClassLoaderPool.register(_CONTEXT_NAME, classLoader);
+		//Test case 1
 
-		ClassLoaderPool.unregister(classLoader);
+		ClassLoaderPool.register(_CONTEXT_NAME, classLoader1);
+
+		ClassLoaderPool.unregister(classLoader1);
 
 		_assertEmptyMaps();
+
+		//Test case 2
+
+		ClassLoaderPool.register("symbolic.name_1.0.0", classLoader1);
+
+		ClassLoaderPool.unregister(classLoader1);
+
+		_assertEmptyMaps();
+
+		//Test case 3
+
+		ClassLoader classLoader2 = new URLClassLoader(new URL[0]);
+
+		ClassLoaderPool.register("symbolic.name_1.0.0", classLoader1);
+		ClassLoaderPool.register("symbolic.name_2.0.0", classLoader2);
+
+		ClassLoaderPool.unregister(classLoader1);
+
+		ConcurrentNavigableMap<Object, Object> concurrentNavigableMap =
+			_fallbackClassLoaders.get("symbolic.name");
+
+		Assert.assertEquals(
+			concurrentNavigableMap.toString(), 1,
+			concurrentNavigableMap.size());
+
+		Class<?> clazz = Class.forName(
+			"com.liferay.petra.lang.ClassLoaderPool$Version");
+
+		Constructor<?> constructor = clazz.getDeclaredConstructors()[0];
+
+		constructor.setAccessible(true);
+
+		Assert.assertSame(
+			classLoader2,
+			concurrentNavigableMap.get(constructor.newInstance(2, 0, 0, "")));
 	}
 
 	@Test
 	public void testUnregisterWithValidContextName() {
-		ClassLoader classLoader = new URLClassLoader(new URL[0]);
+		//Test case 1
 
-		ClassLoaderPool.register(_CONTEXT_NAME, classLoader);
+		ClassLoader classLoader1 = new URLClassLoader(new URL[0]);
+
+		ClassLoaderPool.register(_CONTEXT_NAME, classLoader1);
 
 		ClassLoaderPool.unregister(_CONTEXT_NAME);
 
 		_assertEmptyMaps();
+
+		//Test case 2
+
+		ClassLoader classLoader2 = new URLClassLoader(new URL[0]);
+
+		ClassLoaderPool.register("symbolic_name", classLoader2);
+
+		ClassLoaderPool.unregister("symbolic_name");
+
+		_assertEmptyMaps();
+
+		//Test case 3
+
+		ClassLoader classLoader3 = new URLClassLoader(new URL[0]);
+
+		ClassLoaderPool.register("symbolic.name_", classLoader3);
+
+		ClassLoaderPool.unregister("symbolic.name_");
+
+		_assertEmptyMaps();
+	}
+
+	@Test
+	public void testVersionCompareTo() throws Exception {
+		Class<?> clazz = Class.forName(
+			"com.liferay.petra.lang.ClassLoaderPool$Version");
+
+		Constructor<?> constructor = clazz.getDeclaredConstructors()[0];
+
+		constructor.setAccessible(true);
+
+		Method method = ReflectionTestUtil.getMethod(clazz, "compareTo", clazz);
+
+		Object version = constructor.newInstance(2, 1, 1, "");
+
+		Assert.assertEquals(0, method.invoke(version, version));
+		Assert.assertEquals(
+			1, method.invoke(version, constructor.newInstance(1, 0, 0, "")));
+		Assert.assertEquals(
+			1, method.invoke(version, constructor.newInstance(2, 0, 0, "")));
+		Assert.assertEquals(
+			1, method.invoke(version, constructor.newInstance(2, 1, 0, "")));
+		Assert.assertEquals(
+			0, method.invoke(version, constructor.newInstance(2, 1, 1, "")));
+	}
+
+	@Test
+	public void testVersionEquals() throws Exception {
+		Class<?> clazz = Class.forName(
+			"com.liferay.petra.lang.ClassLoaderPool$Version");
+
+		Constructor<?> constructor = clazz.getDeclaredConstructors()[0];
+
+		constructor.setAccessible(true);
+
+		Object version = constructor.newInstance(1, 0, 0, "");
+
+		Method method = ReflectionTestUtil.getMethod(
+			clazz, "equals", Object.class);
+
+		Assert.assertTrue(
+			"Version instance 1.0.0 equals itself",
+			(boolean)method.invoke(version, version));
+		Assert.assertFalse(
+			"Version instance 1.0.0 does not equals String instance 1.0.0",
+			(boolean)method.invoke(version, "1.0.0"));
+		Assert.assertFalse(
+			"Version instance 1.0.0 does not equals Version instance 2.0.0",
+			(boolean)method.invoke(
+				version, constructor.newInstance(2, 0, 0, "")));
+		Assert.assertFalse(
+			"Version instance 1.0.0 does not equals Version instance 1.1.0",
+			(boolean)method.invoke(
+				version, constructor.newInstance(1, 1, 0, "")));
+		Assert.assertFalse(
+			"Version instance 1.0.0 does not equals Version instance 1.0.1",
+			(boolean)method.invoke(
+				version, constructor.newInstance(1, 0, 1, "")));
+		Assert.assertFalse(
+			"Version instance 1.0.0 does not equals Version instance 1.0.0.1",
+			(boolean)method.invoke(
+				version, constructor.newInstance(1, 0, 0, "1")));
+		Assert.assertTrue(
+			"Version instance 1.0.0 equals Version instance 1.0.0",
+			(boolean)method.invoke(
+				version, constructor.newInstance(1, 0, 0, "")));
+	}
+
+	@Test
+	public void testVersionHashCode() throws Exception {
+		Class<?> clazz = Class.forName(
+			"com.liferay.petra.lang.ClassLoaderPool$Version");
+
+		Constructor<?> constructor = clazz.getDeclaredConstructors()[0];
+
+		constructor.setAccessible(true);
+
+		Object version = constructor.newInstance(1, 0, 0, "");
+
+		Method method = ReflectionTestUtil.getMethod(clazz, "hashCode");
+
+		Assert.assertEquals(
+			0, (int)ReflectionTestUtil.getFieldValue(version, "_hash"));
+
+		int result = (int)method.invoke(version);
+
+		Assert.assertNotEquals(
+			0, (int)ReflectionTestUtil.getFieldValue(version, "_hash"));
+
+		Assert.assertEquals(result, method.invoke(version));
 	}
 
 	private void _assertEmptyMaps() {
 		Assert.assertTrue(_contextNames.toString(), _contextNames.isEmpty());
 		Assert.assertTrue(_classLoaders.toString(), _classLoaders.isEmpty());
+		Assert.assertTrue(
+			_fallbackClassLoaders.toString(), _fallbackClassLoaders.isEmpty());
+	}
+
+	private void _assertEquals(String expectedVersion, Object version) {
+		int major = ReflectionTestUtil.getFieldValue(version, "_major");
+		int minor = ReflectionTestUtil.getFieldValue(version, "_minor");
+		int micro = ReflectionTestUtil.getFieldValue(version, "_micro");
+
+		String qualifier = ReflectionTestUtil.getFieldValue(
+			version, "_qualifier");
+
+		int length = qualifier.length();
+
+		StringBuilder result = new StringBuilder(20 + length);
+
+		result.append(major);
+		result.append(".");
+		result.append(minor);
+		result.append(".");
+		result.append(micro);
+
+		if (length > 0) {
+			result.append(".");
+			result.append(qualifier);
+		}
+
+		Assert.assertEquals(expectedVersion, result.toString());
+	}
+
+	private void _clear() {
+		_classLoaders.clear();
+
+		_contextNames.clear();
+
+		_fallbackClassLoaders.clear();
 	}
 
 	private static final String _CONTEXT_NAME = "contextName";
 
 	private static Map<String, ClassLoader> _classLoaders;
 	private static Map<ClassLoader, String> _contextNames;
+	private static Map<String, ConcurrentNavigableMap<Object, Object>>
+		_fallbackClassLoaders;
 
 }
