@@ -105,7 +105,7 @@ public class ClassLoaderPool {
 
 		int pos = contextName.lastIndexOf("_");
 
-		if (pos == -1) {
+		if ((pos == -1) || (pos == (contextName.length() - 1))) {
 			return;
 		}
 
@@ -151,7 +151,7 @@ public class ClassLoaderPool {
 	private static void _unregisterFallback(String contextName) {
 		int pos = contextName.lastIndexOf("_");
 
-		if (pos == -1) {
+		if ((pos == -1) || (pos == (contextName.length() - 1))) {
 			return;
 		}
 
