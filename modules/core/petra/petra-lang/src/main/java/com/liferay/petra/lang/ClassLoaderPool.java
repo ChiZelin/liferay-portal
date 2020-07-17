@@ -105,25 +105,27 @@ public class ClassLoaderPool {
 
 		int pos = contextName.lastIndexOf("_");
 
-		if (pos > 0) {
-			Version version = Version.parse(contextName.substring(pos + 1));
-
-			if (version == null) {
-				return;
-			}
-
-			_fallbackClassLoaders.compute(
-				contextName.substring(0, pos),
-				(key, classLoaders) -> {
-					if (classLoaders == null) {
-						classLoaders = new ConcurrentSkipListMap<>();
-					}
-
-					classLoaders.put(version, classLoader);
-
-					return classLoaders;
-				});
+		if (pos == -1) {
+			return;
 		}
+
+		Version version = Version.parse(contextName.substring(pos + 1));
+
+		if (version == null) {
+			return;
+		}
+
+		_fallbackClassLoaders.compute(
+			contextName.substring(0, pos),
+			(key, classLoaders) -> {
+				if (classLoaders == null) {
+					classLoaders = new ConcurrentSkipListMap<>();
+				}
+
+				classLoaders.put(version, classLoader);
+
+				return classLoaders;
+			});
 	}
 
 	public static void unregister(ClassLoader classLoader) {
@@ -149,25 +151,27 @@ public class ClassLoaderPool {
 	private static void _unregisterFallback(String contextName) {
 		int pos = contextName.lastIndexOf("_");
 
-		if (pos > 0) {
-			Version version = Version.parse(contextName.substring(pos + 1));
-
-			if (version == null) {
-				return;
-			}
-
-			_fallbackClassLoaders.computeIfPresent(
-				contextName.substring(0, pos),
-				(key, classLoaders) -> {
-					classLoaders.remove(version);
-
-					if (classLoaders.isEmpty()) {
-						return null;
-					}
-
-					return classLoaders;
-				});
+		if (pos == -1) {
+			return;
 		}
+
+		Version version = Version.parse(contextName.substring(pos + 1));
+
+		if (version == null) {
+			return;
+		}
+
+		_fallbackClassLoaders.computeIfPresent(
+			contextName.substring(0, pos),
+			(key, classLoaders) -> {
+				classLoaders.remove(version);
+
+				if (classLoaders.isEmpty()) {
+					return null;
+				}
+
+				return classLoaders;
+			});
 	}
 
 	private static final Map<String, ClassLoader> _classLoaders =
