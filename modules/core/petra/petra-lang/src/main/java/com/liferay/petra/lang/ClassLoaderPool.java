@@ -312,32 +312,6 @@ public class ClassLoaderPool {
 			return _hash = hash;
 		}
 
-		@Override
-		public String toString() {
-			String toString = _versionString;
-
-			if (toString != null) {
-				return toString;
-			}
-
-			int length = _qualifier.length();
-
-			StringBuilder result = new StringBuilder(20 + length);
-
-			result.append(_major);
-			result.append(_SEPARATOR);
-			result.append(_minor);
-			result.append(_SEPARATOR);
-			result.append(_micro);
-
-			if (length > 0) {
-				result.append(_SEPARATOR);
-				result.append(_qualifier);
-			}
-
-			return _versionString = result.toString();
-		}
-
 		private Version(int major, int minor, int micro, String qualifier) {
 			_major = major;
 			_minor = minor;
