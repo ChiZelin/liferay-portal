@@ -330,26 +330,6 @@ public class ClassLoaderPool {
 		}
 
 		public String toString() {
-			return _toString0();
-		}
-
-		private static int _parseInt(String value, String version) {
-			try {
-				return Integer.parseInt(value);
-			}
-			catch (NumberFormatException numberFormatException) {
-				IllegalArgumentException illegalArgumentException =
-					new IllegalArgumentException(
-						"invalid version \"" + version + "\": non-numeric \"" +
-							value + "\"");
-
-				illegalArgumentException.initCause(numberFormatException);
-
-				throw illegalArgumentException;
-			}
-		}
-
-		private String _toString0() {
 			String s = _versionString;
 
 			if (s != null) {
@@ -372,6 +352,22 @@ public class ClassLoaderPool {
 			}
 
 			return _versionString = result.toString();
+		}
+
+		private static int _parseInt(String value, String version) {
+			try {
+				return Integer.parseInt(value);
+			}
+			catch (NumberFormatException numberFormatException) {
+				IllegalArgumentException illegalArgumentException =
+					new IllegalArgumentException(
+						"invalid version \"" + version + "\": non-numeric \"" +
+							value + "\"");
+
+				illegalArgumentException.initCause(numberFormatException);
+
+				throw illegalArgumentException;
+			}
 		}
 
 		private static final String _SEPARATOR = ".";
