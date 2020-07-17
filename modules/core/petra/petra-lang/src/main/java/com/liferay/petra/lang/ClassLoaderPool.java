@@ -103,20 +103,20 @@ public class ClassLoaderPool {
 		_classLoaders.put(contextName, classLoader);
 		_contextNames.put(classLoader, contextName);
 
-		int pos = contextName.lastIndexOf("_");
+		int index = contextName.lastIndexOf("_");
 
-		if ((pos == -1) || (pos == (contextName.length() - 1))) {
+		if ((index == -1) || (index == (contextName.length() - 1))) {
 			return;
 		}
 
-		Version version = Version.parse(contextName.substring(pos + 1));
+		Version version = Version.parse(contextName.substring(index + 1));
 
 		if (version == null) {
 			return;
 		}
 
 		_fallbackClassLoaders.compute(
-			contextName.substring(0, pos),
+			contextName.substring(0, index),
 			(key, classLoaders) -> {
 				if (classLoaders == null) {
 					classLoaders = new ConcurrentSkipListMap<>();
@@ -149,20 +149,20 @@ public class ClassLoaderPool {
 	}
 
 	private static void _unregisterFallback(String contextName) {
-		int pos = contextName.lastIndexOf("_");
+		int index = contextName.lastIndexOf("_");
 
-		if ((pos == -1) || (pos == (contextName.length() - 1))) {
+		if ((index == -1) || (index == (contextName.length() - 1))) {
 			return;
 		}
 
-		Version version = Version.parse(contextName.substring(pos + 1));
+		Version version = Version.parse(contextName.substring(index + 1));
 
 		if (version == null) {
 			return;
 		}
 
 		_fallbackClassLoaders.computeIfPresent(
-			contextName.substring(0, pos),
+			contextName.substring(0, index),
 			(key, classLoaders) -> {
 				classLoaders.remove(version);
 
