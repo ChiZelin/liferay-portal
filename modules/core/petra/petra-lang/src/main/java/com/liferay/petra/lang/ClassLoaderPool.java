@@ -330,7 +330,6 @@ public class ClassLoaderPool {
 		private final int _micro;
 		private final int _minor;
 		private final String _qualifier;
-		private transient String _versionString;
 
 	}
 
