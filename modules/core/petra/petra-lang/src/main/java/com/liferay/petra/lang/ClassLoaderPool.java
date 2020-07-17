@@ -292,6 +292,7 @@ public class ClassLoaderPool {
 			return _qualifier.compareTo(other._qualifier);
 		}
 
+		@Override
 		public boolean equals(Object object) {
 			if (object == this) {
 				return true;
@@ -313,6 +314,7 @@ public class ClassLoaderPool {
 			return false;
 		}
 
+		@Override
 		public int hashCode() {
 			int h = _hash;
 
@@ -329,6 +331,7 @@ public class ClassLoaderPool {
 			return _hash = h;
 		}
 
+		@Override
 		public String toString() {
 			String s = _versionString;
 
