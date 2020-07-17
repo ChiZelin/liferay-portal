@@ -246,13 +246,6 @@ public class ClassLoaderPool {
 			return new Version(major, minor, micro, qualifier);
 		}
 
-		private Version(int major, int minor, int micro, String qualifier) {
-			_major = major;
-			_minor = minor;
-			_micro = micro;
-			_qualifier = qualifier;
-		}
-
 		@Override
 		public int compareTo(Version other) {
 			if (other == this) {
@@ -343,6 +336,13 @@ public class ClassLoaderPool {
 			}
 
 			return _versionString = result.toString();
+		}
+
+		private Version(int major, int minor, int micro, String qualifier) {
+			_major = major;
+			_minor = minor;
+			_micro = micro;
+			_qualifier = qualifier;
 		}
 
 		private static final String _SEPARATOR = ".";
