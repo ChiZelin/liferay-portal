@@ -15,8 +15,6 @@
 package com.liferay.petra.lang;
 
 import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Objects;
 import java.util.StringTokenizer;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentNavigableMap;
@@ -108,28 +106,23 @@ public class ClassLoaderPool {
 		int pos = contextName.lastIndexOf("_");
 
 		if (pos > 0) {
-			try {
-				Version version = new Version(contextName.substring(pos + 1));
+			Version version = Version.parse(contextName.substring(pos + 1));
 
-				_fallbackClassLoaders.compute(
-					contextName.substring(0, pos),
-					(key, classLoaders) -> {
-						if (classLoaders == null) {
-							classLoaders = new ConcurrentSkipListMap<>();
-						}
-
-						classLoaders.put(version, classLoader);
-
-						return classLoaders;
-					});
+			if (version == null) {
+				return;
 			}
-			catch (Exception exception) {
-				if (!Objects.equals(
-						exception.getMessage(), "Invalid version")) {
 
-					throw new RuntimeException(exception);
-				}
-			}
+			_fallbackClassLoaders.compute(
+				contextName.substring(0, pos),
+				(key, classLoaders) -> {
+					if (classLoaders == null) {
+						classLoaders = new ConcurrentSkipListMap<>();
+					}
+
+					classLoaders.put(version, classLoader);
+
+					return classLoaders;
+				});
 		}
 	}
 
@@ -157,28 +150,23 @@ public class ClassLoaderPool {
 		int pos = contextName.lastIndexOf("_");
 
 		if (pos > 0) {
-			try {
-				Version version = new Version(contextName.substring(pos + 1));
+			Version version = Version.parse(contextName.substring(pos + 1));
 
-				_fallbackClassLoaders.computeIfPresent(
-					contextName.substring(0, pos),
-					(key, classLoaders) -> {
-						classLoaders.remove(version);
-
-						if (classLoaders.isEmpty()) {
-							return null;
-						}
-
-						return classLoaders;
-					});
+			if (version == null) {
+				return;
 			}
-			catch (Exception exception) {
-				if (!Objects.equals(
-						exception.getMessage(), "Invalid version")) {
 
-					throw new RuntimeException(exception);
-				}
-			}
+			_fallbackClassLoaders.computeIfPresent(
+				contextName.substring(0, pos),
+				(key, classLoaders) -> {
+					classLoaders.remove(version);
+
+					if (classLoaders.isEmpty()) {
+						return null;
+					}
+
+					return classLoaders;
+				});
 		}
 	}
 
@@ -197,7 +185,7 @@ public class ClassLoaderPool {
 
 	private static class Version implements Comparable<Version> {
 
-		public Version(String version) throws Exception {
+		public static Version parse(String version) {
 			int major;
 			int minor = 0;
 			int micro = 0;
@@ -207,17 +195,17 @@ public class ClassLoaderPool {
 				StringTokenizer stringTokenizer = new StringTokenizer(
 					version, _SEPARATOR, true);
 
-				major = _parseInt(stringTokenizer.nextToken(), version);
+				major = Integer.parseInt(stringTokenizer.nextToken());
 
 				if (stringTokenizer.hasMoreTokens()) {
 					stringTokenizer.nextToken();
 
-					minor = _parseInt(stringTokenizer.nextToken(), version);
+					minor = Integer.parseInt(stringTokenizer.nextToken());
 
 					if (stringTokenizer.hasMoreTokens()) {
 						stringTokenizer.nextToken();
 
-						micro = _parseInt(stringTokenizer.nextToken(), version);
+						micro = Integer.parseInt(stringTokenizer.nextToken());
 
 						if (stringTokenizer.hasMoreTokens()) {
 							stringTokenizer.nextToken();
@@ -227,16 +215,12 @@ public class ClassLoaderPool {
 					}
 				}
 			}
-			catch (NoSuchElementException noSuchElementException) {
-				throw new Exception("Invalid version", noSuchElementException);
-			}
-			catch (IllegalArgumentException illegalArgumentException) {
-				throw new Exception(
-					"Invalid version", illegalArgumentException);
+			catch (Exception exception) {
+				return null;
 			}
 
 			if ((major < 0) || (minor < 0) || (micro < 0)) {
-				throw new Exception("Invalid version");
+				return null;
 			}
 
 			for (char ch : qualifier.toCharArray()) {
@@ -256,9 +240,13 @@ public class ClassLoaderPool {
 					continue;
 				}
 
-				throw new Exception("Invalid version");
+				return null;
 			}
 
+			return new Version(major, minor, micro, qualifier);
+		}
+
+		private Version(int major, int minor, int micro, String qualifier) {
 			_major = major;
 			_minor = minor;
 			_micro = micro;
@@ -355,22 +343,6 @@ public class ClassLoaderPool {
 			}
 
 			return _versionString = result.toString();
-		}
-
-		private static int _parseInt(String value, String version) {
-			try {
-				return Integer.parseInt(value);
-			}
-			catch (NumberFormatException numberFormatException) {
-				IllegalArgumentException illegalArgumentException =
-					new IllegalArgumentException(
-						"invalid version \"" + version + "\": non-numeric \"" +
-							value + "\"");
-
-				illegalArgumentException.initCause(numberFormatException);
-
-				throw illegalArgumentException;
-			}
 		}
 
 		private static final String _SEPARATOR = ".";
