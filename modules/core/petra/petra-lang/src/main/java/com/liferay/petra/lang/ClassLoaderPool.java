@@ -316,32 +316,32 @@ public class ClassLoaderPool {
 
 		@Override
 		public int hashCode() {
-			int h = _hash;
+			int hash = _hash;
 
-			if (h != 0) {
-				return h;
+			if (hash != 0) {
+				return hash;
 			}
 
-			h = 31 * 17;
-			h = (31 * h) + _major;
-			h = (31 * h) + _minor;
-			h = (31 * h) + _micro;
-			h = (31 * h) + _qualifier.hashCode();
+			hash = 31 * 17;
+			hash = (31 * hash) + _major;
+			hash = (31 * hash) + _minor;
+			hash = (31 * hash) + _micro;
+			hash = (31 * hash) + _qualifier.hashCode();
 
-			return _hash = h;
+			return _hash = hash;
 		}
 
 		@Override
 		public String toString() {
-			String s = _versionString;
+			String toString = _versionString;
 
-			if (s != null) {
-				return s;
+			if (toString != null) {
+				return toString;
 			}
 
-			int q = _qualifier.length();
+			int length = _qualifier.length();
 
-			StringBuffer result = new StringBuffer(20 + q);
+			StringBuffer result = new StringBuffer(20 + length);
 
 			result.append(_major);
 			result.append(_SEPARATOR);
@@ -349,7 +349,7 @@ public class ClassLoaderPool {
 			result.append(_SEPARATOR);
 			result.append(_micro);
 
-			if (q > 0) {
+			if (length > 0) {
 				result.append(_SEPARATOR);
 				result.append(_qualifier);
 			}
