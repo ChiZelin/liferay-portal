@@ -341,7 +341,7 @@ public class ClassLoaderPool {
 
 			int length = _qualifier.length();
 
-			StringBuffer result = new StringBuffer(20 + length);
+			StringBuilder result = new StringBuilder(20 + length);
 
 			result.append(_major);
 			result.append(_SEPARATOR);
