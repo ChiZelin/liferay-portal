@@ -45,12 +45,12 @@ public class ClassLoaderPool {
 			classLoader = _classLoaders.get(contextName);
 
 			if (classLoader == null) {
-				int pos = contextName.lastIndexOf("_");
+				int index = contextName.lastIndexOf("_");
 
-				if (pos > 0) {
+				if ((index > 0) && (index != contextName.length() - 1)) {
 					ConcurrentNavigableMap<Version, ClassLoader> classLoaders =
 						_fallbackClassLoaders.get(
-							contextName.substring(0, pos));
+							contextName.substring(0, index));
 
 					if (classLoaders != null) {
 						Map.Entry<Version, ClassLoader> entry =
