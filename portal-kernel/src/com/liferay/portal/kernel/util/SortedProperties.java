@@ -28,7 +28,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * @author Brian Wing Shun Chan
+ * @author Brian Wing
  */
 public class SortedProperties extends Properties {
 
