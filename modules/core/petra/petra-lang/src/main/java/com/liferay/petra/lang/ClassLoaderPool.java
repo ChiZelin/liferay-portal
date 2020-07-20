@@ -284,45 +284,6 @@ public class ClassLoaderPool {
 			return _qualifier.compareTo(other._qualifier);
 		}
 
-		@Override
-		public boolean equals(Object object) {
-			if (object == this) {
-				return true;
-			}
-
-			if (!(object instanceof Version)) {
-				return false;
-			}
-
-			Version other = (Version)object;
-
-			if ((_major == other._major) && (_minor == other._minor) &&
-				(_micro == other._micro) &&
-				_qualifier.equals(other._qualifier)) {
-
-				return true;
-			}
-
-			return false;
-		}
-
-		@Override
-		public int hashCode() {
-			int hash = _hash;
-
-			if (hash != 0) {
-				return hash;
-			}
-
-			hash = 31 * 17;
-			hash = (31 * hash) + _major;
-			hash = (31 * hash) + _minor;
-			hash = (31 * hash) + _micro;
-			hash = (31 * hash) + _qualifier.hashCode();
-
-			return _hash = hash;
-		}
-
 		private Version(int major, int minor, int micro, String qualifier) {
 			_major = major;
 			_minor = minor;
@@ -332,7 +293,6 @@ public class ClassLoaderPool {
 
 		private static final String _SEPARATOR = ".";
 
-		private transient int _hash;
 		private final int _major;
 		private final int _micro;
 		private final int _minor;
