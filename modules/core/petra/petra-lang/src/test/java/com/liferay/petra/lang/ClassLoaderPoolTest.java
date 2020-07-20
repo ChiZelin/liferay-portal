@@ -126,6 +126,18 @@ public class ClassLoaderPoolTest {
 		Assert.assertSame(
 			currentThread.getContextClassLoader(),
 			ClassLoaderPool.getClassLoader("symbolic.name2_1.0.0"));
+
+		// Test case 4
+
+		_clear();
+
+		ClassLoaderPool.register(
+			"symbolic.name1_1.0.0", new URLClassLoader(new URL[0]));
+		ClassLoaderPool.register("symbolic.name1_2.0.0", classLoader);
+
+		Assert.assertSame(
+			classLoader,
+			ClassLoaderPool.getClassLoader("symbolic.name1_3.0.0"));
 	}
 
 	@Test
