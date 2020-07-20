@@ -187,6 +187,9 @@ public class ClassLoaderPoolTest {
 		Assert.assertNull(
 			"null should be return because of invalid version",
 			method.invoke(clazz, "1.0."));
+		Assert.assertNull(
+			"null should be return because of invalid version",
+			method.invoke(clazz, "1.0.0." + (char)128));
 	}
 
 	@Test

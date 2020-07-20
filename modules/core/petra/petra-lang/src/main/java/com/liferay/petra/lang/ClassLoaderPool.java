@@ -174,6 +174,8 @@ public class ClassLoaderPool {
 			});
 	}
 
+	private static final boolean[] _VALID_QUALIFIER_CHARS = new boolean[128];
+
 	private static final Map<String, ClassLoader> _classLoaders =
 		new ConcurrentHashMap<>();
 	private static final Map<ClassLoader, String> _contextNames =
@@ -185,6 +187,21 @@ public class ClassLoaderPool {
 	static {
 		register("SystemClassLoader", ClassLoader.getSystemClassLoader());
 		register("GlobalClassLoader", ClassLoaderPool.class.getClassLoader());
+
+		for (int i = 'a'; i <= 'z'; i++) {
+			_VALID_QUALIFIER_CHARS[i] = true;
+		}
+
+		for (int i = 'A'; i <= 'Z'; i++) {
+			_VALID_QUALIFIER_CHARS[i] = true;
+		}
+
+		for (int i = '0'; i <= '9'; i++) {
+			_VALID_QUALIFIER_CHARS[i] = true;
+		}
+
+		_VALID_QUALIFIER_CHARS['-'] = true;
+		_VALID_QUALIFIER_CHARS['_'] = true;
 	}
 
 	private static class Version implements Comparable<Version> {
@@ -227,20 +244,10 @@ public class ClassLoaderPool {
 				return null;
 			}
 
-			for (char ch : qualifier.toCharArray()) {
-				if (('A' <= ch) && (ch <= 'Z')) {
-					continue;
-				}
+			for (int i = 0; i < qualifier.length(); i++) {
+				char c = qualifier.charAt(i);
 
-				if (('a' <= ch) && (ch <= 'z')) {
-					continue;
-				}
-
-				if (('0' <= ch) && (ch <= '9')) {
-					continue;
-				}
-
-				if ((ch == '_') || (ch == '-')) {
+				if ((c < 128) && _VALID_QUALIFIER_CHARS[c]) {
 					continue;
 				}
 
