@@ -73,6 +73,10 @@ public class ClassLoaderPoolTest {
 
 	@Test
 	public void testGetClassLoaderWithInvalidContextName() {
+		ClassLoader classLoader = new URLClassLoader(new URL[0]);
+
+		ClassLoaderPool.register(_CONTEXT_NAME, classLoader);
+
 		Thread currentThread = Thread.currentThread();
 
 		ClassLoader contextClassLoader = currentThread.getContextClassLoader();
