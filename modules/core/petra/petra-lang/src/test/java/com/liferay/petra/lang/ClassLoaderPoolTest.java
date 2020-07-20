@@ -42,7 +42,7 @@ public class ClassLoaderPoolTest {
 		CodeCoverageAssertor.INSTANCE;
 
 	@BeforeClass
-	public static void setUpClass() {
+	public static void setUpClass() throws Exception {
 		_classLoaders = ReflectionTestUtil.getFieldValue(
 			ClassLoaderPool.class, "_classLoaders");
 
@@ -51,6 +51,14 @@ public class ClassLoaderPoolTest {
 
 		_fallbackClassLoaders = ReflectionTestUtil.getFieldValue(
 			ClassLoaderPool.class, "_fallbackClassLoaders");
+
+		Class<?> clazz = Class.forName(
+			"com.liferay.petra.lang.ClassLoaderPool$Version");
+
+		_versionConstructor = clazz.getDeclaredConstructor(
+			int.class, int.class, int.class, String.class);
+
+		_versionConstructor.setAccessible(true);
 	}
 
 	@Before
@@ -238,16 +246,10 @@ public class ClassLoaderPoolTest {
 			concurrentNavigableMap.toString(), 1,
 			concurrentNavigableMap.size());
 
-		Class<?> clazz = Class.forName(
-			"com.liferay.petra.lang.ClassLoaderPool$Version");
-
-		Constructor<?> constructor = clazz.getDeclaredConstructors()[0];
-
-		constructor.setAccessible(true);
-
 		Assert.assertSame(
 			classLoader4,
-			concurrentNavigableMap.get(constructor.newInstance(1, 0, 0, "")));
+			concurrentNavigableMap.get(
+				_versionConstructor.newInstance(1, 0, 0, "")));
 
 		//Test case 4
 
@@ -334,16 +336,10 @@ public class ClassLoaderPoolTest {
 			concurrentNavigableMap.toString(), 1,
 			concurrentNavigableMap.size());
 
-		Class<?> clazz = Class.forName(
-			"com.liferay.petra.lang.ClassLoaderPool$Version");
-
-		Constructor<?> constructor = clazz.getDeclaredConstructors()[0];
-
-		constructor.setAccessible(true);
-
 		Assert.assertSame(
 			classLoader2,
-			concurrentNavigableMap.get(constructor.newInstance(2, 0, 0, "")));
+			concurrentNavigableMap.get(
+				_versionConstructor.newInstance(2, 0, 0, "")));
 	}
 
 	@Test
@@ -384,23 +380,27 @@ public class ClassLoaderPoolTest {
 		Class<?> clazz = Class.forName(
 			"com.liferay.petra.lang.ClassLoaderPool$Version");
 
-		Constructor<?> constructor = clazz.getDeclaredConstructors()[0];
-
-		constructor.setAccessible(true);
-
 		Method method = ReflectionTestUtil.getMethod(clazz, "compareTo", clazz);
 
-		Object version = constructor.newInstance(2, 1, 1, "");
+		Object version = _versionConstructor.newInstance(2, 1, 1, "");
 
 		Assert.assertEquals(0, method.invoke(version, version));
 		Assert.assertEquals(
-			1, method.invoke(version, constructor.newInstance(1, 0, 0, "")));
+			1,
+			method.invoke(
+				version, _versionConstructor.newInstance(1, 0, 0, "")));
 		Assert.assertEquals(
-			1, method.invoke(version, constructor.newInstance(2, 0, 0, "")));
+			1,
+			method.invoke(
+				version, _versionConstructor.newInstance(2, 0, 0, "")));
 		Assert.assertEquals(
-			1, method.invoke(version, constructor.newInstance(2, 1, 0, "")));
+			1,
+			method.invoke(
+				version, _versionConstructor.newInstance(2, 1, 0, "")));
 		Assert.assertEquals(
-			0, method.invoke(version, constructor.newInstance(2, 1, 1, "")));
+			0,
+			method.invoke(
+				version, _versionConstructor.newInstance(2, 1, 1, "")));
 	}
 
 	private void _assertEmptyMaps() {
@@ -450,5 +450,6 @@ public class ClassLoaderPoolTest {
 	private static Map<ClassLoader, String> _contextNames;
 	private static Map<String, ConcurrentNavigableMap<Object, Object>>
 		_fallbackClassLoaders;
+	private static Constructor<?> _versionConstructor;
 
 }
