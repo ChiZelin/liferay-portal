@@ -41,6 +41,7 @@ import com.liferay.dynamic.data.mapping.test.util.DDMFormTestUtil;
 import com.liferay.dynamic.data.mapping.test.util.DDMFormValuesTestUtil;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
+import com.liferay.portal.json.JSONFactoryImpl;
 import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
@@ -943,7 +944,8 @@ public class DDMFormPagesTemplateContextFactoryTest extends PowerMockito {
 		DDMFormPagesTemplateContextFactory ddmFormPagesTemplateContextFactory =
 			new DDMFormPagesTemplateContextFactory(
 				ddmForm, ddmFormLayout, ddmFormRenderingContext,
-				_ddmStructureLayoutLocalService, _ddmStructureLocalService);
+				_ddmStructureLayoutLocalService, _ddmStructureLocalService,
+				new JSONFactoryImpl());
 
 		ddmFormPagesTemplateContextFactory.setDDMFormEvaluator(
 			getDDMFormEvaluator());

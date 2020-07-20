@@ -23,7 +23,6 @@ import com.liferay.portal.kernel.model.GroupConstants;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.VirtualLayoutConstants;
 import com.liferay.portal.kernel.service.LayoutLocalServiceUtil;
-import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
 import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.HashMapBuilder;
@@ -82,13 +81,8 @@ public class UpdateLanguageActionTest {
 		_testGetRedirectWithControlPanelURL(false);
 		_testGetRedirectWithControlPanelURL(true);
 
-		_testGetRedirectWithPublicLayoutURL(false, "");
-		_testGetRedirectWithPublicLayoutURL(
-			false, Portal.FRIENDLY_URL_SEPARATOR + "asset");
-
-		_testGetRedirectWithPublicLayoutURL(true, "");
-		_testGetRedirectWithPublicLayoutURL(
-			true, Portal.FRIENDLY_URL_SEPARATOR + "asset");
+		_testGetRedirectWithFriendlyURL(false);
+		_testGetRedirectWithFriendlyURL(true);
 	}
 
 	private void _assertRedirect(
@@ -147,7 +141,15 @@ public class UpdateLanguageActionTest {
 		}
 	}
 
-	private void _testGetRedirectWithPublicLayoutURL(boolean i18n, String path)
+	private void _testGetRedirectWithFriendlyURL(boolean i18n)
+		throws Exception {
+
+		_testGetRedirectWithFriendlyURL(i18n, "");
+		_testGetRedirectWithFriendlyURL(
+			i18n, Portal.FRIENDLY_URL_SEPARATOR + "asset");
+	}
+
+	private void _testGetRedirectWithFriendlyURL(boolean i18n, String path)
 		throws Exception {
 
 		ThemeDisplay themeDisplay = new ThemeDisplay();
@@ -181,10 +183,7 @@ public class UpdateLanguageActionTest {
 	}
 
 	private final Locale _defaultLocale = LocaleUtil.US;
-
-	@DeleteAfterTestRun
 	private Group _group;
-
 	private Layout _layout;
 	private final Locale _sourceLocale = LocaleUtil.FRANCE;
 	private final Locale _targetLocale = LocaleUtil.GERMAN;

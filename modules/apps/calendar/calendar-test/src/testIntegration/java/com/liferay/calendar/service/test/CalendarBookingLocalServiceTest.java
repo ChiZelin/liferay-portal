@@ -34,6 +34,7 @@ import com.liferay.calendar.test.util.RecurrenceTestUtil;
 import com.liferay.calendar.util.JCalendarUtil;
 import com.liferay.calendar.util.RecurrenceUtil;
 import com.liferay.calendar.workflow.constants.CalendarBookingWorkflowConstants;
+import com.liferay.layout.test.util.LayoutTestUtil;
 import com.liferay.petra.mail.MailEngine;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
@@ -41,6 +42,7 @@ import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.Group;
+import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.WorkflowDefinitionLinkLocalService;
@@ -800,6 +802,8 @@ public class CalendarBookingLocalServiceTest {
 
 		Group liveGroup = GroupTestUtil.addGroup();
 
+		Layout targetLayout = LayoutTestUtil.addLayout(liveGroup);
+
 		Calendar liveCalendar = CalendarTestUtil.getDefaultCalendar(liveGroup);
 
 		CalendarStagingTestUtil.enableLocalStaging(liveGroup, true);
@@ -809,6 +813,8 @@ public class CalendarBookingLocalServiceTest {
 
 		CalendarBooking calendarBooking =
 			CalendarBookingTestUtil.addRegularCalendarBooking(stagingCalendar);
+
+		CalendarStagingTestUtil.publishPortlet(liveGroup, targetLayout, true);
 
 		CalendarStagingTestUtil.publishLayouts(liveGroup, true);
 
@@ -821,6 +827,8 @@ public class CalendarBookingLocalServiceTest {
 		assertCalendarBookingsCount(liveCalendar, 1);
 
 		assertCalendarBookingsCount(stagingCalendar, 0);
+
+		CalendarStagingTestUtil.publishPortlet(liveGroup, targetLayout, true);
 
 		CalendarStagingTestUtil.publishLayouts(liveGroup, true);
 
@@ -1153,6 +1161,8 @@ public class CalendarBookingLocalServiceTest {
 
 		Group liveGroup = GroupTestUtil.addGroup();
 
+		Layout targetLayout = LayoutTestUtil.addLayout(liveGroup);
+
 		Calendar invitingCalendar = CalendarTestUtil.addCalendar(_user);
 
 		Calendar liveCalendar = CalendarTestUtil.getDefaultCalendar(liveGroup);
@@ -1173,6 +1183,8 @@ public class CalendarBookingLocalServiceTest {
 		assertCalendarBookingsCount(liveCalendar, 0);
 
 		assertCalendarBookingsCount(stagingCalendar, 1);
+
+		CalendarStagingTestUtil.publishPortlet(liveGroup, targetLayout, true);
 
 		CalendarStagingTestUtil.publishLayouts(liveGroup, true);
 
@@ -1288,6 +1300,8 @@ public class CalendarBookingLocalServiceTest {
 
 		Group liveGroup = GroupTestUtil.addGroup();
 
+		Layout targetLayout = LayoutTestUtil.addLayout(liveGroup);
+
 		Calendar invitedCalendar = CalendarTestUtil.addCalendar(_user);
 
 		Calendar liveCalendar = CalendarTestUtil.getDefaultCalendar(liveGroup);
@@ -1300,6 +1314,8 @@ public class CalendarBookingLocalServiceTest {
 		CalendarBooking calendarBooking =
 			CalendarBookingTestUtil.addMasterCalendarBooking(
 				stagingCalendar, invitedCalendar);
+
+		CalendarStagingTestUtil.publishPortlet(liveGroup, targetLayout, true);
 
 		CalendarStagingTestUtil.publishLayouts(liveGroup, true);
 
@@ -1322,6 +1338,8 @@ public class CalendarBookingLocalServiceTest {
 		throws Exception {
 
 		Group liveGroup = GroupTestUtil.addGroup();
+
+		Layout targetLayout = LayoutTestUtil.addLayout(liveGroup);
 
 		_activateWorkflow(liveGroup);
 
@@ -1361,6 +1379,8 @@ public class CalendarBookingLocalServiceTest {
 
 		assertStatus(calendarBooking, WorkflowConstants.STATUS_APPROVED);
 
+		CalendarStagingTestUtil.publishPortlet(liveGroup, targetLayout, true);
+
 		CalendarStagingTestUtil.publishLayouts(liveGroup, true);
 
 		List<CalendarBooking> childCalendarBookings =
@@ -1377,6 +1397,8 @@ public class CalendarBookingLocalServiceTest {
 		throws Exception {
 
 		Group liveGroup = GroupTestUtil.addGroup();
+
+		Layout targetLayout = LayoutTestUtil.addLayout(liveGroup);
 
 		_activateWorkflow(liveGroup);
 
@@ -1402,6 +1424,8 @@ public class CalendarBookingLocalServiceTest {
 		assertCalendarBookingsCount(invitedCalendar, 1);
 
 		assertCalendarBookingsCount(stagingCalendar, 1);
+
+		CalendarStagingTestUtil.publishPortlet(liveGroup, targetLayout, true);
 
 		CalendarStagingTestUtil.publishLayouts(liveGroup, true);
 
@@ -1477,6 +1501,8 @@ public class CalendarBookingLocalServiceTest {
 
 		Group liveGroup = GroupTestUtil.addGroup();
 
+		Layout targetLayout = LayoutTestUtil.addLayout(liveGroup);
+
 		Calendar liveCalendar = CalendarTestUtil.getDefaultCalendar(liveGroup);
 
 		CalendarStagingTestUtil.enableLocalStaging(liveGroup, true);
@@ -1486,6 +1512,8 @@ public class CalendarBookingLocalServiceTest {
 
 		CalendarBooking calendarBooking =
 			CalendarBookingTestUtil.addRegularCalendarBooking(stagingCalendar);
+
+		CalendarStagingTestUtil.publishPortlet(liveGroup, targetLayout, true);
 
 		CalendarStagingTestUtil.publishLayouts(liveGroup, true);
 
@@ -1525,6 +1553,8 @@ public class CalendarBookingLocalServiceTest {
 
 		assertCalendarBookingsCount(stagingCalendar, 1);
 
+		CalendarStagingTestUtil.publishPortlet(liveGroup, targetLayout, true);
+
 		CalendarStagingTestUtil.publishLayouts(liveGroup, true);
 
 		assertCalendarBookingsCount(externalCalendar, 0);
@@ -1540,6 +1570,8 @@ public class CalendarBookingLocalServiceTest {
 
 		Group liveGroup = GroupTestUtil.addGroup();
 
+		Layout targetLayout = LayoutTestUtil.addLayout(liveGroup);
+
 		Calendar liveCalendar = CalendarTestUtil.getDefaultCalendar(liveGroup);
 
 		CalendarStagingTestUtil.enableLocalStaging(liveGroup, true);
@@ -1549,6 +1581,8 @@ public class CalendarBookingLocalServiceTest {
 
 		CalendarBooking calendarBooking =
 			CalendarBookingTestUtil.addRegularCalendarBooking(stagingCalendar);
+
+		CalendarStagingTestUtil.publishPortlet(liveGroup, targetLayout, true);
 
 		CalendarStagingTestUtil.publishLayouts(liveGroup, true);
 
@@ -1577,6 +1611,8 @@ public class CalendarBookingLocalServiceTest {
 
 		assertCalendarBookingsCount(stagingCalendar, 0);
 
+		CalendarStagingTestUtil.publishPortlet(liveGroup, targetLayout, true);
+
 		CalendarStagingTestUtil.publishLayouts(liveGroup, true);
 
 		assertCalendarBookingsCount(externalCalendar, 1);
@@ -1592,6 +1628,8 @@ public class CalendarBookingLocalServiceTest {
 
 		Group liveGroup = GroupTestUtil.addGroup();
 
+		Layout targetLayout = LayoutTestUtil.addLayout(liveGroup);
+
 		Calendar liveCalendar1 = CalendarTestUtil.getDefaultCalendar(liveGroup);
 		Calendar liveCalendar2 = CalendarTestUtil.addCalendar(liveGroup);
 
@@ -1604,6 +1642,8 @@ public class CalendarBookingLocalServiceTest {
 
 		CalendarBooking calendarBooking =
 			CalendarBookingTestUtil.addRegularCalendarBooking(stagingCalendar1);
+
+		CalendarStagingTestUtil.publishPortlet(liveGroup, targetLayout, true);
 
 		CalendarStagingTestUtil.publishLayouts(liveGroup, true);
 
@@ -1627,6 +1667,8 @@ public class CalendarBookingLocalServiceTest {
 		assertCalendarBookingsCount(liveCalendar2, 0);
 		assertCalendarBookingsCount(stagingCalendar1, 0);
 		assertCalendarBookingsCount(stagingCalendar2, 1);
+
+		CalendarStagingTestUtil.publishPortlet(liveGroup, targetLayout, true);
 
 		CalendarStagingTestUtil.publishLayouts(liveGroup, true);
 
@@ -1673,6 +1715,8 @@ public class CalendarBookingLocalServiceTest {
 
 		Group liveGroup = GroupTestUtil.addGroup();
 
+		Layout targetLayout = LayoutTestUtil.addLayout(liveGroup);
+
 		Calendar liveCalendar = CalendarTestUtil.getDefaultCalendar(liveGroup);
 
 		CalendarStagingTestUtil.enableLocalStaging(liveGroup, true);
@@ -1691,6 +1735,8 @@ public class CalendarBookingLocalServiceTest {
 		CalendarNotificationTemplateTestUtil.addCalendarNotificationTemplate(
 			stagingCalendar, NotificationTemplateType.INVITE,
 			"test@liferay.com", "Test Test", mailSubject, mailBody);
+
+		CalendarStagingTestUtil.publishPortlet(liveGroup, targetLayout, true);
 
 		CalendarStagingTestUtil.publishLayouts(liveGroup, true);
 
@@ -1925,12 +1971,16 @@ public class CalendarBookingLocalServiceTest {
 
 		Group liveGroup = GroupTestUtil.addGroup();
 
+		Layout targetLayout = LayoutTestUtil.addLayout(liveGroup);
+
 		Calendar liveCalendar = CalendarTestUtil.getDefaultCalendar(liveGroup);
 
 		CalendarStagingTestUtil.enableLocalStaging(liveGroup, true);
 
 		Calendar stagingCalendar = CalendarStagingTestUtil.getStagingCalendar(
 			liveGroup, liveCalendar);
+
+		CalendarStagingTestUtil.publishPortlet(liveGroup, targetLayout, true);
 
 		CalendarStagingTestUtil.publishLayouts(liveGroup, true);
 
@@ -1940,6 +1990,8 @@ public class CalendarBookingLocalServiceTest {
 			CalendarBookingTestUtil.addRegularCalendarBookingWithReminders(
 				stagingCalendar, startTime, startTime + Time.HOUR,
 				(int)Time.MINUTE, 0);
+
+		CalendarStagingTestUtil.publishPortlet(liveGroup, targetLayout, true);
 
 		CalendarStagingTestUtil.publishLayouts(liveGroup, true);
 
@@ -1958,6 +2010,8 @@ public class CalendarBookingLocalServiceTest {
 		throws Exception {
 
 		Group liveGroup = GroupTestUtil.addGroup();
+
+		Layout targetLayout = LayoutTestUtil.addLayout(liveGroup);
 
 		Calendar liveCalendar = CalendarTestUtil.getDefaultCalendar(liveGroup);
 
@@ -1989,6 +2043,8 @@ public class CalendarBookingLocalServiceTest {
 
 		Assert.assertEquals(
 			childCalendarBookings.toString(), 1, childCalendarBookings.size());
+
+		CalendarStagingTestUtil.publishPortlet(liveGroup, targetLayout, true);
 
 		CalendarStagingTestUtil.publishLayouts(liveGroup, true);
 
@@ -3010,6 +3066,8 @@ public class CalendarBookingLocalServiceTest {
 
 		Group liveGroup = GroupTestUtil.addGroup();
 
+		Layout targetLayout = LayoutTestUtil.addLayout(liveGroup);
+
 		Calendar liveCalendar = CalendarTestUtil.getDefaultCalendar(liveGroup);
 
 		CalendarStagingTestUtil.enableLocalStaging(liveGroup, true);
@@ -3024,6 +3082,8 @@ public class CalendarBookingLocalServiceTest {
 		CalendarBooking childCalendarBooking =
 			CalendarBookingTestUtil.addChildCalendarBooking(
 				stagingCalendar, invitedCalendar);
+
+		CalendarStagingTestUtil.publishPortlet(liveGroup, targetLayout, true);
 
 		CalendarStagingTestUtil.publishLayouts(liveGroup, true);
 
@@ -3050,6 +3110,8 @@ public class CalendarBookingLocalServiceTest {
 		CalendarBookingTestUtil.updateCalendarBooking(
 			childCalendarBooking.getParentCalendarBooking(), titleMap,
 			serviceContext);
+
+		CalendarStagingTestUtil.publishPortlet(liveGroup, targetLayout, true);
 
 		CalendarStagingTestUtil.publishLayouts(liveGroup, true);
 

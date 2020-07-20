@@ -522,7 +522,9 @@ public class DDMStructureImpl extends DDMStructureBaseImpl {
 			_ddmForm = ddmFormDeserializerDeserializeResponse.getDDMForm();
 
 			for (DDMFormField ddmFormField : _ddmForm.getDDMFormFields()) {
-				if (_isFieldSet(ddmFormField)) {
+				if (_isFieldSet(ddmFormField) &&
+					ListUtil.isEmpty(ddmFormField.getNestedDDMFormFields())) {
+
 					_setNestedDDMFormFields(ddmFormField);
 				}
 			}

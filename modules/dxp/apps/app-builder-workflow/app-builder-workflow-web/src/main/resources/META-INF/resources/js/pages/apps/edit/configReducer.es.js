@@ -15,15 +15,16 @@ export const ADD_STEP = 'ADD_STEP';
 export const ADD_STEP_ACTION = 'ADD_STEP_ACTION';
 export const ADD_STEP_FORM_VIEW = 'ADD_STEP_FORM_VIEW';
 export const REMOVE_STEP_ACTION = 'REMOVE_STEP_ACTION';
+export const REMOVE_STEP_FORM_VIEW = 'REMOVE_STEP_FORM_VIEW';
 export const UPDATE_CONFIG = 'UPDATE_CONFIG';
 export const UPDATE_DATA_OBJECT = 'UPDATE_DATA_OBJECT';
 export const UPDATE_FORM_VIEW = 'UPDATE_FORM_VIEW';
+export const UPDATE_LIST_ITEMS = 'UPDATE_LIST_ITEMS';
 export const UPDATE_STEP = 'UPDATE_STEP';
 export const UPDATE_STEP_ACTION = 'UPDATE_STEP_ACTION';
 export const UPDATE_STEP_FORM_VIEW = 'UPDATE_STEP_FORM_VIEW';
 export const UPDATE_STEP_INDEX = 'UPDATE_STEP_INDEX';
 export const UPDATE_TABLE_VIEW = 'UPDATE_TABLE_VIEW';
-export const UPDATE_WORKFLOW_APP = 'UPDATE_WORKFLOW_APP';
 
 export const getInitialConfig = () => {
 	const initialSteps = [
@@ -45,6 +46,13 @@ export const getInitialConfig = () => {
 		currentStep: initialSteps[0],
 		dataObject: {},
 		formView: {},
+		listItems: {
+			assigneeRoles: [],
+			dataObjects: [],
+			fetching: false,
+			formViews: [],
+			tableViews: [],
+		},
 		stepIndex: 0,
 		steps: initialSteps,
 		tableView: {},
@@ -129,24 +137,24 @@ export default (state, action) => {
 
 			return {...state, steps: [...workflowSteps]};
 		}
-		case UPDATE_CONFIG: {
-			const {
-				dataObject = {},
-				formView = {},
-				tableView = {},
-			} = action.config;
-
-			return {
-				...state,
-				dataObject,
-				formView,
-				tableView,
-			};
-		}
 		case REMOVE_STEP_ACTION: {
 			state.steps[state.stepIndex].appWorkflowTransitions.pop();
 
 			return {...state, currentStep: state.steps[state.stepIndex]};
+		}
+		case REMOVE_STEP_FORM_VIEW: {
+			state.steps[state.stepIndex].appWorkflowDataLayoutLinks.splice(
+				action.index,
+				1
+			);
+
+			return {...state, steps: [...state.steps]};
+		}
+		case UPDATE_CONFIG: {
+			return {
+				...state,
+				...action.config,
+			};
 		}
 		case UPDATE_DATA_OBJECT: {
 			return {
@@ -164,7 +172,11 @@ export default (state, action) => {
 				workflowSteps = workflowSteps.map((step) => ({
 					...step,
 					appWorkflowDataLayoutLinks: [
-						{dataLayoutId: action.formView.id, readOnly: true},
+						{
+							dataLayoutId: action.formView.id,
+							name: action.formView.name,
+							readOnly: true,
+						},
 					],
 				}));
 			}
@@ -173,6 +185,15 @@ export default (state, action) => {
 				...state,
 				formView: action.formView,
 				steps: [initialStep, ...workflowSteps, finalStep],
+			};
+		}
+		case UPDATE_LIST_ITEMS: {
+			return {
+				...state,
+				listItems: {
+					...state.listItems,
+					...action.listItems,
+				},
 			};
 		}
 		case UPDATE_STEP: {
@@ -227,18 +248,6 @@ export default (state, action) => {
 			return {
 				...state,
 				tableView: action.tableView,
-			};
-		}
-		case UPDATE_WORKFLOW_APP: {
-			const {appWorkflowStates = [], appWorkflowTasks = []} = action;
-
-			const initialState = appWorkflowStates.find(({initial}) => initial);
-			const finalState = appWorkflowStates.find(({initial}) => !initial);
-
-			return {
-				...state,
-				currentStep: initialState,
-				steps: [initialState, ...appWorkflowTasks, finalState],
 			};
 		}
 		default: {

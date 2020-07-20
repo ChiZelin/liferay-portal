@@ -46,7 +46,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
@@ -144,30 +143,45 @@ public class DirectoryWatcher extends Thread implements BundleListener {
 		_fileInstall = fileInstall;
 		_properties = properties;
 		_bundleContext = bundleContext;
+
+		_activeLevel = GetterUtil.getInteger(properties.get(ACTIVE_LEVEL));
+		_filter = properties.get(FILTER);
+		_fragmentScope = properties.get(FRAGMENT_SCOPE);
+		_noInitialDelay = _getBoolean(properties, NO_INITIAL_DELAY, false);
+		_optionalScope = properties.get(OPTIONAL_SCOPE);
+		_poll = GetterUtil.getLong(properties.get(POLL), 2000);
+		_startBundles = _getBoolean(properties, START_NEW_BUNDLES, true);
+		_startLevel = GetterUtil.getInteger(properties.get(START_LEVEL));
 		_systemBundle = bundleContext.getBundle(
 			Constants.SYSTEM_BUNDLE_LOCATION);
-		_poll = GetterUtil.getLong(properties.get(POLL), 2000);
-		_watchedDirectory = _getFile(properties, DIR, new File("./load"));
-		_verifyWatchedDir();
-		_tmpDir = _getFile(properties, TMPDIR, null);
-		_prepareTempDir();
-		_startBundles = _getBoolean(properties, START_NEW_BUNDLES, true);
-		_useStartTransient = _getBoolean(
-			properties, USE_START_TRANSIENT, false);
 		_useStartActivationPolicy = _getBoolean(
 			properties, USE_START_ACTIVATION_POLICY, true);
-		_filter = properties.get(FILTER);
-		_noInitialDelay = _getBoolean(properties, NO_INITIAL_DELAY, false);
-		_startLevel = GetterUtil.getInteger(properties.get(START_LEVEL));
-		_activeLevel = GetterUtil.getInteger(properties.get(ACTIVE_LEVEL));
-		_fragmentScope = properties.get(FRAGMENT_SCOPE);
-		_optionalScope = properties.get(OPTIONAL_SCOPE);
+		_useStartTransient = _getBoolean(
+			properties, USE_START_TRANSIENT, false);
+
+		_watchedDirectory = _getFile(properties, DIR, new File("./load"));
+
+		if (!_watchedDirectory.exists()) {
+			if (_log.isWarnEnabled()) {
+				_log.warn(
+					_watchedDirectory +
+						" does not exist and needs to be created");
+			}
+		}
+		else if (!_watchedDirectory.isDirectory()) {
+			throw new RuntimeException(
+				StringBundler.concat(
+					"File Install cannot monitor ", _watchedDirectory,
+					" because it is not a directory"));
+		}
+
 		_webStartLevel = GetterUtil.getInteger(
 			properties.get(WEB_START_LEVEL), _startLevel);
-		_bundleContext.addBundleListener(this);
 
-		scanner = new Scanner(
+		_scanner = new Scanner(
 			_watchedDirectory, _filter, properties.get(SUBDIR_MODE));
+
+		_bundleContext.addBundleListener(this);
 	}
 
 	@Override
@@ -208,7 +222,7 @@ public class DirectoryWatcher extends Thread implements BundleListener {
 		interrupt();
 
 		try {
-			scanner.close();
+			_scanner.close();
 		}
 		catch (IOException ioException) {
 		}
@@ -222,6 +236,10 @@ public class DirectoryWatcher extends Thread implements BundleListener {
 
 	public Map<String, String> getProperties() {
 		return _properties;
+	}
+
+	public Scanner getScanner() {
+		return _scanner;
 	}
 
 	public void removeFileInstaller(FileInstaller fileInstaller) {
@@ -280,7 +298,7 @@ public class DirectoryWatcher extends Thread implements BundleListener {
 				if ((frameworkStartLevel.getStartLevel() >= _activeLevel) &&
 					(_systemBundle.getState() == Bundle.ACTIVE)) {
 
-					Set<File> files = scanner.scan(false);
+					Set<File> files = _scanner.scan(false);
 
 					if (files != null) {
 						_process(files);
@@ -313,7 +331,7 @@ public class DirectoryWatcher extends Thread implements BundleListener {
 		if (_noInitialDelay) {
 			_initializeCurrentManagedBundles();
 
-			Set<File> files = scanner.scan(true);
+			Set<File> files = _scanner.scan(true);
 
 			if (files != null) {
 				try {
@@ -327,8 +345,6 @@ public class DirectoryWatcher extends Thread implements BundleListener {
 
 		super.start();
 	}
-
-	public final Scanner scanner;
 
 	protected void findBundlesWithFragmentsToRefresh(Set<Bundle> toRefresh) {
 		Set<Bundle> fragments = new HashSet<>();
@@ -566,7 +582,7 @@ public class DirectoryWatcher extends Thread implements BundleListener {
 			}
 			else {
 				if (artifact != null) {
-					artifact.setChecksum(scanner.getChecksum(file));
+					artifact.setChecksum(_scanner.getChecksum(file));
 
 					modified.add(artifact);
 				}
@@ -574,7 +590,7 @@ public class DirectoryWatcher extends Thread implements BundleListener {
 					artifact = new Artifact();
 
 					artifact.setPath(file);
-					artifact.setChecksum(scanner.getChecksum(file));
+					artifact.setChecksum(_scanner.getChecksum(file));
 
 					created.add(artifact);
 				}
@@ -783,7 +799,7 @@ public class DirectoryWatcher extends Thread implements BundleListener {
 			}
 		}
 
-		scanner.initialize(checksums);
+		_scanner.initialize(checksums);
 	}
 
 	private Bundle _install(Artifact artifact) {
@@ -1003,45 +1019,6 @@ public class DirectoryWatcher extends Thread implements BundleListener {
 
 	private boolean _isStateChanged() {
 		return _stateChanged.get();
-	}
-
-	private void _prepareDir(File dir) {
-		if (!dir.exists() && !dir.mkdirs()) {
-			throw new RuntimeException("Unable to create folder: " + dir);
-		}
-
-		if (!dir.isDirectory()) {
-			throw new RuntimeException(
-				"Unable to start FileInstall. " + dir + " is not a directory.");
-		}
-	}
-
-	private void _prepareTempDir() {
-		if (_tmpDir == null) {
-			File javaIoTmpdir = new File(System.getProperty("java.io.tmpdir"));
-
-			if (!javaIoTmpdir.exists() && !javaIoTmpdir.mkdirs()) {
-				throw new IllegalStateException(
-					"Unable to create temporary directory " + javaIoTmpdir);
-			}
-
-			Random random = new Random();
-
-			while (_tmpDir == null) {
-				File file = new File(
-					javaIoTmpdir,
-					"fileinstall-" + String.valueOf(random.nextLong()));
-
-				if (!file.exists() && file.mkdirs()) {
-					_tmpDir = file;
-
-					_tmpDir.deleteOnExit();
-				}
-			}
-		}
-		else {
-			_prepareDir(_tmpDir);
-		}
 	}
 
 	private void _process(Set<File> files) throws InterruptedException {
@@ -1331,21 +1308,6 @@ public class DirectoryWatcher extends Thread implements BundleListener {
 		return bundles;
 	}
 
-	private void _verifyWatchedDir() {
-		if (!_watchedDirectory.exists()) {
-			if (_log.isWarnEnabled()) {
-				_log.warn(
-					_watchedDirectory + " does not exist, please create it.");
-			}
-		}
-		else if (!_watchedDirectory.isDirectory()) {
-			throw new RuntimeException(
-				StringBundler.concat(
-					"File Install cannot monitor ", _watchedDirectory,
-					" because it is not a directory"));
-		}
-	}
-
 	private static final Log _log = LogFactoryUtil.getLog(
 		DirectoryWatcher.class);
 
@@ -1365,11 +1327,11 @@ public class DirectoryWatcher extends Thread implements BundleListener {
 	private final long _poll;
 	private final Set<File> _processingFailures = new HashSet<>();
 	private final Map<String, String> _properties;
+	private final Scanner _scanner;
 	private final boolean _startBundles;
 	private final int _startLevel;
 	private final AtomicBoolean _stateChanged = new AtomicBoolean();
 	private final Bundle _systemBundle;
-	private File _tmpDir;
 	private final boolean _useStartActivationPolicy;
 	private final boolean _useStartTransient;
 	private final File _watchedDirectory;

@@ -143,8 +143,8 @@ public class AppPortlet extends MVCPortlet {
 			).build());
 
 		renderRequest.setAttribute(
-			AppBuilderWebKeys.DATA_LAYOUT_IDS,
-			appBuilderAppPortletTab.getDataLayoutIds(
+			AppBuilderWebKeys.APP_TAB_CONTEXT,
+			appBuilderAppPortletTab.getAppBuilderAppPortletTabContext(
 				_appBuilderApp,
 				ParamUtil.getLong(renderRequest, "dataRecordId")));
 

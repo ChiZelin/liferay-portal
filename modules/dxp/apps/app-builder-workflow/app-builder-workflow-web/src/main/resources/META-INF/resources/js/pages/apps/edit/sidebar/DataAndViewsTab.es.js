@@ -20,12 +20,10 @@ import EditAppContext, {
 } from 'app-builder-web/js/pages/apps/edit/EditAppContext.es';
 import React, {useContext} from 'react';
 
-import {
-	SelectFormView,
-	SelectTableView,
-} from '../../../../components/select-dropdown/SelectDropdown.es';
+import SelectDropdown from '../../../../components/select-dropdown/SelectDropdown.es';
 import {
 	ADD_STEP_FORM_VIEW,
+	REMOVE_STEP_FORM_VIEW,
 	UPDATE_DATA_OBJECT,
 	UPDATE_FORM_VIEW,
 	UPDATE_STEP_FORM_VIEW,
@@ -48,21 +46,81 @@ const NoObjectEmptyState = () => (
 	</div>
 );
 
-export default () => {
+const SelectFormView = (props) => {
+	props = {
+		...props,
+		emptyResultMessage: Liferay.Language.get(
+			'no-form-views-were-found-with-this-name-try-searching-again-with-a-different-name'
+		),
+		label: Liferay.Language.get('select-a-form-view'),
+		stateProps: {
+			emptyProps: {
+				label: Liferay.Language.get('there-are-no-form-views-yet'),
+			},
+			loadingProps: {
+				label: Liferay.Language.get('retrieving-all-form-views'),
+			},
+		},
+	};
+
+	return <SelectDropdown {...props} />;
+};
+
+const SelectTableView = (props) => {
+	props = {
+		...props,
+		emptyResultMessage: Liferay.Language.get(
+			'no-table-views-were-found-with-this-name-try-searching-again-with-a-different-name'
+		),
+		label: Liferay.Language.get('select-a-table-view'),
+		stateProps: {
+			emptyProps: {
+				label: Liferay.Language.get('there-are-no-table-views-yet'),
+			},
+			loadingProps: {
+				label: Liferay.Language.get('retrieving-all-table-views'),
+			},
+		},
+	};
+
+	return <SelectDropdown {...props} />;
+};
+
+export default function DataAndViewsTab() {
 	const {
-		config: {currentStep, dataObject, formView, stepIndex, tableView},
+		config: {
+			currentStep,
+			dataObject,
+			formView,
+			listItems: {fetching, formViews, tableViews},
+			stepIndex,
+			tableView,
+		},
 		dispatch,
 		dispatchConfig,
 		state: {app},
 	} = useContext(EditAppContext);
 
-	const {
-		appWorkflowDataLayoutLinks = [{dataLayoutId: '', name: ''}],
-	} = currentStep;
+	const {appWorkflowDataLayoutLinks: stepFormViews = []} = currentStep;
+
+	const availableFormViews = formViews.map((form) => ({
+		...form,
+		disabled:
+			stepFormViews.findIndex(
+				({dataLayoutId}) => dataLayoutId === form.id
+			) > -1,
+	}));
 
 	const addStepFormView = () => {
 		dispatchConfig({
 			type: ADD_STEP_FORM_VIEW,
+		});
+	};
+
+	const removeStepFormView = (index) => {
+		dispatchConfig({
+			index,
+			type: REMOVE_STEP_FORM_VIEW,
 		});
 	};
 
@@ -114,25 +172,40 @@ export default () => {
 		<>
 			{stepIndex > 0 ? (
 				<>
-					{appWorkflowDataLayoutLinks.map((stepFormView, index) => (
-						<>
+					{stepFormViews.map(({name}, index) => (
+						<div className="step-form-view" key={index}>
 							<label id="form-view-label">
 								{Liferay.Language.get('form-view')}
 							</label>
 
 							<SelectFormView
 								ariaLabelId="form-view-label"
-								defaultValue={stepFormView.dataLayoutId}
-								objectId={dataObject.id}
+								items={availableFormViews}
 								onSelect={(formView) =>
 									updateStepFormView(formView, index)
 								}
-								selectedValue={stepFormView.name}
+								selectedValue={name}
 							/>
-						</>
+
+							{stepFormViews.length > 1 && (
+								<div className="text-right">
+									<ClayButton
+										className="border-0 mt-2"
+										displayType="secondary"
+										onClick={() =>
+											removeStepFormView(index)
+										}
+										small
+									>
+										{Liferay.Language.get('remove')}
+									</ClayButton>
+								</div>
+							)}
+						</div>
 					))}
 
 					<ClayButton
+						className="w-100"
 						displayType="secondary"
 						onClick={addStepFormView}
 					>
@@ -180,7 +253,8 @@ export default () => {
 
 							<SelectFormView
 								ariaLabelId="form-view-label"
-								objectId={dataObject.id}
+								isLoading={fetching}
+								items={formViews}
 								onSelect={updateFormView}
 								selectedValue={formView.name}
 							/>
@@ -195,7 +269,8 @@ export default () => {
 
 							<SelectTableView
 								ariaLabelId="table-view-label"
-								objectId={dataObject.id}
+								isLoading={fetching}
+								items={tableViews}
 								onSelect={updateTableView}
 								selectedValue={tableView.name}
 							/>
@@ -207,4 +282,4 @@ export default () => {
 			)}
 		</>
 	);
-};
+}
