@@ -109,7 +109,7 @@ public class ClassLoaderPool {
 			return;
 		}
 
-		Version version = Version.parse(contextName.substring(index + 1));
+		Version version = _parseVersion(contextName.substring(index + 1));
 
 		if (version == null) {
 			return;
@@ -148,6 +148,57 @@ public class ClassLoaderPool {
 		}
 	}
 
+	private static Version _parseVersion(String version) {
+		int major;
+		int minor = 0;
+		int micro = 0;
+		String qualifier = "";
+
+		try {
+			StringTokenizer stringTokenizer = new StringTokenizer(
+				version, ".", true);
+
+			major = Integer.parseInt(stringTokenizer.nextToken());
+
+			if (stringTokenizer.hasMoreTokens()) {
+				stringTokenizer.nextToken();
+
+				minor = Integer.parseInt(stringTokenizer.nextToken());
+
+				if (stringTokenizer.hasMoreTokens()) {
+					stringTokenizer.nextToken();
+
+					micro = Integer.parseInt(stringTokenizer.nextToken());
+
+					if (stringTokenizer.hasMoreTokens()) {
+						stringTokenizer.nextToken();
+
+						qualifier = stringTokenizer.nextToken("");
+					}
+				}
+			}
+		}
+		catch (Exception exception) {
+			return null;
+		}
+
+		if ((major < 0) || (minor < 0) || (micro < 0)) {
+			return null;
+		}
+
+		for (int i = 0; i < qualifier.length(); i++) {
+			char c = qualifier.charAt(i);
+
+			if ((c < 128) && _VALID_QUALIFIER_CHARS[c]) {
+				continue;
+			}
+
+			return null;
+		}
+
+		return new Version(major, minor, micro, qualifier);
+	}
+
 	private static void _unregisterFallback(String contextName) {
 		int index = contextName.lastIndexOf("_");
 
@@ -155,7 +206,7 @@ public class ClassLoaderPool {
 			return;
 		}
 
-		Version version = Version.parse(contextName.substring(index + 1));
+		Version version = _parseVersion(contextName.substring(index + 1));
 
 		if (version == null) {
 			return;
@@ -206,57 +257,6 @@ public class ClassLoaderPool {
 
 	private static class Version implements Comparable<Version> {
 
-		public static Version parse(String version) {
-			int major;
-			int minor = 0;
-			int micro = 0;
-			String qualifier = "";
-
-			try {
-				StringTokenizer stringTokenizer = new StringTokenizer(
-					version, _SEPARATOR, true);
-
-				major = Integer.parseInt(stringTokenizer.nextToken());
-
-				if (stringTokenizer.hasMoreTokens()) {
-					stringTokenizer.nextToken();
-
-					minor = Integer.parseInt(stringTokenizer.nextToken());
-
-					if (stringTokenizer.hasMoreTokens()) {
-						stringTokenizer.nextToken();
-
-						micro = Integer.parseInt(stringTokenizer.nextToken());
-
-						if (stringTokenizer.hasMoreTokens()) {
-							stringTokenizer.nextToken();
-
-							qualifier = stringTokenizer.nextToken("");
-						}
-					}
-				}
-			}
-			catch (Exception exception) {
-				return null;
-			}
-
-			if ((major < 0) || (minor < 0) || (micro < 0)) {
-				return null;
-			}
-
-			for (int i = 0; i < qualifier.length(); i++) {
-				char c = qualifier.charAt(i);
-
-				if ((c < 128) && _VALID_QUALIFIER_CHARS[c]) {
-					continue;
-				}
-
-				return null;
-			}
-
-			return new Version(major, minor, micro, qualifier);
-		}
-
 		@Override
 		public int compareTo(Version other) {
 			if (other == this) {
@@ -290,8 +290,6 @@ public class ClassLoaderPool {
 			_micro = micro;
 			_qualifier = qualifier;
 		}
-
-		private static final String _SEPARATOR = ".";
 
 		private final int _major;
 		private final int _micro;

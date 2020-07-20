@@ -158,38 +158,35 @@ public class ClassLoaderPoolTest {
 
 	@Test
 	public void testParse() throws Exception {
-		Class<?> clazz = Class.forName(
-			"com.liferay.petra.lang.ClassLoaderPool$Version");
-
 		Method method = ReflectionTestUtil.getMethod(
-			clazz, "parse", String.class);
+			ClassLoaderPool.class, "_parseVersion", String.class);
 
-		_assertEquals("1.0.0", method.invoke(clazz, "1"));
-		_assertEquals("1.0.0", method.invoke(clazz, "1.0"));
-		_assertEquals("1.0.0.0", method.invoke(clazz, "1.0.0.0"));
-		_assertEquals("1.0.0.Aa0_-", method.invoke(clazz, "1.0.0.Aa0_-"));
+		_assertEquals("1.0.0", method.invoke(null, "1"));
+		_assertEquals("1.0.0", method.invoke(null, "1.0"));
+		_assertEquals("1.0.0.0", method.invoke(null, "1.0.0.0"));
+		_assertEquals("1.0.0.Aa0_-", method.invoke(null, "1.0.0.Aa0_-"));
 
 		Assert.assertNull(
 			"null should be return because of invalid version",
-			method.invoke(clazz, "1.x.0"));
+			method.invoke(null, "1.x.0"));
 		Assert.assertNull(
 			"null should be return because of invalid version",
-			method.invoke(clazz, "-1.0.0"));
+			method.invoke(null, "-1.0.0"));
 		Assert.assertNull(
 			"null should be return because of invalid version",
-			method.invoke(clazz, "1.-1.0"));
+			method.invoke(null, "1.-1.0"));
 		Assert.assertNull(
 			"null should be return because of invalid version",
-			method.invoke(clazz, "1.0.-1"));
+			method.invoke(null, "1.0.-1"));
 		Assert.assertNull(
 			"null should be return because of invalid version",
-			method.invoke(clazz, "1.0.0.~"));
+			method.invoke(null, "1.0.0.~"));
 		Assert.assertNull(
 			"null should be return because of invalid version",
-			method.invoke(clazz, "1.0."));
+			method.invoke(null, "1.0."));
 		Assert.assertNull(
 			"null should be return because of invalid version",
-			method.invoke(clazz, "1.0.0." + (char)128));
+			method.invoke(null, "1.0.0." + (char)128));
 	}
 
 	@Test
