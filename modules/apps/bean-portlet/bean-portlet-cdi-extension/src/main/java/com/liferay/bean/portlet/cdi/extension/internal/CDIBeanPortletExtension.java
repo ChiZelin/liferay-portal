@@ -52,10 +52,14 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+
+import javax.annotation.PreDestroy;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.ConversationScoped;
@@ -73,6 +77,7 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.BeforeBeanDiscovery;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
+import javax.enterprise.inject.spi.ProcessInjectionTarget;
 
 import javax.portlet.ActionParameters;
 import javax.portlet.ActionRequest;
@@ -228,6 +233,29 @@ public class CDIBeanPortletExtension implements Extension {
 		_discoveredClasses.add(discoveredClass);
 
 		MVCExtension.step2ProcessAnnotatedType(processAnnotatedType);
+	}
+
+	public <T> void step2ProcessInjectionTarget(
+			@Observes ProcessInjectionTarget<T> processInjectionTarget)
+		throws NoSuchMethodException {
+
+		AnnotatedType<T> annotatedType =
+			processInjectionTarget.getAnnotatedType();
+
+		Class<T> portletClass = annotatedType.getJavaClass();
+
+		if (!Portlet.class.isAssignableFrom(portletClass)) {
+			return;
+		}
+
+		Method destroyMethod = portletClass.getMethod("destroy");
+
+		if (destroyMethod.isAnnotationPresent(PreDestroy.class)) {
+			return;
+		}
+
+		_injectionTargetWrappers.put(
+			portletClass.getName(), processInjectionTarget);
 	}
 
 	public void step3AfterBeanDiscovery(
@@ -388,7 +416,8 @@ public class CDIBeanPortletExtension implements Extension {
 				new CDIBeanFilterMethodFactory(beanManager),
 				beanFilterMethodInvoker,
 				new CDIBeanPortletMethodFactory(beanManager),
-				beanPortletMethodInvoker, _discoveredClasses, servletContext));
+				beanPortletMethodInvoker, _discoveredClasses, servletContext,
+				_injectionTargetWrappers));
 
 		Bean<?> bean = beanManager.resolve(
 			beanManager.getBeans(ViewRenderer.class));
@@ -676,6 +705,8 @@ public class CDIBeanPortletExtension implements Extension {
 		};
 
 	private final Set<Class<?>> _discoveredClasses = new HashSet<>();
+	private final Map<String, ProcessInjectionTarget<?>>
+		_injectionTargetWrappers = new HashMap<>();
 	private final List<ServiceRegistration<?>> _serviceRegistrations =
 		new ArrayList<>();
 	private ViewRenderer _viewRenderer;

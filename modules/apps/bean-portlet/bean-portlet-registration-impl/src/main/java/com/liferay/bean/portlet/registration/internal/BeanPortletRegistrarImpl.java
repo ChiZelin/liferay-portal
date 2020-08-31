@@ -60,6 +60,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 
+import javax.enterprise.inject.spi.ProcessInjectionTarget;
+
 import javax.portlet.Portlet;
 import javax.portlet.PortletRequest;
 import javax.portlet.annotations.CustomPortletMode;
@@ -114,6 +116,21 @@ public class BeanPortletRegistrarImpl implements BeanPortletRegistrar {
 		BeanPortletMethodFactory beanPortletMethodFactory,
 		BeanPortletMethodInvoker beanPortletMethodInvoker,
 		Set<Class<?>> discoveredClasses, ServletContext servletContext) {
+
+		return register(
+			beanFilterMethodFactory, beanFilterMethodInvoker,
+			beanPortletMethodFactory, beanPortletMethodInvoker,
+			discoveredClasses, servletContext, null);
+	}
+
+	@Override
+	public List<ServiceRegistration<?>> register(
+		BeanFilterMethodFactory beanFilterMethodFactory,
+		BeanFilterMethodInvoker beanFilterMethodInvoker,
+		BeanPortletMethodFactory beanPortletMethodFactory,
+		BeanPortletMethodInvoker beanPortletMethodInvoker,
+		Set<Class<?>> discoveredClasses, ServletContext servletContext,
+		Map<String, ProcessInjectionTarget<?>> injectionTargetWrappers) {
 
 		BundleContext bundleContext =
 			(BundleContext)servletContext.getAttribute("osgi-bundlecontext");
@@ -232,10 +249,25 @@ public class BeanPortletRegistrarImpl implements BeanPortletRegistrar {
 		List<ServiceRegistration<?>> serviceRegistrations = new ArrayList<>();
 
 		for (BeanPortlet beanPortlet : beanPortlets.values()) {
+			InjectionTargetWrapper<?> injectionTargetWrapper = null;
+
+			if (injectionTargetWrappers != null) {
+				ProcessInjectionTarget processInjectionTarget =
+					injectionTargetWrappers.get(
+						beanPortlet.getPortletClassName());
+
+				injectionTargetWrapper = new InjectionTargetWrapper<>(
+					processInjectionTarget.getInjectionTarget());
+
+				processInjectionTarget.setInjectionTarget(
+					injectionTargetWrapper);
+			}
+
 			ServiceRegistration<Portlet> portletServiceRegistration =
 				RegistrationUtil.registerBeanPortlet(
 					beanApp, beanPortlet, beanPortletIds,
-					beanPortletMethodInvoker, bundleContext, servletContext);
+					beanPortletMethodInvoker, bundleContext, servletContext,
+					injectionTargetWrapper);
 
 			if (portletServiceRegistration != null) {
 				serviceRegistrations.add(portletServiceRegistration);
