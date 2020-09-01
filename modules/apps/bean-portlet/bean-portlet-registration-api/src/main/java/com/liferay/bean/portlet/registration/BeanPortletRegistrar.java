@@ -20,7 +20,10 @@ import com.liferay.bean.portlet.extension.BeanPortletMethodFactory;
 import com.liferay.bean.portlet.extension.BeanPortletMethodInvoker;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+
+import javax.enterprise.inject.spi.ProcessInjectionTarget;
 
 import javax.servlet.ServletContext;
 
@@ -39,6 +42,14 @@ public interface BeanPortletRegistrar {
 		BeanPortletMethodFactory beanPortletMethodFactory,
 		BeanPortletMethodInvoker beanPortletMethodInvoker,
 		Set<Class<?>> discoveredClasses, ServletContext servletContext);
+
+	public List<ServiceRegistration<?>> register(
+		BeanFilterMethodFactory beanFilterMethodFactory,
+		BeanFilterMethodInvoker beanFilterMethodInvoker,
+		BeanPortletMethodFactory beanPortletMethodFactory,
+		BeanPortletMethodInvoker beanPortletMethodInvoker,
+		Set<Class<?>> discoveredClasses, ServletContext servletContext,
+		Map<String, ProcessInjectionTarget<?>> injectionTargetWrappers);
 
 	public void unregister(
 		List<ServiceRegistration<?>> serviceRegistrations,
