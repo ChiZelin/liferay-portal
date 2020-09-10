@@ -30,7 +30,7 @@ import com.liferay.portal.configuration.metatype.annotations.ExtendedObjectClass
 public interface UploadServletRequestConfiguration {
 
 	@Meta.AD(
-		deflt = "104857600", description = "max-size-help",
+		deflt = "104857600", min = "102400", description = "max-size-help",
 		name = "overall-maximum-upload-request-size", required = false
 	)
 	public long maxSize();

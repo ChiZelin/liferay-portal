@@ -30,6 +30,7 @@ import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.configuration.metatype.annotations.ExtendedObjectClassDefinition;
+import com.liferay.portal.configuration.metatype.definitions.ExtendedAttributeDefinition;
 import com.liferay.portal.configuration.persistence.listener.ConfigurationModelListenerException;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.log.Log;
@@ -260,6 +261,18 @@ public class BindConfigurationMVCActionCommand implements MVCActionCommand {
 
 				if (Objects.equals(value, Portal.TEMP_OBFUSCATION_VALUE)) {
 					continue;
+				}
+
+				ExtendedAttributeDefinition extendedAttributeDefinition =
+					configurationModel.getExtendedAttributeDefinition(key);
+
+				if (extendedAttributeDefinition != null) {
+					String validation = extendedAttributeDefinition.validate(
+						String.valueOf(value));
+
+					if (Validator.isNotNull(validation)) {
+						System.out.println(validation);
+					}
 				}
 
 				configuredProperties.put(key, value);
