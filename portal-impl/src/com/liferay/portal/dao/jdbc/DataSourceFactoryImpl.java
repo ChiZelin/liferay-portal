@@ -54,16 +54,21 @@ import com.zaxxer.hikari.HikariDataSource;
 
 import java.io.Closeable;
 
+import java.lang.reflect.Field;
+
 import java.net.URL;
 import java.net.URLClassLoader;
 
 import java.nio.file.Paths;
+
+import java.security.NoSuchAlgorithmException;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -73,6 +78,9 @@ import javax.management.ObjectName;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLEngine;
 
 import javax.sql.DataSource;
 
@@ -667,6 +675,60 @@ public class DataSourceFactoryImpl implements DataSourceFactory {
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		DataSourceFactoryImpl.class);
+
+	static {
+
+		//Make MySQL Connector/J 8.0.21 compatible with cipher suits returned by
+		//IBM jvm
+
+		String jvmVendor = System.getProperty("java.vm.vendor");
+
+		if ((jvmVendor != null) && jvmVendor.equals("IBM Corporation")) {
+			try {
+				Class<?> clazz = Class.forName(
+					"com.mysql.cj.protocol.ExportControlled");
+
+				Field allowedCiphersField = clazz.getDeclaredField(
+					"ALLOWED_CIPHERS");
+
+				allowedCiphersField.setAccessible(true);
+
+				List<String> allowedCiphers =
+					(List<String>)allowedCiphersField.get(null);
+
+				SSLContext sslContext = SSLContext.getDefault();
+
+				SSLEngine engine = sslContext.createSSLEngine();
+
+				String[] ibmSupportedCiphers =
+					engine.getSupportedCipherSuites();
+
+				for (String ibmSupportedCipher : ibmSupportedCiphers) {
+					allowedCiphers.add(ibmSupportedCipher);
+				}
+			}
+			catch (ClassNotFoundException classNotFoundException) {
+			}
+			catch (IllegalAccessException illegalAccessException) {
+				_log.error(
+					"Failed to make MySQL connector / j8.0.21 compatible " +
+						"with the cipher suite returned by IBM JVM",
+					illegalAccessException);
+			}
+			catch (NoSuchAlgorithmException noSuchAlgorithmException) {
+				_log.error(
+					"Failed to make MySQL connector / j8.0.21 compatible " +
+						"with he cipher suite returned by IBM JVM",
+					noSuchAlgorithmException);
+			}
+			catch (NoSuchFieldException noSuchFieldException) {
+				_log.error(
+					"Failed to make MySQL connector / j8.0.21 compatible " +
+						"with the cipher suite returned by IBM JVM",
+					noSuchFieldException);
+			}
+		}
+	}
 
 	private ServiceTracker<MBeanServer, MBeanServer> _serviceTracker;
 
