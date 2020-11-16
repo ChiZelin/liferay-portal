@@ -22,7 +22,10 @@ import org.junit.runner.Description;
 
 /**
  * @author Cristina González
+ * @deprecated As of Cavanaugh (7.4.x), replaced by {@link
+ *             CompanyProviderMethodTestRule}
  */
+@Deprecated
 public class CompanyProviderClassTestRule extends ClassTestRule<Long> {
 
 	public static final CompanyProviderClassTestRule INSTANCE =
