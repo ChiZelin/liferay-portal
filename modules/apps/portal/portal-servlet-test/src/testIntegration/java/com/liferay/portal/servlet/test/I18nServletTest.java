@@ -36,7 +36,6 @@ import com.liferay.portal.util.PropsValues;
 
 import java.util.Arrays;
 import java.util.Locale;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -68,13 +67,11 @@ public class I18nServletTest extends I18nServlet {
 
 	@BeforeClass
 	public static void setUpClass() throws Exception {
-		_availableLocales = _language.getAvailableLocales();
-		_defaultLocale = LocaleUtil.getDefault();
 		_localesEnabled = PropsValues.LOCALES_ENABLED;
 
 		_language.init();
 
-		CompanyTestUtil.resetCompanyLocales(
+		_autoCloseable = CompanyTestUtil.resetCompanyLocalesWithAutoCloseable(
 			_portal.getDefaultCompanyId(),
 			Arrays.asList(
 				LocaleUtil.CANADA_FRENCH, LocaleUtil.SPAIN, LocaleUtil.UK,
@@ -93,8 +90,7 @@ public class I18nServletTest extends I18nServlet {
 	public static void tearDownClass() throws Exception {
 		_language.init();
 
-		CompanyTestUtil.resetCompanyLocales(
-			_portal.getDefaultCompanyId(), _availableLocales, _defaultLocale);
+		_autoCloseable.close();
 
 		PropsValues.LOCALES_ENABLED = _localesEnabled;
 	}
@@ -411,8 +407,7 @@ public class I18nServletTest extends I18nServlet {
 		Assert.assertNotEquals(defaultLocale, locale);
 	}
 
-	private static Set<Locale> _availableLocales;
-	private static Locale _defaultLocale;
+	private static AutoCloseable _autoCloseable;
 
 	@Inject
 	private static Language _language;

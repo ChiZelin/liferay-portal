@@ -59,12 +59,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -85,32 +84,27 @@ public class StagingLocalizationTest {
 			new LiferayIntegrationTestRule(),
 			PermissionCheckerMethodTestRule.INSTANCE);
 
-	@BeforeClass
-	public static void setUpClass() throws Exception {
-		_availableLocales = LanguageUtil.getAvailableLocales(
-			TestPropsValues.getCompanyId());
-		_defaultLocale = LocaleThreadLocal.getDefaultLocale();
-	}
-
 	@AfterClass
-	public static void tearDownClass() throws Exception {
+	public static void tearDownClass() {
 		LanguageUtil.init();
-
-		CompanyTestUtil.resetCompanyLocales(
-			TestPropsValues.getCompanyId(), _availableLocales, _defaultLocale);
 	}
 
 	@Before
 	public void setUp() throws Exception {
 		LanguageUtil.init();
 
-		CompanyTestUtil.resetCompanyLocales(
+		_autoCloseable = CompanyTestUtil.resetCompanyLocalesWithAutoCloseable(
 			TestPropsValues.getCompanyId(), _locales, LocaleUtil.US);
 
 		UserTestUtil.setUser(TestPropsValues.getUser());
 
 		_sourceGroup = GroupTestUtil.addGroup();
 		_targetGroup = GroupTestUtil.addGroup();
+	}
+
+	@After
+	public void tearDown() throws Exception {
+		_autoCloseable.close();
 	}
 
 	@Test
@@ -198,7 +192,7 @@ public class StagingLocalizationTest {
 
 		LanguageUtil.init();
 
-		CompanyTestUtil.resetCompanyLocales(
+		CompanyTestUtil.resetCompanyLocalesWithAutoCloseable(
 			TestPropsValues.getCompanyId(), languageIds, defaultLanguageId);
 
 		ExportImportLocalServiceUtil.importLayouts(
@@ -318,9 +312,7 @@ public class StagingLocalizationTest {
 		return nameMap;
 	}
 
-	private static Set<Locale> _availableLocales;
-	private static Locale _defaultLocale;
-
+	private AutoCloseable _autoCloseable;
 	private final List<Locale> _locales = Arrays.asList(
 		LocaleUtil.US, LocaleUtil.GERMANY, LocaleUtil.SPAIN);
 

@@ -77,7 +77,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.ClassRule;
@@ -1329,15 +1328,14 @@ public class GroupServiceTest {
 			boolean expectFailure)
 		throws Exception {
 
-		Set<Locale> availableLocales = _language.getAvailableLocales();
+		try (AutoCloseable autoCloseable =
+				CompanyTestUtil.resetCompanyLocalesWithAutoCloseable(
+					TestPropsValues.getCompanyId(), portalAvailableLocales,
+					LocaleUtil.getDefault())) {
 
-		CompanyTestUtil.resetCompanyLocales(
-			TestPropsValues.getCompanyId(), portalAvailableLocales,
-			LocaleUtil.getDefault());
+			_group = GroupTestUtil.addGroup(
+				GroupConstants.DEFAULT_PARENT_GROUP_ID);
 
-		_group = GroupTestUtil.addGroup(GroupConstants.DEFAULT_PARENT_GROUP_ID);
-
-		try {
 			GroupTestUtil.updateDisplaySettings(
 				_group.getGroupId(), groupAvailableLocales, groupDefaultLocale);
 
@@ -1345,11 +1343,6 @@ public class GroupServiceTest {
 		}
 		catch (LocaleException localeException) {
 			Assert.assertTrue(expectFailure);
-		}
-		finally {
-			CompanyTestUtil.resetCompanyLocales(
-				TestPropsValues.getCompanyId(), availableLocales,
-				LocaleUtil.getDefault());
 		}
 	}
 

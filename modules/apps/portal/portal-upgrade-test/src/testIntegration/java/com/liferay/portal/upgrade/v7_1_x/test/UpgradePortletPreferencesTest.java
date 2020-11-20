@@ -28,14 +28,10 @@ import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
 import com.liferay.portal.kernel.test.util.CompanyTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
-import com.liferay.portal.kernel.upgrade.util.UpgradeProcessUtil;
 import com.liferay.portal.kernel.util.PortletKeys;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.upgrade.v7_1_x.UpgradePortalPreferences;
-
-import java.util.Locale;
-import java.util.Set;
 
 import javax.portlet.PortletPreferences;
 
@@ -61,22 +57,13 @@ public class UpgradePortletPreferencesTest extends UpgradePortalPreferences {
 
 	@BeforeClass
 	public static void setUpClass() throws Exception {
-		_availableLocales = _language.getAvailableLocales();
-
-		String defaultLanguageId = UpgradeProcessUtil.getDefaultLanguageId(
-			CompanyThreadLocal.getCompanyId());
-
-		_defaultLocale = _language.getLocale(defaultLanguageId);
-
-		CompanyTestUtil.resetCompanyLocales(
+		_autoCloseable = CompanyTestUtil.resetCompanyLocalesWithAutoCloseable(
 			CompanyThreadLocal.getCompanyId(), "en_US,es_ES", "en_US");
 	}
 
 	@AfterClass
 	public static void tearDownClass() throws Exception {
-		CompanyTestUtil.resetCompanyLocales(
-			CompanyThreadLocal.getCompanyId(), _availableLocales,
-			_defaultLocale);
+		_autoCloseable.close();
 	}
 
 	@Before
@@ -152,8 +139,7 @@ public class UpgradePortletPreferencesTest extends UpgradePortalPreferences {
 		return _organization.getPreferences();
 	}
 
-	private static Set<Locale> _availableLocales;
-	private static Locale _defaultLocale;
+	private static AutoCloseable _autoCloseable;
 
 	@Inject
 	private static Language _language;

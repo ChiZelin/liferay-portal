@@ -23,7 +23,6 @@ import com.liferay.portal.kernel.search.Document;
 import com.liferay.portal.kernel.search.DocumentImpl;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.search.SearchContext;
-import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
 import com.liferay.portal.kernel.test.util.CompanyTestUtil;
@@ -45,7 +44,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Stream;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -66,14 +64,7 @@ public class SearchLocalizationHelperTest {
 
 	@Before
 	public void setUp() {
-		_companyId = CompanyThreadLocal.getCompanyId();
-
 		_groups = new ArrayList<>();
-	}
-
-	@After
-	public void tearDown() {
-		CompanyThreadLocal.setCompanyId(_companyId);
 	}
 
 	@Test
@@ -99,73 +90,95 @@ public class SearchLocalizationHelperTest {
 
 	@Test
 	public void testGetLocalesFromCompany() throws Exception {
-		SearchContext searchContext = getSearchContext(
-			addCompany(LocaleUtil.BRAZIL, LocaleUtil.JAPAN));
+		_company = CompanyTestUtil.addCompany();
 
-		assertSameValues(
-			searchLocalizationHelper.getLocales(searchContext),
-			LocaleUtil.BRAZIL, LocaleUtil.JAPAN);
+		try (AutoCloseable autoCloseable =
+				CompanyTestUtil.resetCompanyLocalesWithAutoCloseable(
+					_company.getCompanyId(),
+					ListUtil.fromArray(LocaleUtil.BRAZIL, LocaleUtil.JAPAN),
+					LocaleUtil.BRAZIL)) {
+
+			assertSameValues(
+				searchLocalizationHelper.getLocales(getSearchContext(_company)),
+				LocaleUtil.BRAZIL, LocaleUtil.JAPAN);
+		}
 	}
 
 	@Test
 	public void testGetLocalesFromGroups() throws Exception {
-		Company company = addCompany(
-			LocaleUtil.BRAZIL, LocaleUtil.JAPAN, LocaleUtil.GERMANY,
-			LocaleUtil.SPAIN);
+		_company = CompanyTestUtil.addCompany();
 
-		SearchContext searchContext = getSearchContext(
-			company, addGroup(company, LocaleUtil.GERMANY),
-			addGroup(company, LocaleUtil.SPAIN));
+		try (AutoCloseable autoCloseable =
+				CompanyTestUtil.resetCompanyLocalesWithAutoCloseable(
+					_company.getCompanyId(),
+					ListUtil.fromArray(
+						LocaleUtil.BRAZIL, LocaleUtil.JAPAN, LocaleUtil.GERMANY,
+						LocaleUtil.SPAIN),
+					LocaleUtil.BRAZIL)) {
 
-		assertSameValues(
-			searchLocalizationHelper.getLocales(searchContext),
-			LocaleUtil.GERMANY, LocaleUtil.SPAIN);
+			SearchContext searchContext = getSearchContext(
+				_company, addGroup(_company, LocaleUtil.GERMANY),
+				addGroup(_company, LocaleUtil.SPAIN));
+
+			assertSameValues(
+				searchLocalizationHelper.getLocales(searchContext),
+				LocaleUtil.GERMANY, LocaleUtil.SPAIN);
+		}
 	}
 
 	@Test
 	public void testGetLocalizedFieldNamesFromCompany() throws Exception {
-		SearchContext searchContext = getSearchContext(
-			addCompany(LocaleUtil.BRAZIL, LocaleUtil.JAPAN));
+		_company = CompanyTestUtil.addCompany();
 
-		String[] locales = searchLocalizationHelper.getLocalizedFieldNames(
-			new String[] {"test", "example"}, searchContext);
+		try (AutoCloseable autoCloseable =
+				CompanyTestUtil.resetCompanyLocalesWithAutoCloseable(
+					_company.getCompanyId(),
+					ListUtil.fromArray(LocaleUtil.BRAZIL, LocaleUtil.JAPAN),
+					LocaleUtil.BRAZIL)) {
 
-		assertSameValues(
-			locales, "test_pt_BR", "test_ja_JP", "example_pt_BR",
-			"example_ja_JP");
+			String[] locales = searchLocalizationHelper.getLocalizedFieldNames(
+				new String[] {"test", "example"}, getSearchContext(_company));
+
+			assertSameValues(
+				locales, "test_pt_BR", "test_ja_JP", "example_pt_BR",
+				"example_ja_JP");
+		}
 	}
 
 	@Test
 	public void testGetLocalizedFieldNamesFromGroups() throws Exception {
-		Company company = addCompany(
-			LocaleUtil.BRAZIL, LocaleUtil.JAPAN, LocaleUtil.GERMANY,
-			LocaleUtil.SPAIN);
+		_company = CompanyTestUtil.addCompany();
 
-		SearchContext searchContext = getSearchContext(
-			company, addGroup(company, LocaleUtil.GERMANY),
-			addGroup(company, LocaleUtil.SPAIN));
+		try (AutoCloseable autoCloseable =
+				CompanyTestUtil.resetCompanyLocalesWithAutoCloseable(
+					_company.getCompanyId(),
+					ListUtil.fromArray(
+						LocaleUtil.BRAZIL, LocaleUtil.JAPAN, LocaleUtil.GERMANY,
+						LocaleUtil.SPAIN),
+					LocaleUtil.BRAZIL)) {
 
-		String[] locales = searchLocalizationHelper.getLocalizedFieldNames(
-			new String[] {"test", "example"}, searchContext);
+			CompanyTestUtil.resetCompanyLocalesWithAutoCloseable(
+				_company.getCompanyId(),
+				ListUtil.fromArray(
+					LocaleUtil.BRAZIL, LocaleUtil.JAPAN, LocaleUtil.GERMANY,
+					LocaleUtil.SPAIN),
+				LocaleUtil.BRAZIL);
 
-		assertSameValues(
-			locales, "test_de_DE", "test_es_ES", "example_de_DE",
-			"example_es_ES");
+			SearchContext searchContext = getSearchContext(
+				_company, addGroup(_company, LocaleUtil.GERMANY),
+				addGroup(_company, LocaleUtil.SPAIN));
+
+			String[] locales = searchLocalizationHelper.getLocalizedFieldNames(
+				new String[] {"test", "example"}, searchContext);
+
+			assertSameValues(
+				locales, "test_de_DE", "test_es_ES", "example_de_DE",
+				"example_es_ES");
+		}
 	}
 
 	@Rule
 	public SearchTestRule searchTestRule = new SearchTestRule();
-
-	protected Company addCompany(Locale... locales) throws Exception {
-		Company company = CompanyTestUtil.addCompany();
-
-		CompanyTestUtil.resetCompanyLocales(
-			company.getCompanyId(), ListUtil.fromArray(locales), locales[0]);
-
-		_company = company;
-
-		return company;
-	}
 
 	protected Group addGroup(Company company, Locale... locales)
 		throws Exception, PortalException {
@@ -214,8 +227,6 @@ public class SearchLocalizationHelperTest {
 
 	@DeleteAfterTestRun
 	private Company _company;
-
-	private Long _companyId;
 
 	@DeleteAfterTestRun
 	private List<Group> _groups;

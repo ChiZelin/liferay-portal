@@ -19,7 +19,6 @@ import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.GroupConstants;
-import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
@@ -59,31 +58,23 @@ public class LanguageImplGetAvailableLocalesTest {
 
 	@Test
 	public void testCompanyThreadLocalIsDefaultWithNoArgs() throws Exception {
-		long companyId = CompanyThreadLocal.getCompanyId();
-
-		try {
-			_resetCompanyLocales();
+		try (AutoCloseable autoCloseable =
+				CompanyTestUtil.resetCompanyLocalesWithAutoCloseable(
+					_company.getCompanyId(), _locales, LocaleUtil.US)) {
 
 			Assert.assertEquals(_locales, _language.getAvailableLocales());
-		}
-		finally {
-			CompanyThreadLocal.setCompanyId(companyId);
 		}
 	}
 
 	@Test
 	public void testGroupWithoutLocalesInheritsFromCompany() throws Exception {
-		long companyId = CompanyThreadLocal.getCompanyId();
+		try (AutoCloseable autoCloseable =
+				CompanyTestUtil.resetCompanyLocalesWithAutoCloseable(
+					_company.getCompanyId(), _locales, LocaleUtil.US)) {
 
-		try {
-			_resetCompanyLocales();
+			Assert.assertEquals(
+				_locales, _language.getAvailableLocales(_getGuestGroupId()));
 		}
-		finally {
-			CompanyThreadLocal.setCompanyId(companyId);
-		}
-
-		Assert.assertEquals(
-			_locales, _language.getAvailableLocales(_getGuestGroupId()));
 	}
 
 	@Test
@@ -100,11 +91,6 @@ public class LanguageImplGetAvailableLocalesTest {
 			_company.getCompanyId(), GroupConstants.GUEST);
 
 		return group.getGroupId();
-	}
-
-	private void _resetCompanyLocales() throws Exception {
-		CompanyTestUtil.resetCompanyLocales(
-			_company.getCompanyId(), _locales, LocaleUtil.US);
 	}
 
 	@Inject

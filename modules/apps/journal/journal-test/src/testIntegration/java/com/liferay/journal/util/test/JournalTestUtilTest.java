@@ -51,7 +51,6 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -150,21 +149,13 @@ public class JournalTestUtilTest {
 
 	@Test(expected = LocaleException.class)
 	public void testAddDDMStructureWithNonexistingLocale() throws Exception {
-		Set<Locale> availableLocales = LanguageUtil.getAvailableLocales();
-		Locale defaultLocale = LocaleUtil.getDefault();
-
-		try {
-			CompanyTestUtil.resetCompanyLocales(
-				PortalUtil.getDefaultCompanyId(), Arrays.asList(LocaleUtil.US),
-				LocaleUtil.US);
+		try (AutoCloseable autoCloseable =
+				CompanyTestUtil.resetCompanyLocalesWithAutoCloseable(
+					PortalUtil.getDefaultCompanyId(),
+					Arrays.asList(LocaleUtil.US), LocaleUtil.US)) {
 
 			DDMStructureTestUtil.addStructure(
 				JournalArticle.class.getName(), LocaleUtil.CANADA);
-		}
-		finally {
-			CompanyTestUtil.resetCompanyLocales(
-				PortalUtil.getDefaultCompanyId(), availableLocales,
-				defaultLocale);
 		}
 	}
 

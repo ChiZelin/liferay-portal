@@ -129,7 +129,7 @@ public class DDMStructureStagedModelDataHandlerTest
 	public void tearDown() throws Exception {
 		LanguageUtil.init();
 
-		CompanyTestUtil.resetCompanyLocales(
+		CompanyTestUtil.resetCompanyLocalesWithAutoCloseable(
 			TestPropsValues.getCompanyId(), _availableLocales, _defaultLocale);
 	}
 
@@ -199,7 +199,7 @@ public class DDMStructureStagedModelDataHandlerTest
 
 		LanguageUtil.init();
 
-		CompanyTestUtil.resetCompanyLocales(
+		CompanyTestUtil.resetCompanyLocalesWithAutoCloseable(
 			stagingGroup.getCompanyId(), Arrays.asList(newLocale), newLocale);
 
 		initExport();

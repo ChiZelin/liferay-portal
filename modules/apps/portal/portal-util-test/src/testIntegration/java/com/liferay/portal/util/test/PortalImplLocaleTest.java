@@ -25,7 +25,6 @@ import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
 import com.liferay.portal.kernel.test.util.CompanyTestUtil;
 import com.liferay.portal.kernel.test.util.GroupTestUtil;
-import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.Props;
 import com.liferay.portal.kernel.util.PropsKeys;
@@ -84,7 +83,7 @@ public class PortalImplLocaleTest {
 
 		_layout = LayoutTestUtil.addLayout(_group);
 
-		CompanyTestUtil.resetCompanyLocales(
+		_autoCloseable = CompanyTestUtil.resetCompanyLocalesWithAutoCloseable(
 			_group.getCompanyId(),
 			Arrays.asList(
 				LocaleUtil.fromLanguageId("ca_ES"), LocaleUtil.US,
@@ -105,9 +104,7 @@ public class PortalImplLocaleTest {
 
 		_language.init();
 
-		CompanyTestUtil.resetCompanyLocales(
-			TestPropsValues.getCompanyId(), _availableLocales,
-			LocaleUtil.getDefault());
+		_autoCloseable.close();
 	}
 
 	@Test
@@ -184,6 +181,7 @@ public class PortalImplLocaleTest {
 		return mockHttpServletResponse;
 	}
 
+	private AutoCloseable _autoCloseable;
 	private Set<Locale> _availableLocales;
 
 	@DeleteAfterTestRun
