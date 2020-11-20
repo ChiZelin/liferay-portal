@@ -29,6 +29,7 @@ import com.liferay.portal.kernel.util.TimeZoneUtil;
 
 import java.util.Collection;
 import java.util.Locale;
+import java.util.Set;
 import java.util.TimeZone;
 
 import javax.portlet.PortletPreferences;
@@ -96,6 +97,84 @@ public class CompanyTestUtil {
 
 		LocaleThreadLocal.setDefaultLocale(
 			LocaleUtil.fromLanguageId(defaultLanguageId));
+	}
+
+	public static AutoCloseable resetCompanyLocalesWithAutoCloseable(
+			long companyId, Collection<Locale> locales, Locale defaultLocale)
+		throws Exception {
+
+		String defaultLanguageId = LocaleUtil.toLanguageId(defaultLocale);
+
+		String languageIds = StringUtil.merge(
+			LocaleUtil.toLanguageIds(locales));
+
+		return resetCompanyLocalesWithAutoCloseable(
+			companyId, languageIds, defaultLanguageId);
+	}
+
+	public static AutoCloseable resetCompanyLocalesWithAutoCloseable(
+			long companyId, String languageIds, String defaultLanguageId)
+		throws Exception {
+
+		Set<Locale> originalAvailableLocales =
+			LanguageUtil.getAvailableLocales();
+		Locale originalDefaultLocale = LocaleUtil.getDefault();
+
+		_resetCompanyLocales(companyId, languageIds, defaultLanguageId);
+
+		// Reset thread locals
+
+		Long originalCompanyId = CompanyThreadLocal.getCompanyId();
+		Locale originalThreadLocalDefaultLocale =
+			LocaleThreadLocal.getDefaultLocale();
+
+		CompanyThreadLocal.setCompanyId(companyId);
+
+		LocaleThreadLocal.setDefaultLocale(
+			LocaleUtil.fromLanguageId(defaultLanguageId));
+
+		return () -> {
+			_resetCompanyLocales(
+				companyId,
+				StringUtil.merge(
+					LocaleUtil.toLanguageIds(originalAvailableLocales)),
+				LocaleUtil.toLanguageId(originalDefaultLocale));
+
+			CompanyThreadLocal.setCompanyId(originalCompanyId);
+
+			LocaleThreadLocal.setDefaultLocale(
+				originalThreadLocalDefaultLocale);
+		};
+	}
+
+	private static void _resetCompanyLocales(
+			long companyId, String languageIds, String defaultLanguageId)
+		throws Exception {
+
+		// Reset company default locale and timezone
+
+		User user = UserLocalServiceUtil.loadGetDefaultUser(companyId);
+
+		user.setLanguageId(defaultLanguageId);
+
+		TimeZone timeZone = TimeZoneUtil.getDefault();
+
+		user.setTimeZoneId(timeZone.getID());
+
+		UserLocalServiceUtil.updateUser(user);
+
+		// Reset company supported locales
+
+		PortletPreferences preferences = PrefsPropsUtil.getPreferences(
+			companyId);
+
+		preferences.setValue(PropsKeys.LOCALES, languageIds);
+
+		preferences.store();
+
+		// Reset company locales cache
+
+		LanguageUtil.resetAvailableLocales(companyId);
 	}
 
 }
