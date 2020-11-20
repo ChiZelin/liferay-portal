@@ -50,6 +50,11 @@ public class CompanyTestUtil {
 			null, name, virtualHostname, virtualHostname, false, 0, true);
 	}
 
+	/**
+	 * @deprecated As of Cavanaugh (7.4.x), replaced by {@link
+	 * 			#resetCompanyLocalesWithAutoCloseable(long, Collection, Locale)}
+	 */
+	@Deprecated
 	public static void resetCompanyLocales(
 			long companyId, Collection<Locale> locales, Locale defaultLocale)
 		throws Exception {
@@ -62,6 +67,11 @@ public class CompanyTestUtil {
 		resetCompanyLocales(companyId, languageIds, defaultLanguageId);
 	}
 
+	/**
+	 * @deprecated As of Cavanaugh (7.4.x), replaced by {@link
+	 * 			#resetCompanyLocalesWithAutoCloseable(long, String, String)}
+	 */
+	@Deprecated
 	public static void resetCompanyLocales(
 			long companyId, String languageIds, String defaultLanguageId)
 		throws Exception {
