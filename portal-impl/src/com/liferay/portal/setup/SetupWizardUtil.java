@@ -145,6 +145,8 @@ public class SetupWizardUtil {
 		CompanyLocalServiceUtil.updateDisplay(
 			PortalInstances.getDefaultCompanyId(), languageId, timeZoneId);
 
+		httpServletRequest.setAttribute(WebKeys.LOCALE, locale);
+
 		HttpSession session = httpServletRequest.getSession();
 
 		session.setAttribute(WebKeys.LOCALE, locale);
