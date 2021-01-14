@@ -10,6 +10,10 @@
 		<priority value="INFO" />
 	</category>
 
+	<category name="com.liferay.portal.search.elasticsearch7.internal.sidecar.ElasticsearchServerUtil">
+		<priority value="ERROR" />
+	</category>
+
 	<category name="com.liferay.portal.search.elasticsearch7.internal.sidecar.SidecarManager">
 		<priority value="INFO" />
 	</category>

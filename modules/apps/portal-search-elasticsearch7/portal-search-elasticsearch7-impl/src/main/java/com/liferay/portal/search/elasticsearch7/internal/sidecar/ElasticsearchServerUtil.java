@@ -16,6 +16,8 @@ package com.liferay.portal.search.elasticsearch7.internal.sidecar;
 
 import com.liferay.petra.process.ProcessException;
 import com.liferay.petra.reflect.ReflectionUtil;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -24,9 +26,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import org.elasticsearch.cli.ExitCodes;
 import org.elasticsearch.node.Node;
@@ -41,8 +40,8 @@ public class ElasticsearchServerUtil {
 			_stopMethod.invoke(null);
 		}
 		catch (Exception exception) {
-			if (_logger.isWarnEnabled()) {
-				_logger.warn("Unable to invoke stop method", exception);
+			if (_log.isWarnEnabled()) {
+				_log.warn("Unable to invoke stop method", exception);
 			}
 
 			System.exit(ExitCodes.CODE_ERROR);
@@ -117,7 +116,7 @@ public class ElasticsearchServerUtil {
 		}
 	}
 
-	private static final Logger _logger = LogManager.getLogger(
+	private static final Log _log = LogFactoryUtil.getLog(
 		ElasticsearchServerUtil.class);
 
 	private static final Field _hooksField;
