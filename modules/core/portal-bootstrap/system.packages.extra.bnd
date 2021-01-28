@@ -98,6 +98,11 @@ Export-Package:\
 	\
 	!unicode-license.txt,\
 	\
+	com.fasterxml.jackson.databind;version='2.12.1',\
+	com.fasterxml.jackson.databind.ser;version='2.12.1',\
+	com.fasterxml.jackson.databind.ser.impl;version='2.12.1',\
+	com.fasterxml.jackson.databind.util;version='2.12.1',\
+	\
 	com.ibm.crypto.provider,\
 	\
 	com.liferay.ibm.icu.*;version='4.0.1',\
