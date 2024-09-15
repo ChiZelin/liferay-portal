@@ -22,7 +22,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 
 /**
- * @author Preston Crary
+ * @author Preston Crary LPS-92184 test
  */
 public class UpgradeCTModel extends UpgradeProcess {
 
