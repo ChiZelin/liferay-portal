@@ -28,6 +28,7 @@ import java.util.Set;
 import javax.portlet.MimeResponse;
 import javax.portlet.PortletRequest;
 
+import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -119,6 +120,12 @@ public class NamespaceServletRequest extends DynamicServletRequest {
 
 		if (value == null) {
 			value = super.getParameter(_paramNamespace + name);
+		}
+
+		if (value == null) {
+			ServletRequest servletRequest = super.getRequest();
+
+			value = servletRequest.getParameter(name);
 		}
 
 		return value;
